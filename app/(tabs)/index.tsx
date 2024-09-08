@@ -21,16 +21,20 @@ export default function HomeScreen() {
         <ThemedText type="title">150€</ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">5</ThemedText>
+        <ThemedText type="subtitle" style={styles.fiveColour}>5</ThemedText>
+        <ThemedText type="subtitle" style={styles.amount}>0</ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">10</ThemedText>
+        <ThemedText type="subtitle" style={styles.tenColour}>10</ThemedText>
+        <ThemedText type="subtitle" style={styles.amount}>0</ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">20</ThemedText>
+        <ThemedText type="subtitle" style={styles.twentyColour}>20</ThemedText>
+        <ThemedText type="subtitle" style={styles.amount}>0</ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">50</ThemedText>
+        <ThemedText type="subtitle" style={styles.fiftyColour}>50</ThemedText>
+        <ThemedText type="subtitle" style={styles.amount}>0</ThemedText>
       </ThemedView>
     </ParallaxScrollView>
   );
@@ -46,7 +50,8 @@ const styles = StyleSheet.create({
   },
   stepContainer: {
     gap: 24,
-    marginBottom: 24
+    marginBottom: 24,
+    flexDirection: 'row'
   },
   logo: {
     height: "100%",
@@ -55,12 +60,48 @@ const styles = StyleSheet.create({
     left: 0,
     position: 'absolute',
   },
-  balance: {
+  fiveColour: {
     textAlign: 'center',
     fontWeight: 'bold',
-    fontSize: 18,
-    marginTop: 0,
-    width: 200,
-    backgroundColor: 'yellow',
-  }
+    fontSize: 28,
+    marginTop: 10,
+    width: 100,
+    backgroundColor: 'gray',
+    color: 'white'
+  },
+  tenColour: {
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 28,
+    marginTop: 10,
+    width: 100,
+    backgroundColor: 'red',
+    color: 'white'
+  },
+  twentyColour: {
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 28,
+    marginTop: 10,
+    width: 100,
+    backgroundColor: 'blue',
+    color: 'white'
+  },
+  fiftyColour: {
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 28,
+    marginTop: 10,
+    width: 100,
+    backgroundColor: 'orange',
+    color: 'white'
+  },
+  amount: {
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 28,
+    marginTop: 10,
+    width: 100,
+    color: 'black'
+  },
 });
