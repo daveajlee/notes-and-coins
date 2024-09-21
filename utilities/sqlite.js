@@ -3,35 +3,23 @@ import * as SQLite from 'expo-sqlite';
 /**
  * Define the file where the database will be stored by SQLite.
  */
-const database = SQLite.openDatabase('notes-and-coins.db');
+let database;
 
 /**
  * Initialise the database by creating all of the required tables
  * and returning whether or not it was successful.
  * @returns a promise with either a success result or an error message.
  */
-export function init() {
+export async function initializeDatabase() {
 
-    // Create table with balances i.e. value and amount as key/value pair.
-    var promise = new Promise((resolve, reject) => {
-        database.transaction((tx) => {
-            tx.executeSql(`CREATE TABLE IF NOT EXISTS balances (
+    database = await SQLite.openDatabaseAsync('notes-and-coins.db');
+
+    await database.execAsync(`
+        CREATE TABLE IF NOT EXISTS balances (
                 id INTEGER PRIMARY KEY NOT NULL,
                 value INTEGER NOT NULL,
-                amount INTEGER NOT NULL,
-            )`,
-            [],
-            () => {
-                resolve();
-            },
-            (_, error) => {
-                reject(error);
-            }
-            );
-        });
-    });
-
-    return promise;
+                amount INTEGER NOT NULL
+            )`, []);
 
 }
 
@@ -41,22 +29,9 @@ export function init() {
  * @param {number} amount the amount of the note that should be saved.
  * @returns a promise with either a success result or an error message.
  */
-export function insertValueAmount(value, amount) {
-    const promise = new Promise((resolve, reject) => {
-        database.transaction((tx) => {
-            tx.executeSql(`INSERT INTO balances (value, amount) VALUES (?, ?)`,
-            [value, amount],
-            (_, result) => {
-
-                resolve(result);
-            },
-            (_, error) => {
-                reject(error);
-            })
-        })
-    });
-
-    return promise;
+export async function insertValueAmount(value, amount) {
+    await database.execAsync(`INSERT INTO balances (value, amount) VALUES (?, ?)`,
+            [value, amount]);
 }
 
 /**
@@ -64,21 +39,8 @@ export function insertValueAmount(value, amount) {
  * @param value the note value to retrieve.
  * @returns a promise with the amount or an error message if something bad happens
  */
-export function fetchAmount(value) {
-    const promise = new Promise((resolve, reject) => {
-        database.transaction((tx) => {
-            tx.executeSql('SELECT * FROM balances where value = ?', [value],
-            (_, result) => {
-                const balances = [];
-                for (const balance of result.rows._array) {
-                    balances.push(balance.amount);
-                }
-                resolve(games);
-            }, (_, error) => { reject(error); });
-        })
-    })
-
-    return promise;
+export async function fetchAmount(value) {
+    await database.execAsync('SELECT * FROM balances where value = ?', [value]);
 }
 
 /**
@@ -86,19 +48,6 @@ export function fetchAmount(value) {
  * @param value the note value to retrieve.
  * @returns a promise with either a success result or error message
  */
-export function deleteAmount(value) {
-    const promise = new Promise((resolve, reject) => {
-        database.transaction((tx) => {
-            tx.executeSql('DELETE FROM balances WHERE value = ?', [value],
-            (_, result) => {
-                console.log(result);
-                resolve(result);
-            },
-            (_, error) => {
-                reject(error);
-            })
-        })
-    })
-    
-    return promise;
+export async function deleteAmount(value) {
+    await database.execAsync('DELETE FROM balances WHERE value = ?', [value]);
 }
