@@ -1,29 +1,94 @@
-import { Image, StyleSheet, Platform,} from 'react-native';
-
+import { Image, StyleSheet} from 'react-native';
+import { useEffect, useState } from 'react';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { TouchableOpacity } from 'react-native';
 import { Text } from 'react-native';
+import { updateValueAmount, fetchAmount } from '@/utilities/sqlite';
 
+/**
+ * Show the home screen with the various categories of notes and the quantities to increase and decrease the amount of notes.
+ */
 export default function HomeScreen() {
 
-  function getBalance() {
-    return (getNoteAmount(5) * 5) + (getNoteAmount(10) * 10) + (getNoteAmount(20) * 20) + (getNoteAmount(50) * 50);
+  const [balance, setBalance] = useState(0);
+  const [fiveAmount, setFiveAmount] = useState(0);
+  const [tenAmount, setTenAmount] = useState(0);
+  const [twentyAmount, setTwentyAmount] = useState(0);
+  const [fiftyAmount, setFiftyAmount] = useState(0);
+
+  /**
+   * Whenever we visit the screen, we want to retrieve the current balance.
+   */
+  useEffect(() => {
+
+    async function prepare() {
+      await getBalance();
+    }
+
+    prepare();
+    
+  }, []);
+
+  /**
+   * Get the balance by multiplying the various categories.
+   */
+  async function getBalance() {
+    setBalance((await (getNoteAmount(5)) * 5) + ((await getNoteAmount(10)) * 10) + ((await getNoteAmount(20)) * 20) + ((await getNoteAmount(50)) * 50));
   }
 
-  function getNoteAmount(noteValue: number) {
-    return 0;
+  /**
+   * Retrieve the amount of a particular note.
+   * @param noteValue the value of the note to retrieve the amount for.
+   * @returns the amount of the note currently saved in the database and update the UI.
+   */
+  async function getNoteAmount(noteValue: number) {
+    if ( noteValue === 5 ) {
+      setFiveAmount(await fetchAmount(noteValue));
+    } else if ( noteValue === 10 ) {
+      setTenAmount(await fetchAmount(noteValue));
+    } else if ( noteValue === 20 ) {
+      setTwentyAmount(await fetchAmount(noteValue));
+    } else if ( noteValue === 50 ) {
+      setFiftyAmount(await fetchAmount(noteValue));
+    }
+    return await(fetchAmount(noteValue));
   }
 
-  function onIncreaseNote(noteValue: number) {
-    console.log('Increase Note amount ' + noteValue);
+  /**
+   * Incresse the amount of a particular note by 1.
+   * @param noteValue the value of the note to increase the amount for.
+   */
+  async function onIncreaseNote(noteValue: number) {
+    let currentValue:number = await fetchAmount(noteValue);
+    if ( currentValue ) {
+      await updateValueAmount(noteValue, currentValue + 1);
+    } else {
+      await updateValueAmount(noteValue, 1);
+    }
+    await getNoteAmount(noteValue);
+    await getBalance();
   }
 
-  function onDecreaseNote(noteValue: number) {
-    console.log('Decrease Note amount ' + noteValue);
+  /**
+   * Decrease the amount of a particular note by 1.
+   * @param noteValue the value of the note to decrease the amount for.
+   */
+  async function onDecreaseNote(noteValue: number) {
+    let currentValue:number = await fetchAmount(noteValue);
+    if ( currentValue ) {
+      await updateValueAmount(noteValue, currentValue - 1);
+    } else {
+      await updateValueAmount(noteValue, 0);
+    }
+    await getNoteAmount(noteValue);
+    await getBalance();
   }
 
+  /**
+   * Display the screen to the user.
+   */
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#843D48', dark: '#CD978E' }}
@@ -37,11 +102,11 @@ export default function HomeScreen() {
         <ThemedText type="title">Your Current Balance</ThemedText>
       </ThemedView>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">{getBalance()}€</ThemedText>
+        <ThemedText type="title">{balance}€</ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle" style={styles.fiveColour}>5</ThemedText>
-        <ThemedText type="subtitle" style={styles.amount}>{getNoteAmount(5)}</ThemedText>
+        <ThemedText type="subtitle" style={styles.amount}>{fiveAmount}</ThemedText>
         <TouchableOpacity style={styles.fiveButton} onPress={() => onIncreaseNote(5)}>
           <Text style={styles.buttonText}>+</Text>
         </TouchableOpacity>
@@ -51,7 +116,7 @@ export default function HomeScreen() {
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle" style={styles.tenColour}>10</ThemedText>
-        <ThemedText type="subtitle" style={styles.amount}>{getNoteAmount(10)}</ThemedText>
+        <ThemedText type="subtitle" style={styles.amount}>{tenAmount}</ThemedText>
         <TouchableOpacity style={styles.tenButton} onPress={() => onIncreaseNote(10)}>
           <Text style={styles.buttonText}>+</Text>
         </TouchableOpacity>
@@ -61,7 +126,7 @@ export default function HomeScreen() {
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle" style={styles.twentyColour}>20</ThemedText>
-        <ThemedText type="subtitle" style={styles.amount}>{getNoteAmount(20)}</ThemedText>
+        <ThemedText type="subtitle" style={styles.amount}>{twentyAmount}</ThemedText>
         <TouchableOpacity style={styles.twentyButton} onPress={() => onIncreaseNote(20)}>
           <Text style={styles.buttonText}>+</Text>
         </TouchableOpacity>
@@ -71,7 +136,7 @@ export default function HomeScreen() {
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle" style={styles.fiftyColour}>50</ThemedText>
-        <ThemedText type="subtitle" style={styles.amount}>{getNoteAmount(50)}</ThemedText>
+        <ThemedText type="subtitle" style={styles.amount}>{fiftyAmount}</ThemedText>
         <TouchableOpacity style={styles.fiftyButton} onPress={() => onIncreaseNote(50)}>
           <Text style={styles.buttonText}>+</Text>
         </TouchableOpacity>
@@ -89,7 +154,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     justifyContent: "center",
-    marginBottom: 24
+    marginBottom: 24,
   },
   stepContainer: {
     gap: 24,

@@ -8,7 +8,6 @@ let database;
 /**
  * Initialise the database by creating all of the required tables
  * and returning whether or not it was successful.
- * @returns a promise with either a success result or an error message.
  */
 export async function initializeDatabase() {
 
@@ -30,8 +29,17 @@ export async function initializeDatabase() {
  * @returns a promise with either a success result or an error message.
  */
 export async function insertValueAmount(value, amount) {
-    await database.execAsync(`INSERT INTO balances (value, amount) VALUES (?, ?)`,
-            [value, amount]);
+    await database.runAsync(`INSERT INTO balances (value, amount) VALUES (?, ?)`, [value, amount]);
+}
+
+/**
+ * Update the amount for a value in the database.
+ * @param {number} value the value of the note to be saved.
+ * @param {number} amount the amount of the note that should be saved.
+ * @returns a promise with either a success result or an error message.
+ */
+export async function updateValueAmount(value, amount) {
+    await database.runAsync(`UPDATE balances SET amount = ? WHERE value = ?`, [amount, value]);
 }
 
 /**
@@ -40,13 +48,23 @@ export async function insertValueAmount(value, amount) {
  * @returns a promise with the amount or an error message if something bad happens
  */
 export async function fetchAmount(value) {
-    await database.execAsync('SELECT * FROM balances where value = ?', [value]);
+    try {
+        var result = await database.getFirstAsync('SELECT * FROM balances WHERE value = ' + value);
+        if ( result ) {
+            return result.amount;
+        }
+        return 0;
+    } catch ( error ) {
+        insertValueAmount(value, 0);
+        console.error(error);
+        return 0;
+    }
+    
 }
 
 /**
  * Delete an amount based on the supplied note value.
  * @param value the note value to retrieve.
- * @returns a promise with either a success result or error message
  */
 export async function deleteAmount(value) {
     await database.execAsync('DELETE FROM balances WHERE value = ?', [value]);
