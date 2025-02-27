@@ -5,7 +5,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { TouchableOpacity } from 'react-native';
 import { Text } from 'react-native';
-import { updateValueAmount, fetchAmount } from '@/utilities/sqlite';
+import { updateValueAmount, fetchAmount, insertValueAmount } from '@/utilities/sqlite';
 
 /**
  * Show the home screen with the various categories of notes and the quantities to increase and decrease the amount of notes.
@@ -65,8 +65,9 @@ export default function HomeScreen() {
     if ( currentValue ) {
       await updateValueAmount(noteValue, currentValue + 1);
     } else {
-      await updateValueAmount(noteValue, 1);
+      await insertValueAmount(noteValue, 1);
     }
+    console.log(await getNoteAmount(noteValue));
     await getNoteAmount(noteValue);
     await getBalance();
   }
