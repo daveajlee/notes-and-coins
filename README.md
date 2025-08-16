@@ -1,6 +1,6 @@
-# Notes & Coins
-
-## Introduction
+<p align="center">
+<img src="https://www.davelee.de/common/assets/img/portfolio/notesandcoins.webp" alt="Notes & Coins" width="300" height="300">
+</p>
 
 Notes & Coins enables users to easily manage the amount of cash you have in your wallet.
 
