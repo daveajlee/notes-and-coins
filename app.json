@@ -1,6 +1,4 @@
 {
-  "name": "Notes & Coins",
-  "ios": {
-    "bundleIdentifier": "com.anonymous.notes-and-coins"
-  }
+  "name": "notes-and-coins",
+  "displayName": "notes-and-coins"
 }
