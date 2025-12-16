@@ -57,7 +57,7 @@ export async function updateValueAmount(value: number, amount: number): Promise<
  * @param value the note value to retrieve.
  * @returns a promise with the amount or an error message if something bad happens
  */
-export async function fetchAmount(value: number) {
+export async function fetchAmount(value: number): Promise<number> {
     try {
       let {rows} = await database.execute('SELECT * FROM balances WHERE value = ' + value);
       console.log('Fetch amount is ' + rows.length);
