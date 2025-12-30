@@ -155,7 +155,7 @@ export default function HomeScreen() {
      * Display the screen to the user.
      */
     return (
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#A2574F', }}>
         <ScrollView contentContainerStyle={styles.container}>
           <Image
             style={{ marginTop: 10, width: 128, height: 128 }}

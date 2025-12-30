@@ -5,16 +5,28 @@
  * @format
  */
 
-import { StatusBar, useColorScheme } from 'react-native';
 import { useEffect } from 'react';
 import {
   SafeAreaProvider,
 } from 'react-native-safe-area-context';
 import HomeScreen from "./screens/HomeScreen.tsx";
 import { init } from './utilities/sqlite';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 
 function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+
+  // Define stack navigation
+  const Stack = createNativeStackNavigator();
+
+  const MyDefaultTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      background: '#A2574F',
+      primary: 'black',
+    },
+  };
 
   useEffect(() => {
     async function prepare() {
@@ -32,7 +44,11 @@ function App() {
 
   return (
       <SafeAreaProvider>
-        <HomeScreen/>
+        <NavigationContainer theme={MyDefaultTheme}>
+          <Stack.Navigator initialRouteName="HomeScreen">
+            <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
+          </Stack.Navigator>
+        </NavigationContainer>
       </SafeAreaProvider>
   );
 }
