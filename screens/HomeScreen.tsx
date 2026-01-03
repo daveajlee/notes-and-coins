@@ -15,6 +15,7 @@ export default function HomeScreen() {
     const [tenAmount, setTenAmount] = useState(0);
     const [twentyAmount, setTwentyAmount] = useState(0);
     const [fiftyAmount, setFiftyAmount] = useState(0);
+    const [hundredAmount, setHundredAmount] = useState(0);
 
     const colorScheme = Appearance.getColorScheme();
 
@@ -54,6 +55,8 @@ export default function HomeScreen() {
             setTwentyAmount(await fetchAmount(noteValue));
         } else if ( noteValue === 50 ) {
             setFiftyAmount(await fetchAmount(noteValue));
+        } else if ( noteValue === 100 ) {
+            setHundredAmount(await fetchAmount(noteValue));
         }
         return await(fetchAmount(noteValue));
     }
@@ -80,6 +83,12 @@ export default function HomeScreen() {
       await onIncreaseNote(50);
       setFiftyAmount(fiftyAmount+1);
       setBalance(balance+50);
+    }
+
+    async function onIncreaseNote100(): Promise<void> {
+      await onIncreaseNote(100);
+      setHundredAmount(hundredAmount+1);
+      setBalance(balance+100);
     }
 
     async function onDecreaseNote5(): Promise<void> {
@@ -119,6 +128,16 @@ export default function HomeScreen() {
         setBalance(balance-50);
       } else {
         setFiftyAmount(0);
+      }
+    }
+
+    async function onDecreaseNote100(): Promise<void> {
+      await onDecreaseNote(100);
+      if ( hundredAmount > 0 ) {
+        setHundredAmount(hundredAmount-1);
+        setBalance(balance-100);
+      } else {
+        setHundredAmount(0);
       }
     }
 
@@ -277,6 +296,38 @@ export default function HomeScreen() {
               </Text>
             </TouchableOpacity>
           </View>
+          <View style={styles.stepContainer}>
+            <Text style={styles.hundredColour}>100</Text>
+            <Text style={styles.amount}>{hundredAmount}</Text>
+            <TouchableOpacity
+              style={styles.hundredButton}
+              onPress={onIncreaseNote100}
+            >
+              <Text
+                style={
+                  colorScheme === 'dark'
+                    ? [styles.darkModeText, styles.buttonText]
+                    : [styles.lightModeText, styles.buttonText]
+                }
+              >
+                +
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.hundredButton}
+              onPress={onDecreaseNote100}
+            >
+              <Text
+                style={
+                  colorScheme === 'dark'
+                    ? [styles.darkModeText, styles.buttonText]
+                    : [styles.lightModeText, styles.buttonText]
+                }
+              >
+                -
+              </Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </SafeAreaView>
     );
@@ -385,6 +436,23 @@ const styles = StyleSheet.create({
   fiftyButton: {
     alignItems: 'center',
     backgroundColor: 'orange',
+    width: '10%',
+    padding: 0,
+    marginTop: 10,
+    height: 30,
+  },
+  hundredColour: {
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 28,
+    marginTop: 10,
+    width: 100,
+    backgroundColor: 'green',
+    color: 'white',
+  },
+  hundredButton: {
+    alignItems: 'center',
+    backgroundColor: 'green',
     width: '10%',
     padding: 0,
     marginTop: 10,
