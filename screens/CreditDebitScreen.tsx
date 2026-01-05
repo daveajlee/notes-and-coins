@@ -6,9 +6,9 @@ import { updateValueAmount, fetchAmount, insertValueAmount } from '../utilities/
 import {SafeAreaView} from "react-native-safe-area-context";
 
 /**
- * Show the home screen with the various categories of notes and the quantities to increase and decrease the amount of notes.
+ * Show the credit / debit screen with the various categories of notes and the quantities to increase and decrease the amount of notes.
  */
-export default function HomeScreen() {
+export default function CreditDebitScreen() {
 
     const [balance, setBalance] = useState(0);
     const [fiveAmount, setFiveAmount] = useState(0);
