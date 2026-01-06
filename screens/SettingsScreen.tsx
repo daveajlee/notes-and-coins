@@ -11,7 +11,6 @@ export default function SettingsScreen() {
      */
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#A2574F', }}>
-            <Text style={styles.text}>Settings Screen</Text>
             <Text style={styles.text}>Coming Soon...</Text>
         </SafeAreaView>
     );

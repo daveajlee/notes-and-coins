@@ -11,7 +11,6 @@ export default function HistoryScreen() {
      */
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#A2574F', }}>
-            <Text style={styles.text}>History Screen</Text>
             <Text style={styles.text}>Coming Soon...</Text>
         </SafeAreaView>
     );

@@ -11,7 +11,6 @@ export default function CategoriesScreen() {
      */
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#A2574F', }}>
-            <Text style={styles.text}>Categories Screen</Text>
             <Text style={styles.text}>Coming Soon...</Text>
         </SafeAreaView>
     );

@@ -5,7 +5,7 @@
  * @format
  */
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   SafeAreaProvider,
 } from 'react-native-safe-area-context';
@@ -17,11 +17,22 @@ import { init } from './utilities/sqlite';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from '@react-native-vector-icons/ionicons';
+import AddCategoryModal from './modals/AddCategoryModal.tsx';
+import AddHistoryModal from './modals/AddHistoryModal.tsx';
+import ModalButton from './components/ModalButton.tsx';
+import CreditModal from './modals/CreditModal.tsx';
+import DebitModal from './modals/DebitModal.tsx';
 
 function App() {
 
   // Define tab navigation
   const Tab = createBottomTabNavigator();
+
+  // Control modals.
+  const [addCategoryModalVisible, setAddCategoryModalVisible] = useState(false);
+  const [addHistoryModalVisible, setAddHistoryModalVisible] = useState(false);
+  const [creditModalVisible, setCreditModalVisible] = useState(false);
+  const [debitModalVisible, setDebitModalVisible] = useState(false);
 
   const MyDefaultTheme = {
     ...DefaultTheme,
@@ -68,15 +79,23 @@ function App() {
           // You can return any component that you like here!
           return <Ionicons name={iconName} size={size} color={color} />;
         },
+        headerStyle: {
+            backgroundColor: '#f2d6d3ff'}, headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+          headerTitleAlign: 'center',
         tabBarStyle: { position: 'absolute', backgroundColor: '#f2d6d3ff', },
-        headerShown: false,
       })}>
-            <Tab.Screen name="Credit / Debit" component={CreditDebitScreen} options={{ headerShown: false }} />
-            <Tab.Screen name="Categories" component={CategoriesScreen} options={{ headerShown: false }} />
-            <Tab.Screen name="History" component={HistoryScreen} options={{ headerShown: false }} />
-            <Tab.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
+            <Tab.Screen name="Credit / Debit" component={CreditDebitScreen} options={{ title: 'Credit & Debit', headerLeft: () => <ModalButton modalVisible={debitModalVisible} setModalVisible={setDebitModalVisible} iconName='remove-circle-outline' />, headerRight: () => <ModalButton modalVisible={creditModalVisible} setModalVisible={setCreditModalVisible} iconName='add-circle-outline' /> }} />
+            <Tab.Screen name="Categories" component={CategoriesScreen} options={{ title: 'Categories', headerRight: () => <ModalButton modalVisible={addCategoryModalVisible} setModalVisible={setAddCategoryModalVisible} iconName='add-circle-outline' /> }} />
+            <Tab.Screen name="History" component={HistoryScreen} options={{ title: 'History', headerRight: () => <ModalButton modalVisible={addHistoryModalVisible} setModalVisible={setAddHistoryModalVisible} iconName='add-circle-outline' /> }} />
+            <Tab.Screen name="Settings" component={SettingsScreen} options={{ title: 'Settings' }} />
           </Tab.Navigator>
         </NavigationContainer>
+        <AddCategoryModal modalVisible={addCategoryModalVisible} setModalVisible={setAddCategoryModalVisible} />
+        <AddHistoryModal modalVisible={addHistoryModalVisible} setModalVisible={setAddHistoryModalVisible} />
+        <CreditModal modalVisible={creditModalVisible} setModalVisible={setCreditModalVisible} />
+        <DebitModal modalVisible={debitModalVisible} setModalVisible={setDebitModalVisible} />
       </SafeAreaProvider>
   );
 }
