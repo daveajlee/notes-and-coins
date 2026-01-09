@@ -1,4 +1,7 @@
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useState } from 'react';
+import { insertCategory } from '../utilities/sqlite';
+import { Dropdown } from 'react-native-element-dropdown';
 
 type AddCategoryModalProps = {
     modalVisible: boolean;
@@ -6,6 +9,57 @@ type AddCategoryModalProps = {
 }
 
 export default function AddCategoryModal({modalVisible, setModalVisible}: AddCategoryModalProps) {
+
+    const [name, setName] = useState('');
+    const [colour, setColour] = useState('');
+    const [colourValue] = useState(null);
+
+    const [colourItems] = useState([
+        {label: 'Red', value: 'red'},
+        {label: 'Green', value: 'green'},
+        {label: 'Yellow', value: 'yellow'},
+        {label: 'Blue', value: 'blue'},
+        {label: 'Purple', value: 'purple'},
+        {label: 'Orange', value: 'orange'},
+        {label: 'Pink', value: 'pink'},
+        {label: 'Brown', value: 'brown'},
+        {label: 'Gray', value: 'gray'},
+    ]);
+
+    /**
+     * Set the name that the user entered.
+     * @param {string} enteredText the text that the user entered in the category name field.
+     */
+    function nameInputHandler(enteredText: string) {
+        setName(enteredText);
+    }
+
+    /**
+     * Render the item on the colour dropdown list with the label and the appropriate styling.
+     * @param item the item to be displayed on the colour dropdown list.
+     * @returns the appropriate components to display to the user.
+     */
+    const _renderColourItem = (item: any) => {
+        return (
+            <View>
+                <Text style={styles.colourItemLight}>{item.label}</Text>
+            </View>
+        );
+    };
+
+    function saveAndClose() {
+        insertCategory(name, colour);
+        Alert.alert('Category Added', `Category ${name} added successfully.`);
+        setModalVisible(!modalVisible);
+        setName('');
+        setColour('');
+    }
+
+    function resetAndClose() {
+        setModalVisible(!modalVisible);
+        setName('');
+        setColour('');
+    }
 
     return ( 
         <Modal
@@ -17,12 +71,40 @@ export default function AddCategoryModal({modalVisible, setModalVisible}: AddCat
             }}>
             <View style={styles.centeredView}>
                 <View style={styles.modalView}>
-                    <Text style={styles.modalText}>Add Category!</Text>
-                    <Pressable
-                        style={[styles.button, styles.buttonClose]}
-                        onPress={() => setModalVisible(!modalVisible)}>
-                        <Text style={styles.textStyle}>Hide Modal</Text>
-                      </Pressable>
+                    <Text style={styles.modalText}>Add Category</Text>
+                    <View style={styles.categoryNameContainer}>
+                        <Text style={[styles.bodyText]}>Name:</Text>
+                        <TextInput style={styles.textInputLight} placeholder='Your Category Name' onChangeText={nameInputHandler} value={name}/>
+                    </View>
+                    <View style={styles.categoryNameContainer}>
+                        <Text style={[styles.bodyText]}>Colour:</Text>
+                        <Dropdown
+                            style={styles.colourDropdownLight}
+                            data={colourItems}
+                            labelField="label"
+                            valueField="value"
+                            placeholder="Red"
+                            value={colourValue}
+                            onChange={item => {
+                                setColour(item.value);
+                                console.log('selected', item);                  
+                            }}
+                            renderItem={item => _renderColourItem(item)}
+                        />
+                    </View>
+                    <View style={styles.categoryButtonContainer}>
+                        <Pressable
+                            style={[styles.button, styles.buttonClose]}
+                            onPress={saveAndClose}>
+                            <Text style={styles.textStyle}>Save</Text>
+                        </Pressable>
+                        <Pressable
+                            style={[styles.button, styles.buttonClose]}
+                            onPress={resetAndClose}>
+                            <Text style={styles.textStyle}>Close</Text>
+                        </Pressable>
+                    </View>
+                    
                 </View>
             </View>
         </Modal>
@@ -38,9 +120,11 @@ const styles = StyleSheet.create({
   },
   modalView: {
     margin: 20,
-    backgroundColor: 'white',
+    backgroundColor: '#f2d6d3ff',
     borderRadius: 20,
     padding: 35,
+    height: "90%",
+    width: "80%",
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -55,12 +139,13 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     elevation: 2,
+    marginRight: 10
   },
   buttonOpen: {
     backgroundColor: '#F194FF',
   },
   buttonClose: {
-    backgroundColor: '#2196F3',
+    backgroundColor: '#A2574F',
   },
   textStyle: {
     color: 'white',
@@ -70,5 +155,43 @@ const styles = StyleSheet.create({
   modalText: {
     marginBottom: 15,
     textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 20
   },
+  categoryNameContainer: {
+        flexDirection: 'column',
+        width: '80%',
+        marginBottom: 20
+  },
+  bodyText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    paddingBottom: 16
+ },
+ categoryButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+ },
+ textInputLight: {
+    borderWidth: 1,
+    borderColor: '#e4d0ff',
+    backgroundColor: 'white',
+    color: '#120438',
+    borderRadius: 6,
+    width: '100%',
+    padding: 8
+ },
+colourDropdownLight: {
+    borderWidth: 1,
+    borderColor: '#e4d0ff',
+    backgroundColor: 'white',
+    color: 'black',
+    padding: 2,
+},
+colourItemLight: {
+    color: 'black',
+    fontSize: 18,
+    marginLeft: 5
+},
 });

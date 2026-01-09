@@ -1,4 +1,5 @@
 import { open, QueryResult } from '@op-engineering/op-sqlite';
+import { Category } from '../models/Category';
 
 /**
  * Define the file where the database will be stored by SQLite.
@@ -20,6 +21,12 @@ export async function init(): Promise<void> {
                 value INTEGER NOT NULL,
                 amount INTEGER NOT NULL
             )`);
+  // Create categories table.
+  await database.execute(`CREATE TABLE IF NOT EXISTS categories (
+                id INTEGER PRIMARY KEY NOT NULL,
+                name TEXT NOT NULL,
+                colour TEXT NOT NULL
+  )`);
   // Create history table.
   await database.execute(`CREATE TABLE IF NOT EXISTS history (
                 id INTEGER PRIMARY KEY NOT NULL,
@@ -79,4 +86,21 @@ export async function fetchAmount(value: number): Promise<number> {
  */
 export async function deleteAmount(value: number): Promise<void> {
     await database.execute('DELETE FROM balances WHERE value = ?', [value]);
+}
+
+/**
+ * Insert a category name and colour to the database.
+ * @param {string} name the name of the category to be saved.
+ * @param {string} colour the colour of the category that should be saved.
+ * @returns a promise with either a success result or an error message.
+ */
+export async function insertCategory(name: string, colour: string): Promise<number> {
+    let insertResult: QueryResult = await database.execute(`INSERT INTO categories (name, colour) VALUES (?, ?)`, [name, colour]);
+    console.log('Insert id is: ' + insertResult.insertId);
+    return insertResult.insertId ? insertResult.insertId : 0;
+}
+
+export async function fetchCategories(): Promise<Category[]> {
+    let {rows} = await database.execute('SELECT * FROM categories');
+    return rows;
 }
