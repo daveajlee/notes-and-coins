@@ -5,10 +5,8 @@
  * @format
  */
 
-import { useEffect, useState } from 'react';
-import {
-  SafeAreaProvider,
-} from 'react-native-safe-area-context';
+import { useEffect } from 'react';
+import { SafeAreaProvider, } from 'react-native-safe-area-context';
 import CreditDebitScreen from "./screens/CreditDebitScreen.tsx";
 import CategoriesScreen from './screens/CategoriesScreen.tsx';
 import HistoryScreen from './screens/HistoryScreen.tsx';
@@ -17,22 +15,22 @@ import { init } from './utilities/sqlite';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from '@react-native-vector-icons/ionicons';
-import AddCategoryModal from './modals/AddCategoryModal.tsx';
-import AddHistoryModal from './modals/AddHistoryModal.tsx';
-import ModalButton from './components/ModalButton.tsx';
-import CreditModal from './modals/CreditModal.tsx';
-import DebitModal from './modals/DebitModal.tsx';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
+import AddCategoryScreen from './screens/AddCategoryScreen.tsx';
+import IconButton from './components/IconButton.tsx';
+
+type NavigationStackParams = {
+  navigate: Function;
+}
 
 function App() {
 
   // Define tab navigation
   const Tab = createBottomTabNavigator();
 
-  // Control modals.
-  const [addCategoryModalVisible, setAddCategoryModalVisible] = useState(false);
-  const [addHistoryModalVisible, setAddHistoryModalVisible] = useState(false);
-  const [creditModalVisible, setCreditModalVisible] = useState(false);
-  const [debitModalVisible, setDebitModalVisible] = useState(false);
+  // Define stack navigation
+  const Stack = createNativeStackNavigator();
 
   const MyDefaultTheme = {
     ...DefaultTheme,
@@ -57,10 +55,13 @@ function App() {
     prepare();
   }, []);
 
+function BottomTabs() {
+
+  // Navigation hook
+  const navigation = useNavigation<NavigationStackParams>();
+
   return (
-      <SafeAreaProvider>
-        <NavigationContainer theme={MyDefaultTheme}>
-          <Tab.Navigator screenOptions={({ route }) => ({
+    <Tab.Navigator screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
@@ -86,16 +87,36 @@ function App() {
           headerTitleAlign: 'center',
         tabBarStyle: { position: 'absolute', backgroundColor: '#f2d6d3ff', },
       })}>
-            <Tab.Screen name="Credit / Debit" component={CreditDebitScreen} options={{ title: 'Credit & Debit', headerLeft: () => <ModalButton modalVisible={debitModalVisible} setModalVisible={setDebitModalVisible} iconName='remove-circle-outline' />, headerRight: () => <ModalButton modalVisible={creditModalVisible} setModalVisible={setCreditModalVisible} iconName='add-circle-outline' /> }} />
-            <Tab.Screen name="Categories" component={CategoriesScreen} options={{ title: 'Categories', headerRight: () => <ModalButton modalVisible={addCategoryModalVisible} setModalVisible={setAddCategoryModalVisible} iconName='add-circle-outline' /> }} />
-            <Tab.Screen name="History" component={HistoryScreen} options={{ title: 'History', headerRight: () => <ModalButton modalVisible={addHistoryModalVisible} setModalVisible={setAddHistoryModalVisible} iconName='add-circle-outline' /> }} />
+            <Tab.Screen name="Credit / Debit" component={CreditDebitScreen} options={{ title: 'Credit & Debit'}} />
+            <Tab.Screen name="Categories" component={CategoriesScreen} options={{ title: 'Categories', headerRight: () => <IconButton onPress={() => navigation.navigate('AddCategoryScreen')} iconName='add-circle-outline' /> }} />
+            <Tab.Screen name="History" component={HistoryScreen} options={{ title: 'History', }} />
             <Tab.Screen name="Settings" component={SettingsScreen} options={{ title: 'Settings' }} />
           </Tab.Navigator>
+  );
+}
+
+function RootStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Home"
+        component={BottomTabs}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="AddCategoryScreen"
+        component={AddCategoryScreen}
+        options={{ title: 'Add Category' }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+  return (
+      <SafeAreaProvider>
+        <NavigationContainer theme={MyDefaultTheme}>
+          <RootStack/>
         </NavigationContainer>
-        <AddCategoryModal modalVisible={addCategoryModalVisible} setModalVisible={setAddCategoryModalVisible} />
-        <AddHistoryModal modalVisible={addHistoryModalVisible} setModalVisible={setAddHistoryModalVisible} />
-        <CreditModal modalVisible={creditModalVisible} setModalVisible={setCreditModalVisible} />
-        <DebitModal modalVisible={debitModalVisible} setModalVisible={setDebitModalVisible} />
       </SafeAreaProvider>
   );
 }
