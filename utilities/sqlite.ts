@@ -32,8 +32,15 @@ export async function init(): Promise<void> {
                 id INTEGER PRIMARY KEY NOT NULL,
                 sum INTEGER NOT NULL,
                 description TEXT NOT NULL,
+                categoryName TEXT NOT NULL,
                 datetime DATETIME NOT NULL
-            )`);
+  )`);
+  // Create settings table.
+  await database.execute(`CREATE TABLE IF NOT EXISTS settings (
+                id INTEGER PRIMARY KEY NOT NULL,
+                minimum_balance INTEGER NOT NULL
+  )`);
+  console.log('Database initialized.');
 }
 
 /**
@@ -100,7 +107,36 @@ export async function insertCategory(name: string, colour: string): Promise<numb
     return insertResult.insertId ? insertResult.insertId : 0;
 }
 
+/**
+ * Retrieve all categories from the database.
+ * @returns an array of categories.
+ */
 export async function fetchCategories(): Promise<Category[]> {
     let {rows} = await database.execute('SELECT * FROM categories');
     return rows;
+}
+
+/**
+ * Insert the minimum balance to the database.
+ * @param minimumBalance A string representing the minimum balance.
+ * @returns a promise with either the inserted id or 0 if insert was not successful.
+ */
+export async function insertMinimumBalance(minimumBalance: string): Promise<number> {
+    let insertResult: QueryResult = await database.execute(`INSERT INTO settings (minimum_balance) VALUES (?)`, [minimumBalance]);
+    console.log('Insert id is: ' + insertResult.insertId);
+    return insertResult.insertId ? insertResult.insertId : 0;
+}
+
+/**
+ * Retrieve the minimum balance from the database.
+ * @returns a promise with the minimum balance or "0,00" if no value is found.
+ */
+export async function fetchMinimumBalance(): Promise<string> {
+    let {rows} = await database.execute('SELECT * FROM settings');
+    console.log('Fetch minimum balance length is ' + rows.length);
+    if ( rows.length > 0 ) {
+        console.log('Minimum balance is ' + rows[rows.length-1].minimum_balance);
+        return rows[rows.length-1].minimum_balance;
+    }
+    return "0,00";
 }
