@@ -2,6 +2,11 @@ import { FlatList, View, Text, StyleSheet, TouchableOpacity } from "react-native
 import { useEffect, useState } from "react";
 import { fetchCategories } from "../utilities/sqlite";
 import { Category } from "../models/Category";
+import { useNavigation } from "@react-navigation/native";
+
+type NavigationStackParams = {
+  navigate: Function;
+}
 
 /**
  * This component displays a list of categories from the database.
@@ -9,6 +14,9 @@ import { Category } from "../models/Category";
 function CategoryList() {
 
     const [loadedCategories, setLoadedCategories] = useState<Category[]>([]);
+
+    // Navigation hook
+    const navigation = useNavigation<NavigationStackParams>();
 
     /**
      * Load the categories from the database as soon as the screen is loaded.
@@ -27,7 +35,7 @@ function CategoryList() {
      * @param {Category} item 
      */
     async function onLoadCategory(item: Category) {
-        console.log('Category selected:', item);
+        navigation.navigate('CategoryDetailScreen', { category: item });
     }
 
     function getBackgroundColour(item: Category) {

@@ -19,6 +19,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import AddCategoryScreen from './screens/AddCategoryScreen.tsx';
 import IconButton from './components/IconButton.tsx';
+import CategoryDetailScreen from './screens/CategoryDetailScreen.tsx';
 
 type NavigationStackParams = {
   navigate: Function;
@@ -107,6 +108,11 @@ function RootStack() {
         name="AddCategoryScreen"
         component={AddCategoryScreen}
         options={{ title: 'Add Category' }}
+      />
+      <Stack.Screen
+        name="CategoryDetailScreen"
+        component={CategoryDetailScreen}
+        options={{ title: 'Category' }}
       />
     </Stack.Navigator>
   );
