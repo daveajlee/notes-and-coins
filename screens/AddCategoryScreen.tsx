@@ -51,7 +51,10 @@ export default function AddCategoryScreen() {
     };
 
     async function save() {
-        if ( await insertCategory(name, colour) ) {
+        if ( name.trim().length === 0 ) {
+            Alert.alert('Please enter a valid category name.');
+        }
+        else if ( await insertCategory(name, colour) ) {
             Alert.alert('Category Added', `Category ${name} added successfully.`);
             setName('');
             setColour('');
