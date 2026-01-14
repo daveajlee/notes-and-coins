@@ -1,5 +1,8 @@
 import { StyleSheet, Text, View } from "react-native";
 import { useEffect, useState } from "react";
+import { useNavigation } from "@react-navigation/native";
+import IconButton from "../components/IconButton";
+import { deleteCategory } from "../utilities/sqlite";
 
 type CategoryDetailScreenProps = {
   route: any;
@@ -10,18 +13,22 @@ export default function CategoryDetailScreen({route}: CategoryDetailScreenProps)
     const [categoryName, setCategoryName] = useState('');
     const [categoryColour, setCategoryColour] = useState('');
 
+    // Navigation hook
+    const navigation = useNavigation();
+
     useEffect(() => {
         async function prepare() {
             try {
                 setCategoryName(route.params.category.name);
                 setCategoryColour(route.params.category.colour);
+                navigation.setOptions({ title: route.params.category.name, headerRight: () => <IconButton onPress={() => { deleteCategory(route.params.category.name); navigation.navigate('Home'); }} iconName='trash-outline' />  });
             } catch (err) {
                 console.log(err);
             }
         }
             
         prepare();
-    }, [route]);
+    }, [route, navigation]);
 
 
     return (

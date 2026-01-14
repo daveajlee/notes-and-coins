@@ -101,10 +101,17 @@ export async function deleteAmount(value: number): Promise<void> {
  * @param {string} colour the colour of the category that should be saved.
  * @returns a promise with either a success result or an error message.
  */
-export async function insertCategory(name: string, colour: string): Promise<number> {
+export async function insertCategory(name: string, colour: string): Promise<boolean> {
+    // Check if the name already exists.
+    let categories = await fetchCategories();
+    for ( let i = 0; i < categories.length; i++ ) {
+        if ( categories[i].name.toLowerCase() === name.toLowerCase() ) {
+            return false;
+        }
+    }
+    // Add it to the db.
     let insertResult: QueryResult = await database.execute(`INSERT INTO categories (name, colour) VALUES (?, ?)`, [name, colour]);
-    console.log('Insert id is: ' + insertResult.insertId);
-    return insertResult.insertId ? insertResult.insertId : 0;
+    return insertResult.insertId ? true : false;
 }
 
 /**
@@ -114,6 +121,15 @@ export async function insertCategory(name: string, colour: string): Promise<numb
 export async function fetchCategories(): Promise<Category[]> {
     let {rows} = await database.execute('SELECT * FROM categories');
     return rows;
+}
+
+/**
+ * Delete a category based on the supplied name from the database.
+ * Change any history entries with this category to Unassigned.
+ */
+export async function deleteCategory(name: string): Promise<void> {
+    await database.execute('DELETE FROM categories WHERE name = ?', [name]);
+    await database.execute('UPDATE history SET categoryName = ? WHERE categoryName = ?', ['Unassigned', name]);
 }
 
 /**

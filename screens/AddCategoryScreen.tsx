@@ -11,7 +11,7 @@ type NavigationStackParams = {
 export default function AddCategoryScreen() {
 
     const [name, setName] = useState('');
-    const [colour, setColour] = useState('');
+    const [colour, setColour] = useState('red');
     const [colourValue] = useState(null);
 
     const [colourItems] = useState([
@@ -50,12 +50,16 @@ export default function AddCategoryScreen() {
         );
     };
 
-    function save() {
-        insertCategory(name, colour);
-        Alert.alert('Category Added', `Category ${name} added successfully.`);
-        setName('');
-        setColour('');
-        navigation.navigate('Home');
+    async function save() {
+        if ( await insertCategory(name, colour) ) {
+            Alert.alert('Category Added', `Category ${name} added successfully.`);
+            setName('');
+            setColour('');
+            navigation.navigate('Home');
+        } else {
+            Alert.alert('Error', `Category ${name} could not be added. The name of the category already exists.`);
+        }
+        
     }
 
     function reset() {

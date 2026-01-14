@@ -44,7 +44,7 @@ function CategoryList() {
 
     if ( !loadedCategories || loadedCategories.length === 0 ) {
         return <View style={styles.fallbackContainer}>
-            <Text style={styles.fallbackTitle}>No categories added yet - start adding some!</Text>
+            <Text style={styles.fallbackTitle}>No categories added yet! {"\n"}{"\n"} Click on the plus button at the top right to add a category!</Text>
         </View>
     }
     return <FlatList style={styles.list} data={loadedCategories} keyExtractor={(item: Category) => item.name} renderItem={({item}) => <TouchableOpacity style={[styles.button, getBackgroundColour(item)]} onPress={onLoadCategory.bind(null, item)}>
@@ -65,13 +65,14 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 20
-    },
-    fallbackText: {
-        fontSize: 16
+        marginBottom: 20,
+        color: 'white'
     },
     fallbackTitle: {
-      fontSize: 24
+        fontSize: 24,
+        color: 'white',
+        textAlign: 'center',
+        fontWeight: 'bold'
     },
     button: {
         alignItems: 'center',
