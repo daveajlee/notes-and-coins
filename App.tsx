@@ -20,6 +20,7 @@ import { useNavigation } from '@react-navigation/native';
 import AddCategoryScreen from './screens/AddCategoryScreen.tsx';
 import IconButton from './components/IconButton.tsx';
 import CategoryDetailScreen from './screens/CategoryDetailScreen.tsx';
+import AddHistoryScreen from './screens/AddHistoryScreen.tsx';
 
 type NavigationStackParams = {
   navigate: Function;
@@ -88,9 +89,9 @@ function BottomTabs() {
           headerTitleAlign: 'center',
         tabBarStyle: { position: 'absolute', backgroundColor: '#f2d6d3ff', },
       })}>
-            <Tab.Screen name="Credit / Debit" component={CreditDebitScreen} options={{ title: 'Credit & Debit'}} />
+            <Tab.Screen name="Credit / Debit" component={CreditDebitScreen} options={{ title: 'Credit & Debit', headerRight: () => <IconButton onPress={() => navigation.navigate('AddHistoryScreen')} iconName='add-circle-outline' /> }} />
             <Tab.Screen name="Categories" component={CategoriesScreen} options={{ title: 'Categories', headerRight: () => <IconButton onPress={() => navigation.navigate('AddCategoryScreen')} iconName='add-circle-outline' /> }} />
-            <Tab.Screen name="History" component={HistoryScreen} options={{ title: 'History', }} />
+            <Tab.Screen name="History" component={HistoryScreen} options={{ title: 'History', headerRight: () => <IconButton onPress={() => navigation.navigate('AddHistoryScreen')} iconName='add-circle-outline' /> }} />
             <Tab.Screen name="Settings" component={SettingsScreen} options={{ title: 'Settings' }} />
           </Tab.Navigator>
   );
@@ -98,7 +99,10 @@ function BottomTabs() {
 
 function RootStack() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator screenOptions={{ headerStyle: {
+            backgroundColor: '#f2d6d3ff'}, headerTitleStyle: {
+            fontWeight: 'bold',
+          }, headerTitleAlign: 'center'}}>
       <Stack.Screen
         name="Home"
         component={BottomTabs}
@@ -108,6 +112,11 @@ function RootStack() {
         name="AddCategoryScreen"
         component={AddCategoryScreen}
         options={{ title: 'Add Category' }}
+      />
+      <Stack.Screen
+        name="AddHistoryScreen"
+        component={AddHistoryScreen}
+        options={{ title: 'Add History' }}
       />
       <Stack.Screen
         name="CategoryDetailScreen"
