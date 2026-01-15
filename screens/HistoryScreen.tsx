@@ -1,5 +1,6 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet} from "react-native";
+import HistoryList from "../components/HistoryList";
 
 /**
  * Show the history screen.
@@ -11,7 +12,7 @@ export default function HistoryScreen() {
      */
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#A2574F', }}>
-            <Text style={styles.text}>Coming Soon...</Text>
+            <HistoryList/>
         </SafeAreaView>
     );
 }

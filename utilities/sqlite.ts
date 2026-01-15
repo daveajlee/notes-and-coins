@@ -1,5 +1,6 @@
 import { open, QueryResult } from '@op-engineering/op-sqlite';
 import { Category } from '../models/Category';
+import { HistoryEntry } from '../models/HistoryEntry';
 
 /**
  * Define the file where the database will be stored by SQLite.
@@ -155,4 +156,13 @@ export async function fetchMinimumBalance(): Promise<string> {
         return rows[rows.length-1].minimum_balance;
     }
     return "0,00";
+}
+
+/**
+ * Retrieve all history from the database.
+ * @returns an array of categories.
+ */
+export async function fetchHistory(): Promise<HistoryEntry[]> {
+    let {rows} = await database.execute('SELECT * FROM history');
+    return rows;
 }
