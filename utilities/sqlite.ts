@@ -159,10 +159,36 @@ export async function fetchMinimumBalance(): Promise<string> {
 }
 
 /**
+ * Insert a history entry to the database.
+ * @param sum the sum of the history entry.
+ * @param description the description of the history entry.
+ * @param categoryName the category name of the history entry.
+ * @param datetime the date and time of the history entry.
+ * @returns a promise with either the inserted id or 0 if insert was not successful.  
+ */
+export async function insertHistoryEntry(sum: string, description: string, categoryName: string, datetime: string): Promise<boolean> {
+    let insertResult: QueryResult = await database.execute(`INSERT INTO history (sum, description, categoryName, datetime) VALUES (?, ?, ?, ?)`, [sum, description, categoryName, datetime]);
+    return insertResult.insertId ? true : false;
+} 
+
+/**
  * Retrieve all history from the database.
  * @returns an array of categories.
  */
 export async function fetchHistory(): Promise<HistoryEntry[]> {
     let {rows} = await database.execute('SELECT * FROM history');
+    for ( let i = 0; i < rows.length; i++ ) {
+        let categoryColour = await getCategoryColour(rows[i].categoryName);
+        rows[i].categoryColour = categoryColour;
+        console.log('Category colour for ' + rows[i].categoryName + ' is ' + categoryColour);
+    }
     return rows;
+}
+
+export async function getCategoryColour(categoryName: string): Promise<string> {
+    let {rows} = await database.execute('SELECT * FROM categories WHERE name = ?', [categoryName]);
+    if ( rows.length > 0 ) {
+        return rows[0].colour;
+    }
+    return 'darkgray'; // Default dark gray colour.
 }

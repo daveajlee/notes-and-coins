@@ -2,9 +2,14 @@ import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Dropdown } from "react-native-element-dropdown";
-import { fetchCategories } from "../utilities/sqlite";
+import { fetchCategories, insertHistoryEntry } from "../utilities/sqlite";
 import DatePicker from "react-native-date-picker";
 import { Alert } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+
+type NavigationStackParams = {
+  navigate: Function;
+}
 
 export default function AddHistoryScreen() {
 
@@ -15,6 +20,9 @@ export default function AddHistoryScreen() {
 
     const [categories, setCategories] = useState<{label: string, value: string}[]>([]);
     const [initialCategory, setInitialCategory] = useState('Select a category');
+
+    // Navigation hook
+    const navigation = useNavigation<NavigationStackParams>();
 
     useEffect(() => {
         async function prepare() {
@@ -60,7 +68,16 @@ export default function AddHistoryScreen() {
     };
 
     async function save() {
-        Alert.alert('Coming soon!');
+        if ( await insertHistoryEntry(amount, description, category, date.toISOString()) ) {
+            Alert.alert('History Entry Added', `History entry added successfully.`);
+            setAmount(''); 
+            setDate(new Date());
+            setCategory('');
+            setDescription('');
+            navigation.navigate('Home');
+        } else {
+            Alert.alert('Error', `History entry could not be added.`);
+        }
     }
     
     function reset() {
