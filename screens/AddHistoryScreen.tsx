@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Dropdown } from "react-native-element-dropdown";
 import { fetchCategories, insertHistoryEntry } from "../utilities/sqlite";
@@ -31,6 +31,7 @@ export default function AddHistoryScreen() {
                 let dropdownCategories = dbCategories.map((cat) => ({ label: cat.name, value: cat.name }));
                 setCategories(dropdownCategories);
                 setInitialCategory(dbCategories[0]?.name || 'No categories available');
+                setCategory(dbCategories[0]?.name || 'Unassigned');
             } catch (err) {
                 console.log(err);
             }
@@ -74,7 +75,7 @@ export default function AddHistoryScreen() {
             setDate(new Date());
             setCategory('');
             setDescription('');
-            navigation.navigate('Home');
+            navigation.navigate('Home', { screen: 'History' });
         } else {
             Alert.alert('Error', `History entry could not be added.`);
         }
@@ -89,7 +90,7 @@ export default function AddHistoryScreen() {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#A2574F', }}>
-            <View style={styles.centeredView}>
+            <ScrollView style={styles.centeredView}>
                 <View style={styles.formFieldContainer}>
                     <Text style={[styles.formFieldLabel]}>Amount:</Text>
                     <TextInput style={styles.formFieldValue} placeholder='0.00' onChangeText={amountInputHandler} value={amount}/>
@@ -126,7 +127,7 @@ export default function AddHistoryScreen() {
                         <Text style={styles.textStyle}>Reset</Text>
                     </Pressable>
                 </View>
-            </View>
+            </ScrollView>
         </SafeAreaView>
     );
 

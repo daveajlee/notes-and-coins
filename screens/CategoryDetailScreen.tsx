@@ -8,20 +8,25 @@ type CategoryDetailScreenProps = {
   route: any;
 }
 
+type NavigationStackProps = {
+  navigate: Function;
+  setOptions: Function;
+}
+
 export default function CategoryDetailScreen({route}: CategoryDetailScreenProps) {
 
     const [categoryName, setCategoryName] = useState('');
     const [categoryColour, setCategoryColour] = useState('');
 
     // Navigation hook
-    const navigation = useNavigation();
+    const navigation = useNavigation<NavigationStackProps>();
 
     useEffect(() => {
         async function prepare() {
             try {
                 setCategoryName(route.params.category.name);
                 setCategoryColour(route.params.category.colour);
-                navigation.setOptions({ title: route.params.category.name, headerRight: () => <IconButton onPress={() => { deleteCategory(route.params.category.name); navigation.navigate('Home'); }} iconName='trash-outline' />  });
+                navigation.setOptions({ title: route.params.category.name, headerRight: () => <IconButton onPress={() => { deleteCategory(route.params.category.name); navigation.navigate('Home'); }} iconName='trash-outline' color="black" />  });
             } catch (err) {
                 console.log(err);
             }

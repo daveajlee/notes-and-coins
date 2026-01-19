@@ -1,6 +1,6 @@
 import { open, QueryResult } from '@op-engineering/op-sqlite';
 import { Category } from '../models/Category';
-import { HistoryEntry } from '../models/HistoryEntry';
+import { HistoryEntryResult } from '../models/HistoryEntryResult';
 
 /**
  * Define the file where the database will be stored by SQLite.
@@ -175,7 +175,7 @@ export async function insertHistoryEntry(sum: string, description: string, categ
  * Retrieve all history from the database.
  * @returns an array of categories.
  */
-export async function fetchHistory(): Promise<HistoryEntry[]> {
+export async function fetchHistory(): Promise<HistoryEntryResult[]> {
     let {rows} = await database.execute('SELECT * FROM history');
     for ( let i = 0; i < rows.length; i++ ) {
         let categoryColour = await getCategoryColour(rows[i].categoryName);
@@ -183,6 +183,15 @@ export async function fetchHistory(): Promise<HistoryEntry[]> {
         console.log('Category colour for ' + rows[i].categoryName + ' is ' + categoryColour);
     }
     return rows;
+}
+
+/**
+ * Delete 
+ * @param categoryName 
+ * @returns 
+ */
+export async function deleteHistoryEntry(id: number): Promise<void> {
+  await database.execute('DELETE FROM history WHERE id = ?', [id]);
 }
 
 export async function getCategoryColour(categoryName: string): Promise<string> {

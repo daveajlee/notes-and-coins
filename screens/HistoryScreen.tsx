@@ -1,5 +1,4 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import { StyleSheet} from "react-native";
 import HistoryList from "../components/HistoryList";
 
 /**
@@ -16,12 +15,3 @@ export default function HistoryScreen() {
         </SafeAreaView>
     );
 }
-
-const styles = StyleSheet.create({
-    text: {
-        color: 'white',
-        marginLeft: 10,
-        fontSize: 30,
-        fontWeight: "bold"
-    },
-});

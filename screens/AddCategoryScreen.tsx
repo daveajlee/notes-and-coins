@@ -58,7 +58,7 @@ export default function AddCategoryScreen() {
             Alert.alert('Category Added', `Category ${name} added successfully.`);
             setName('');
             setColour('');
-            navigation.navigate('Home');
+            navigation.navigate('Home', { screen: 'Categories'});
         } else {
             Alert.alert('Error', `Category ${name} could not be added. The name of the category already exists.`);
         }

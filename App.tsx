@@ -89,9 +89,9 @@ function BottomTabs() {
           headerTitleAlign: 'center',
         tabBarStyle: { position: 'absolute', backgroundColor: '#f2d6d3ff', },
       })}>
-            <Tab.Screen name="Credit / Debit" component={CreditDebitScreen} options={{ title: 'Credit & Debit', headerRight: () => <IconButton onPress={() => navigation.navigate('AddHistoryScreen')} iconName='add-circle-outline' /> }} />
-            <Tab.Screen name="Categories" component={CategoriesScreen} options={{ title: 'Categories', headerRight: () => <IconButton onPress={() => navigation.navigate('AddCategoryScreen')} iconName='add-circle-outline' /> }} />
-            <Tab.Screen name="History" component={HistoryScreen} options={{ title: 'History', headerRight: () => <IconButton onPress={() => navigation.navigate('AddHistoryScreen')} iconName='add-circle-outline' /> }} />
+            <Tab.Screen name="Credit / Debit" component={CreditDebitScreen} options={{ title: 'Credit & Debit', headerRight: () => <IconButton onPress={() => navigation.navigate('AddHistoryScreen')} iconName='add-circle-outline' color="black" /> }} />
+            <Tab.Screen name="Categories" component={CategoriesScreen} options={{ title: 'Categories', headerRight: () => <IconButton onPress={() => navigation.navigate('AddCategoryScreen')} iconName='add-circle-outline' color="black" /> }} />
+            <Tab.Screen name="History" component={HistoryScreen} options={{ title: 'History', headerRight: () => <IconButton onPress={() => navigation.navigate('AddHistoryScreen')} iconName='add-circle-outline' color="black" /> }} />
             <Tab.Screen name="Settings" component={SettingsScreen} options={{ title: 'Settings' }} />
           </Tab.Navigator>
   );
