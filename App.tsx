@@ -19,7 +19,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import AddCategoryScreen from './screens/AddCategoryScreen.tsx';
 import IconButton from './components/IconButton.tsx';
-import CategoryDetailScreen from './screens/CategoryDetailScreen.tsx';
 import AddHistoryScreen from './screens/AddHistoryScreen.tsx';
 
 type NavigationStackParams = {
@@ -117,11 +116,6 @@ function RootStack() {
         name="AddHistoryScreen"
         component={AddHistoryScreen}
         options={{ title: 'Add History' }}
-      />
-      <Stack.Screen
-        name="CategoryDetailScreen"
-        component={CategoryDetailScreen}
-        options={{ title: 'Category' }}
       />
     </Stack.Navigator>
   );

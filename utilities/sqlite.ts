@@ -180,7 +180,6 @@ export async function fetchHistory(): Promise<HistoryEntryResult[]> {
     for ( let i = 0; i < rows.length; i++ ) {
         let categoryColour = await getCategoryColour(rows[i].categoryName);
         rows[i].categoryColour = categoryColour;
-        console.log('Category colour for ' + rows[i].categoryName + ' is ' + categoryColour);
     }
     return rows;
 }

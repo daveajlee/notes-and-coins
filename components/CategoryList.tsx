@@ -1,12 +1,9 @@
-import { FlatList, View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { Alert, FlatList, View, Text, StyleSheet } from "react-native";
 import { useEffect, useState } from "react";
 import { fetchCategories } from "../utilities/sqlite";
 import { Category } from "../models/Category";
-import { useNavigation } from "@react-navigation/native";
-
-type NavigationStackParams = {
-  navigate: Function;
-}
+import IconButton from "./IconButton";
+import { deleteCategory } from "../utilities/sqlite";
 
 /**
  * This component displays a list of categories from the database.
@@ -14,9 +11,6 @@ type NavigationStackParams = {
 function CategoryList() {
 
     const [loadedCategories, setLoadedCategories] = useState<Category[]>([]);
-
-    // Navigation hook
-    const navigation = useNavigation<NavigationStackParams>();
 
     /**
      * Load the categories from the database as soon as the screen is loaded.
@@ -28,18 +22,15 @@ function CategoryList() {
         }
 
         loadCategories();
-    }, []);
-
-    /**
-     * Load the category that the user clicked on.
-     * @param {Category} item 
-     */
-    async function onLoadCategory(item: Category) {
-        navigation.navigate('CategoryDetailScreen', { category: item });
-    }
+    }, [loadedCategories]);
 
     function getBackgroundColour(item: Category) {
-        return { backgroundColor: item.colour };
+        if ( item.colour === 'yellow' ) {
+            return { backgroundColor: item.colour, color: 'black' };
+        } else {
+            return { backgroundColor: item.colour };
+        }
+        
     }
 
     if ( !loadedCategories || loadedCategories.length === 0 ) {
@@ -47,15 +38,49 @@ function CategoryList() {
             <Text style={styles.fallbackTitle}>No categories added yet! {"\n"}{"\n"} Click on the plus button at the top right to add a category!</Text>
         </View>
     }
-    return <FlatList style={styles.list} data={loadedCategories} keyExtractor={(item: Category) => item.name} renderItem={({item}) => <TouchableOpacity style={[styles.button, getBackgroundColour(item)]} onPress={onLoadCategory.bind(null, item)}>
-        <Text style={styles.buttonText}>{item.name}</Text>
-    </TouchableOpacity>}/>
+    return <FlatList style={styles.list} data={loadedCategories} keyExtractor={(item: Category) => item.name} renderItem={({item}) =>
+        <View style={styles.container}>
+            <Text style={[styles.categoryLabel, getBackgroundColour(item)]}>{item.name}</Text>
+            <View style={styles.deleteIcon}>
+            <IconButton color="white" onPress={() => { 
+                Alert.alert('Confirm deletion', 'Are you sure you want to delete ' + item.name + '?', [
+                    {
+                        text: 'Cancel',
+                        onPress: () => console.log('Cancel Pressed'),
+                    },
+                    {
+                        text: 'OK', 
+                        onPress: () => {
+                            const categories = loadedCategories;
+                            console.log('Categories length is: ' + categories.length);
+                            for ( let i = 0; i < categories.length; i++ ) {
+                                if ( categories[i].name === item.name ) {
+                                    categories.splice(i, 1);
+                                }
+                            }
+                            console.log('After deletion length is ' + categories.length);
+                            setLoadedCategories(categories);
+                            deleteCategory(item.name);
+                        }
+                    },
+                ]); 
+            ; }} iconName='trash-outline' /> 
+            </View>
+        </View> 
+        }/>
 
 }
 
 export default CategoryList;
 
 const styles = StyleSheet.create({
+    container: {
+        flexDirection: 'row'
+    },
+    deleteIcon: {
+        marginTop: 30,
+        paddingLeft: 30
+    },
     list: {
         marginLeft: '10%',
         width: '100%',
@@ -74,17 +99,15 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: 'bold'
     },
-    button: {
-        alignItems: 'center',
-        width: '80%',
-        padding: 20,
-        marginBottom: 20,
-        marginTop: 20
-    },
-    buttonText: {
+    categoryLabel: {
         fontSize: 18,
         color: 'white',
         fontWeight: 'bold',
-        textAlign: 'center'
+        textAlign: 'center',
+        alignItems: 'center',
+        width: '70%',
+        padding: 20,
+        marginBottom: 20,
+        marginTop: 20
     }
 })

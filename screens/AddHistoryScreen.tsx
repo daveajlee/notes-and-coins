@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Dropdown } from "react-native-element-dropdown";
 import { fetchCategories, insertHistoryEntry } from "../utilities/sqlite";
@@ -90,10 +90,15 @@ export default function AddHistoryScreen() {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#A2574F', }}>
-            <ScrollView style={styles.centeredView}>
+            {/*<ScrollView >*/}
+                <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.centeredView}>
                 <View style={styles.formFieldContainer}>
                     <Text style={[styles.formFieldLabel]}>Amount:</Text>
                     <TextInput style={styles.formFieldValue} placeholder='0.00' onChangeText={amountInputHandler} value={amount}/>
+                </View>
+                <View style={styles.formFieldContainer}>
+                    <Text style={[styles.formFieldLabel]}>Description:</Text>
+                    <TextInput style={styles.formFieldValue} placeholder='A short description explaining why...' onChangeText={descriptionInputHandler} value={description}/>
                 </View>
                 <View style={styles.formFieldContainer}>
                     <Text style={[styles.formFieldLabel]}>Date:</Text>
@@ -115,10 +120,6 @@ export default function AddHistoryScreen() {
                         renderItem={item => _renderCategoryItem(item)}
                     />
                 </View>
-                <View style={styles.formFieldContainer}>
-                    <Text style={[styles.formFieldLabel]}>Description:</Text>
-                    <TextInput style={styles.formFieldValue} placeholder='A short description explaining why...' onChangeText={descriptionInputHandler} value={description}/>
-                </View>
                 <View style={styles.buttonContainer}>
                     <Pressable style={[styles.button]} onPress={save}>
                         <Text style={styles.textStyle}>Save</Text>
@@ -127,7 +128,8 @@ export default function AddHistoryScreen() {
                         <Text style={styles.textStyle}>Reset</Text>
                     </Pressable>
                 </View>
-            </ScrollView>
+                </KeyboardAvoidingView>
+            {/*</ScrollView>*/}
         </SafeAreaView>
     );
 
