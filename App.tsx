@@ -20,6 +20,7 @@ import { useNavigation } from '@react-navigation/native';
 import AddCategoryScreen from './screens/AddCategoryScreen.tsx';
 import IconButton from './components/IconButton.tsx';
 import AddHistoryScreen from './screens/AddHistoryScreen.tsx';
+import { View } from 'react-native';
 
 type NavigationStackParams = {
   navigate: Function;
@@ -88,9 +89,9 @@ function BottomTabs() {
           headerTitleAlign: 'center',
         tabBarStyle: { position: 'absolute', backgroundColor: '#f2d6d3ff', },
       })}>
-            <Tab.Screen name="Credit / Debit" component={CreditDebitScreen} options={{ title: 'Credit & Debit', headerRight: () => <IconButton onPress={() => navigation.navigate('AddHistoryScreen')} iconName='add-circle-outline' color="black" /> }} />
-            <Tab.Screen name="Categories" component={CategoriesScreen} options={{ title: 'Categories', headerRight: () => <IconButton onPress={() => navigation.navigate('AddCategoryScreen')} iconName='add-circle-outline' color="black" /> }} />
-            <Tab.Screen name="History" component={HistoryScreen} options={{ title: 'History', headerRight: () => <IconButton onPress={() => navigation.navigate('AddHistoryScreen')} iconName='add-circle-outline' color="black" /> }} />
+            <Tab.Screen name="Credit / Debit" component={CreditDebitScreen} options={{ title: 'Credit & Debit', headerRight: () => <View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('AddHistoryScreen')} iconName='add-circle-outline' color="black" /></View> }} />
+            <Tab.Screen name="Categories" component={CategoriesScreen} options={{ title: 'Categories', headerRight: () => <View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('AddCategoryScreen')} iconName='add-circle-outline' color="black" /></View> }} />
+            <Tab.Screen name="History" component={HistoryScreen} options={{ title: 'History', headerRight: () => <View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('AddHistoryScreen')} iconName='add-circle-outline' color="black" /></View> }} />
             <Tab.Screen name="Settings" component={SettingsScreen} options={{ title: 'Settings' }} />
           </Tab.Navigator>
   );
