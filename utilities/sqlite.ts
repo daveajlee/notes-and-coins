@@ -176,7 +176,7 @@ export async function insertHistoryEntry(sum: string, description: string, categ
  * @returns an array of categories.
  */
 export async function fetchHistory(): Promise<HistoryEntryResult[]> {
-    let {rows} = await database.execute('SELECT * FROM history');
+    let {rows} = await database.execute('SELECT * FROM history order by datetime DESC');
     for ( let i = 0; i < rows.length; i++ ) {
         let categoryColour = await getCategoryColour(rows[i].categoryName);
         rows[i].categoryColour = categoryColour;

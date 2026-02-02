@@ -19,7 +19,11 @@ type DisplayHistoryEntryProps = {
 export function DisplayHistoryEntry({entries, id, sum, datetime, categoryName, categoryColour, description}: DisplayHistoryEntryProps) {
 
     function getBackgroundColour() {
-        return { backgroundColor: categoryColour };
+        if ( categoryColour === 'yellow' ) {
+            return { backgroundColor: categoryColour, color: 'black' };
+        } else {
+            return { backgroundColor: categoryColour };
+        }
     }
     
     return (
@@ -33,7 +37,7 @@ export function DisplayHistoryEntry({entries, id, sum, datetime, categoryName, c
                 <Text style={styles.listText}>{description}</Text>
             </View>
             <View style={styles.rightRow}>
-                <Text style={styles.rightRowText}>€{sum}</Text>
+                <Text style={styles.rightRowText}>€{parseFloat(sum).toFixed(2)}</Text>
                 <IconButton color="white" onPress={() => { 
                     Alert.alert('Confirm deletion', 'Are you sure you want to delete this entry?', [
                         {
@@ -62,13 +66,16 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginTop: 5
+        marginTop: 10,
+        borderBottomColor: 'white',
+        borderBottomWidth: 2,
     },
     leftRow: {
         width: '30%',
     },
     middleRow: {
         width: '40%',
+        marginBottom: 10,
     },
     rightRow: {
         width: '30%',
