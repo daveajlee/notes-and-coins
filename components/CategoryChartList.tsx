@@ -31,15 +31,16 @@ export default function CategoryChartList() {
     return (
         <View style={styles.container}>
             <Text style={styles.fallbackTitle}>Income Chart</Text>
-            <ChartView/>
+            <Text style={styles.fallbackTitle}>Coming Soon...</Text>
             <Text style={styles.fallbackTitle}>Expenses Chart</Text>
-            <ChartView/>
+            <ChartView categories={loadedCategories}/>
         </View>);
 }
 
 const styles = StyleSheet.create({
     container: {
-        flexDirection: 'column'
+        flexDirection: 'column',
+        marginTop: 10
     },
     fallbackContainer: {
         flex: 1,

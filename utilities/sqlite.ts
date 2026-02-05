@@ -185,6 +185,16 @@ export async function fetchHistory(): Promise<HistoryEntryResult[]> {
 }
 
 /**
+ * Retrieve history from the database with the specified category.
+ * @param categoryName the category name to filter by.
+ * @returns an array of categories.
+ */
+export async function fetchHistoryForCategory(categoryName: string): Promise<HistoryEntryResult[]> {
+    let {rows} = await database.execute('SELECT * FROM history WHERE categoryName = ? order by datetime DESC', [categoryName]);
+    return rows;
+}
+
+/**
  * Delete 
  * @param categoryName 
  * @returns 
