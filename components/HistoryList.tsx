@@ -29,7 +29,7 @@ export default function HistoryList() {
             </View>
     }
 
-    return <FlatList style={styles.list} data={loadedHistoryEntries} keyExtractor={(item: HistoryEntryResult) => item.datetime} renderItem={({item}) => <DisplayHistoryEntry entries={loadedHistoryEntries} id={item.id} sum={item.sum} datetime={item.datetime} categoryName={item.categoryName} categoryColour={item.categoryColour} description={item.description}/>}/>;
+    return <FlatList style={styles.list} data={loadedHistoryEntries} keyExtractor={(item: HistoryEntryResult) => item.datetime} renderItem={({item}) => <DisplayHistoryEntry entries={loadedHistoryEntries} id={item.id} sum={item.sum} datetime={item.datetime} categoryName={item.categoryName} categoryColour={item.categoryColour} description={item.description} type={item.type}/>}/>;
 
 }
 

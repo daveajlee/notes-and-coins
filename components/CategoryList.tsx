@@ -52,13 +52,11 @@ function CategoryList() {
                         text: 'OK', 
                         onPress: () => {
                             const categories = loadedCategories;
-                            console.log('Categories length is: ' + categories.length);
                             for ( let i = 0; i < categories.length; i++ ) {
                                 if ( categories[i].name === item.name ) {
                                     categories.splice(i, 1);
                                 }
                             }
-                            console.log('After deletion length is ' + categories.length);
                             setLoadedCategories(categories);
                             deleteCategory(item.name);
                         }

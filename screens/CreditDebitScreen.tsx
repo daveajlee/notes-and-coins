@@ -147,13 +147,11 @@ export default function CreditDebitScreen() {
      */
     async function onIncreaseNote(noteValue: number) {
         let currentValue:number = await fetchAmount(noteValue);
-        console.log("current value for " + noteValue + " is " + currentValue);
         if ( currentValue ) {
             await updateValueAmount(noteValue, currentValue + 1);
         } else {
             await insertValueAmount(noteValue, 1);
         }
-        console.log(await getNoteAmount(noteValue));
     }
 
     /**

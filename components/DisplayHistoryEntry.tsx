@@ -15,9 +15,10 @@ type DisplayHistoryEntryProps = {
     categoryName: string;
     categoryColour: string;
     description: string;
+    type: string;
 }
 
-export function DisplayHistoryEntry({entries, id, sum, datetime, categoryName, categoryColour, description}: DisplayHistoryEntryProps) {
+export function DisplayHistoryEntry({entries, id, sum, datetime, categoryName, categoryColour, description, type}: DisplayHistoryEntryProps) {
 
     function getBackgroundColour() {
         if ( categoryColour === 'yellow' ) {
@@ -33,7 +34,6 @@ export function DisplayHistoryEntry({entries, id, sum, datetime, categoryName, c
 
     function convertUTCDateToLocal(datetime: string) {
         let timezone = getTimeZone();
-        console.log('Timezone is ' + timezone);
         let date = new Date(datetime);
         let options: Intl.DateTimeFormatOptions = {
             timeZone: timezone,
@@ -42,10 +42,14 @@ export function DisplayHistoryEntry({entries, id, sum, datetime, categoryName, c
             month: '2-digit',
             day: '2-digit',
             hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
+            minute: '2-digit'
         };
         return new Intl.DateTimeFormat(getLocales()[0].languageTag, options).format(date);
+    }
+
+    function getValueWithCurrency() {
+        let displayedValue = (type === 'credit') ? '+' : '-';
+        return displayedValue + getCurrency(parseFloat(sum).toFixed(2));
     }
     
     return (
@@ -58,7 +62,7 @@ export function DisplayHistoryEntry({entries, id, sum, datetime, categoryName, c
                 <Text style={styles.listText}>{description}</Text>
             </View>
             <View style={styles.rightRow}>
-                <Text style={styles.rightRowText}>{getCurrency(parseFloat(sum).toFixed(2))}</Text>
+                <Text style={styles.rightRowText}>{getValueWithCurrency()}</Text>
                 <IconButton color="white" onPress={() => { 
                     Alert.alert('Confirm deletion', 'Are you sure you want to delete this entry?', [
                         {

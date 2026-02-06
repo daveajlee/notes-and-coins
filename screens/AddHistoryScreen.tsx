@@ -21,6 +21,10 @@ export default function AddHistoryScreen() {
     const [categories, setCategories] = useState<{label: string, value: string}[]>([]);
     const [initialCategory, setInitialCategory] = useState('Select a category');
 
+    const [types, setTypes] = useState<{label: string, value: string}[]>([]);
+    const [type, setType] = useState(''); 
+    const [initialType, setInitialType] = useState('Debit');
+
     // Navigation hook
     const navigation = useNavigation<NavigationStackParams>();
 
@@ -32,6 +36,10 @@ export default function AddHistoryScreen() {
                 setCategories(dropdownCategories);
                 setInitialCategory(dbCategories[0]?.name || 'No categories available');
                 setCategory(dbCategories[0]?.name || 'Unassigned');
+
+                setTypes([{ label: 'Debit', value: 'debit' }, { label: 'Credit', value: 'credit' }]);
+                setInitialType('Debit');
+                setType('debit');
             } catch (err) {
                 console.log(err);
             }
@@ -69,12 +77,13 @@ export default function AddHistoryScreen() {
     };
 
     async function save() {
-        if ( await insertHistoryEntry(amount, description, category, date.toISOString()) ) {
+        if ( await insertHistoryEntry(amount, description, category, date.toISOString(), type) ) {
             Alert.alert('History Entry Added', `History entry added successfully.`);
             setAmount(''); 
             setDate(new Date());
             setCategory('');
             setDescription('');
+            setType('debit');
             navigation.navigate('Home', { screen: 'History' });
         } else {
             Alert.alert('Error', `History entry could not be added.`);
@@ -94,7 +103,22 @@ export default function AddHistoryScreen() {
                 <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.centeredView}>
                 <View style={styles.formFieldContainer}>
                     <Text style={[styles.formFieldLabel]}>Amount:</Text>
-                    <TextInput style={styles.formFieldValue} placeholder='0.00' onChangeText={amountInputHandler} value={amount}/>
+                    <View style={styles.amountType}>
+                        <Dropdown
+                            style={styles.amountFieldDropdown}
+                            data={types}
+                            labelField="label"
+                            valueField="value"
+                            placeholder={initialType}
+                            value={type}
+                            onChange={item => {
+                                setType(item.value);                
+                            }}
+                            renderItem={item => _renderCategoryItem(item)}
+                        />
+                        <TextInput style={styles.amountFieldValue} placeholder='0.00' onChangeText={amountInputHandler} value={amount}/>
+                    </View>
+                    
                 </View>
                 <View style={styles.formFieldContainer}>
                     <Text style={[styles.formFieldLabel]}>Description:</Text>
@@ -114,8 +138,7 @@ export default function AddHistoryScreen() {
                         placeholder={initialCategory}
                         value={category}
                         onChange={item => {
-                            setCategory(item.value);
-                            console.log('selected', item);                  
+                            setCategory(item.value);                 
                         }}
                         renderItem={item => _renderCategoryItem(item)}
                     />
@@ -143,6 +166,35 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         width: '100%',
         marginTop: 20
+    },
+    amountType: {
+        flexDirection: 'row',
+    },
+    amountFieldDropdown: {
+        borderWidth: 1,
+        borderColor: '#e4d0ff',
+        backgroundColor: 'white',
+        color: 'black',
+        borderRadius: 6,
+        width: '30%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
+        marginLeft: '10%',
+        padding: 8
+    },
+    amountFieldValue: {
+        borderWidth: 1,
+        borderColor: '#e4d0ff',
+        backgroundColor: 'white',
+        color: 'black',
+        borderRadius: 6,
+        width: '40%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center',
+        marginLeft: '10%',
+        padding: 8
     },
     formFieldLabel: {
         fontSize: 16,

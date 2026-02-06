@@ -5,4 +5,5 @@ export type HistoryEntryResult = {
     categoryName: string;
     categoryColour: string;
     datetime: string;
+    type: string;
 }

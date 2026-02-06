@@ -31,9 +31,9 @@ export default function CategoryChartList() {
     return (
         <View style={styles.container}>
             <Text style={styles.fallbackTitle}>Income Chart</Text>
-            <Text style={styles.fallbackTitle}>Coming Soon...</Text>
+            <ChartView categories={loadedCategories} type="credit" />
             <Text style={styles.fallbackTitle}>Expenses Chart</Text>
-            <ChartView categories={loadedCategories}/>
+            <ChartView categories={loadedCategories} type="debit" />
         </View>);
 }
 

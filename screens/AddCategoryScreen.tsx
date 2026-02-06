@@ -86,8 +86,7 @@ export default function AddCategoryScreen() {
                         placeholder="Red"
                         value={colourValue}
                         onChange={item => {
-                            setColour(item.value);
-                            console.log('selected', item);                  
+                            setColour(item.value);          
                         }}
                         renderItem={item => _renderColourItem(item)}
                     />

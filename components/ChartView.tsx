@@ -4,15 +4,17 @@ import { Category } from "../models/Category";
 import { useEffect, useState } from "react";
 import { fetchHistoryForCategory } from "../utilities/sqlite";
 import { getCurrencies } from "react-native-localize";
+import { formatCurrency } from "react-native-format-currency";
 
 type ChartViewProps = {
     categories: Category[];
+    type: string;
 }
 
 /**
  * This component displays a chart.
  */
-export default function ChartView({categories}: ChartViewProps) {
+export default function ChartView({categories, type}: ChartViewProps) {
 
     const [chartData, setChartData] = useState<any>(null);
     const [screenWidth, setScreenWidth] = useState<any>();
@@ -20,8 +22,13 @@ export default function ChartView({categories}: ChartViewProps) {
 
     const UNASSIGNED = "Unassigned";
 
+    const [withSymbol, withoutSymbol, symbol] = formatCurrency({
+        amount: 0.00,
+        code: getCurrencies()[0],
+    });
+
+
     function convertColourForChart(colour: string) {
-        console.log('Converting colour ' + colour + ' for chart'); 
         switch ( colour ) {
             case 'green':
                 return (opacity = 1) => `rgba(0, 128, 0, ${opacity})`;
@@ -59,25 +66,34 @@ export default function ChartView({categories}: ChartViewProps) {
             const categoryColours = [];
 
             for ( let i = 0; i < categories.length; i++ ) {
-                categoryNames.push(categories[i].name);
-                categoryColours.push(convertColourForChart(categories[i].colour));
                 let historyForCategory = await fetchHistoryForCategory(categories[i].name);
                 let total = 0;
                 for ( let j = 0; j < historyForCategory.length; j++ ) {
-                    total += parseFloat(historyForCategory[j].sum);
+                    if ( historyForCategory[j].type === type ) {
+                        total += parseFloat(historyForCategory[j].sum);
+                    }
                 }
-                categoryAmounts.push(total);
+                if ( total !== 0 ) {
+                    categoryNames.push(categories[i].name);
+                    categoryColours.push(convertColourForChart(categories[i].colour));
+                    categoryAmounts.push(total);
+                } 
             }
 
             let unassignedEntries = await fetchHistoryForCategory(UNASSIGNED);
             if ( unassignedEntries && unassignedEntries.length > 0 ) {
-                categoryNames.push(UNASSIGNED);
+                
                 let total = 0;
                 for ( let j = 0; j < unassignedEntries.length; j++ ) {
-                    total += parseFloat(unassignedEntries[j].sum);
+                    if ( unassignedEntries[j].type === type ) {
+                        total += parseFloat(unassignedEntries[j].sum);
+                    }
                 }
-                categoryAmounts.push(total);
-                categoryColours.push(convertColourForChart('darkgray'));
+                if ( total !== 0 ) {
+                    categoryNames.push(UNASSIGNED);
+                    categoryAmounts.push(total);
+                    categoryColours.push(convertColourForChart('darkgray'));
+                }
             }
 
             const myChartData = {
@@ -113,7 +129,7 @@ export default function ChartView({categories}: ChartViewProps) {
         }
     
         loadChartData();
-    }, [categories]);
+    }, [categories, type]);
 
 
         return (
@@ -123,11 +139,12 @@ export default function ChartView({categories}: ChartViewProps) {
                         data={chartData}
                         width={screenWidth}
                         height={220}
-                        yAxisLabel={getCurrencies()[0]}
+                        yAxisLabel={symbol}
                         chartConfig={chartConfig}
                         verticalLabelRotation={0}
                         withCustomBarColorFromData={true}
                         flatColor={true}
+                        fromZero={true}
                     />
                 }
             </View>

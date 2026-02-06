@@ -33,6 +33,7 @@ export async function init(): Promise<void> {
                 id INTEGER PRIMARY KEY NOT NULL,
                 sum INTEGER NOT NULL,
                 description TEXT NOT NULL,
+                type TEXT NOT NULL,
                 categoryName TEXT NOT NULL,
                 datetime DATETIME NOT NULL
   )`);
@@ -41,6 +42,9 @@ export async function init(): Promise<void> {
                 id INTEGER PRIMARY KEY NOT NULL,
                 minimum_balance INTEGER NOT NULL
   )`);
+  // Ensure backward compatibility by adding the type column to history table.
+  await database.execute(`ALTER TABLE history ADD COLUMN type TEXT NOT NULL DEFAULT 'debit'`);
+  // Print that database has been created.
   console.log('Database initialized.');
 }
 
@@ -52,7 +56,6 @@ export async function init(): Promise<void> {
  */
 export async function insertValueAmount(value: number, amount: number): Promise<number> {
     let insertResult: QueryResult = await database.execute(`INSERT INTO balances (value, amount) VALUES (?, ?)`, [value, amount]);
-    console.log('Insert id is: ' + insertResult.insertId);
     return insertResult.insertId ? insertResult.insertId : 0;
 }
 
@@ -63,7 +66,6 @@ export async function insertValueAmount(value: number, amount: number): Promise<
  * @returns a promise with either a success result or an error message.
  */
 export async function updateValueAmount(value: number, amount: number): Promise<void> {
-  console.log(`Updating value amount: ${amount} + value ${value}` );
   await database.execute(`UPDATE balances SET amount = ? WHERE value = ?`, [amount, value]);
 }
 
@@ -75,7 +77,6 @@ export async function updateValueAmount(value: number, amount: number): Promise<
 export async function fetchAmount(value: number): Promise<number> {
     try {
       let {rows} = await database.execute('SELECT * FROM balances WHERE value = ' + value);
-      console.log('Fetch amount is ' + rows.length);
       if ( rows.length > 0 ) {
         return rows[rows.length-1].amount;
       }
@@ -140,7 +141,6 @@ export async function deleteCategory(name: string): Promise<void> {
  */
 export async function insertMinimumBalance(minimumBalance: string): Promise<number> {
     let insertResult: QueryResult = await database.execute(`INSERT INTO settings (minimum_balance) VALUES (?)`, [minimumBalance]);
-    console.log('Insert id is: ' + insertResult.insertId);
     return insertResult.insertId ? insertResult.insertId : 0;
 }
 
@@ -150,9 +150,7 @@ export async function insertMinimumBalance(minimumBalance: string): Promise<numb
  */
 export async function fetchMinimumBalance(): Promise<string> {
     let {rows} = await database.execute('SELECT * FROM settings');
-    console.log('Fetch minimum balance length is ' + rows.length);
     if ( rows.length > 0 ) {
-        console.log('Minimum balance is ' + rows[rows.length-1].minimum_balance);
         return rows[rows.length-1].minimum_balance;
     }
     return "0,00";
@@ -164,10 +162,11 @@ export async function fetchMinimumBalance(): Promise<string> {
  * @param description the description of the history entry.
  * @param categoryName the category name of the history entry.
  * @param datetime the date and time of the history entry.
+ * @param type the type of the history entry (debit or credit).
  * @returns a promise with either the inserted id or 0 if insert was not successful.  
  */
-export async function insertHistoryEntry(sum: string, description: string, categoryName: string, datetime: string): Promise<boolean> {
-    let insertResult: QueryResult = await database.execute(`INSERT INTO history (sum, description, categoryName, datetime) VALUES (?, ?, ?, ?)`, [sum, description, categoryName, datetime]);
+export async function insertHistoryEntry(sum: string, description: string, categoryName: string, datetime: string, type: string): Promise<boolean> {
+    let insertResult: QueryResult = await database.execute(`INSERT INTO history (sum, description, categoryName, datetime, type) VALUES (?, ?, ?, ?, ?)`, [sum, description, categoryName, datetime, type]);
     return insertResult.insertId ? true : false;
 } 
 
