@@ -4,6 +4,10 @@ import {Image, ScrollView, Text, View} from "react-native";
 import { TouchableOpacity } from 'react-native';
 import { updateValueAmount, fetchAmount, insertValueAmount } from '../utilities/sqlite';
 import {SafeAreaView} from "react-native-safe-area-context";
+import { fetchMinimumBalance } from '../utilities/sqlite';
+import notifee from '@notifee/react-native';
+import { formatCurrency } from "react-native-format-currency";
+import { getCurrencies } from 'react-native-localize';
 
 /**
  * Show the credit / debit screen with the various categories of notes and the quantities to increase and decrease the amount of notes.
@@ -21,6 +25,11 @@ export default function CreditDebitScreen() {
 
     const logoImage = require('./../assets/images/logo-1024.png');
 
+    const [withSymbol, withoutSymbol, symbol] = formatCurrency({
+            amount: 0.00,
+            code: getCurrencies()[0],
+    });
+
     /**
      * Whenever we visit the screen, we want to retrieve the current balance.
      */
@@ -34,12 +43,37 @@ export default function CreditDebitScreen() {
          * Get the balance by multiplying the various categories.
          */
         async function calculateBalance() {
-          setBalance((await (getNoteAmount(5)) * 5) + ((await getNoteAmount(10)) * 10) + ((await getNoteAmount(20)) * 20) + ((await getNoteAmount(50)) * 50));
+          let calculatedBalance = (await (getNoteAmount(5)) * 5) + ((await getNoteAmount(10)) * 10) + ((await getNoteAmount(20)) * 20) + ((await getNoteAmount(50)) * 50) + ((await getNoteAmount(100)) * 100);
+          setBalance(calculatedBalance);
+          if ( calculatedBalance < parseFloat(await fetchMinimumBalance()) ) {
+            //Alert.alert('Your balance is below the minimum balance of ' + await fetchMinimumBalance() + '€! Please add more money to your balance.');
+            // Request permissions (required for iOS)
+            await notifee.requestPermission()
+
+            // Create a channel (required for Android)
+            const channelId = await notifee.createChannel({
+              id: 'default',
+              name: 'Default Channel',
+            });
+
+            // Display a notification
+            await notifee.displayNotification({
+            title: 'Balance below Minimum Balance!',
+            body: 'Your balance of ' + calculatedBalance + symbol + ' is below the minimum balance of ' + await fetchMinimumBalance() + symbol + '!',
+            android: {
+              channelId,
+              // pressAction is needed if you want the notification to open the app when pressed
+              pressAction: {
+                id: 'default',
+              },
+            },
+          });
+          }
         }
 
         prepare();
 
-    }, []);
+    }, [symbol]);
 
     /**
      * Retrieve the amount of a particular note.
