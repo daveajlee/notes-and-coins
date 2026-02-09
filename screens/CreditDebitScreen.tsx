@@ -66,6 +66,11 @@ export default function CreditDebitScreen() {
               pressAction: {
                 id: 'default',
               },
+              // Reference the name created (Optional, defaults to 'ic_launcher')
+              smallIcon: 'ic_notification_icon',
+
+              // Set color of icon (Optional, defaults to white)
+              color: '#A2574F'
             },
           });
           }
