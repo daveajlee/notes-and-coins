@@ -77,7 +77,13 @@ export default function AddHistoryScreen() {
     };
 
     async function save() {
-        if ( await insertHistoryEntry(amount, description, category, date.toISOString(), type) ) {
+        // Convert any commas to dots for decimal representation.
+        let convertedAmount = amount;
+        if ( amount.includes(',') ) {
+            convertedAmount = amount.replace(',', '.');
+        }
+        // Now save the entry to the database.
+        if ( await insertHistoryEntry(convertedAmount, description, category, date.toISOString(), type) ) {
             Alert.alert('History Entry Added', `History entry added successfully.`);
             setAmount(''); 
             setDate(new Date());
@@ -91,7 +97,7 @@ export default function AddHistoryScreen() {
     }
     
     function reset() {
-        setAmount("0.00");
+        setAmount("0,00");
         setDate(new Date());
         setCategory('');
         setDescription('');
@@ -116,7 +122,7 @@ export default function AddHistoryScreen() {
                             }}
                             renderItem={item => _renderCategoryItem(item)}
                         />
-                        <TextInput style={styles.amountFieldValue} placeholder='0.00' onChangeText={amountInputHandler} value={amount}/>
+                        <TextInput style={styles.amountFieldValue} placeholder='0,00' onChangeText={amountInputHandler} value={amount}/>
                     </View>
                     
                 </View>
