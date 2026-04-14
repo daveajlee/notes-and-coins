@@ -1,7 +1,8 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useEffect, useState } from "react";
-import { fetchMinimumBalance, insertMinimumBalance } from "../utilities/sqlite";
+import { fetchLanguage, fetchMinimumBalance, saveSettingsToDatabase } from "../utilities/sqlite";
+import CountryFlag from "react-native-country-flag";
 
 /**
  * Show the settings screen.
@@ -9,6 +10,7 @@ import { fetchMinimumBalance, insertMinimumBalance } from "../utilities/sqlite";
 export default function SettingsScreen() {
 
     const [minimumBalance, setMinimumBalance] = useState('');
+    const [language, setLanguage] = useState('');
 
     useEffect(() => {
         async function prepare() {
@@ -16,6 +18,8 @@ export default function SettingsScreen() {
                 let fetchedMinimumBalance = await fetchMinimumBalance();
                 let parsedMinimumBalance = parseFloat(fetchedMinimumBalance.toString().replace(',', '.')).toFixed(2);
                 setMinimumBalance("" + parsedMinimumBalance);
+                const myLanguage = await fetchLanguage();
+                setLanguage(myLanguage);
               } catch (err) {
                 console.log(err);
               }
@@ -32,7 +36,11 @@ export default function SettingsScreen() {
         setMinimumBalance(enteredText);
     }
 
-    function saveSettings() {
+    function changeLanguage(languageCode: string) {
+        setLanguage(languageCode);
+    }
+
+    async function saveSettings() {
         var regExp = /[a-zA-Z]/;
         // Make sure minimum balance does not contain letters.
         if ( regExp.test(minimumBalance) ) {
@@ -46,9 +54,9 @@ export default function SettingsScreen() {
         }
         // Parse the number and then to two decimal places.
         let parsedMinimumBalance = parseFloat(minimumBalance.replace(',', '.')).toFixed(2);
-        setMinimumBalance(parsedMinimumBalance);
-        insertMinimumBalance("" + parsedMinimumBalance);
-        Alert.alert('Minimum balance saved successfully.');
+        await setMinimumBalance(parsedMinimumBalance);
+        await saveSettingsToDatabase(parsedMinimumBalance, language);
+        Alert.alert('Settings saved successfully.');
     }
 
     function resetSettings() {
@@ -63,6 +71,21 @@ export default function SettingsScreen() {
             <View style={styles.minimumBalanceContainer}>
                 <Text style={[styles.bodyText]}>Minimum Balance:</Text>
                 <TextInput style={styles.textInput} placeholder='Your Minimum Balance' onChangeText={minimumBalanceInputHandler} value={minimumBalance}/>
+            </View>
+            <View style={styles.languageContainer}>
+                <Text style={[styles.bodyText]}>Language:</Text>
+                <View style={styles.flagsContainer}>
+                    <View style={language === 'DE' ? styles.selectedFlag : styles.flag}>
+                        <TouchableOpacity onPress={() => changeLanguage('DE')}>
+                            <CountryFlag isoCode="de" size={25} />
+                        </TouchableOpacity>
+                    </View>
+                    <View style={language === 'DE' ? styles.flag : styles.selectedFlag}>
+                        <TouchableOpacity onPress={() => changeLanguage('GB')}>
+                            <CountryFlag isoCode="gb" size={25} />
+                        </TouchableOpacity>
+                    </View>
+                </View>
             </View>
             <View style={styles.buttonContainer}>
                 <Pressable style={[styles.button]} onPress={saveSettings}>
@@ -90,15 +113,18 @@ const styles = StyleSheet.create({
         fontSize: 20
     },
     minimumBalanceContainer: {
-        flexDirection: 'column',
+        flexDirection: 'row',
         width: '100%',
-        marginTop: 20
+        marginTop: 20,
     },
     bodyText: {
         fontSize: 20,
         fontWeight: 'bold',
-        textAlign: 'center',
-        paddingBottom: 16,
+        textAlign: 'right',
+        width: '50%',
+        paddingBottom: 10,
+        paddingLeft: 10,
+        paddingTop: 10,
         color: 'white',
     },
     textInput: {
@@ -107,17 +133,38 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         color: 'black',
         borderRadius: 6,
-        width: '80%',
         alignItems: 'center',
         justifyContent: 'center',
         textAlign: 'center',
         marginLeft: '10%',
-        padding: 8
+        paddingRight: 20,
+    },
+    languageContainer: {
+        flexDirection: 'row',
+        width: '100%',
+        marginTop: 20,
+    },
+    flagsContainer: {
+        flexDirection: 'row',
+        width: '40%',
+        marginTop: 20,
+        marginLeft: '10%'
+    },
+    flag: {
+        marginRight: 20,
+        marginTop: -2,
+        marginBottom: 10
+    },
+    selectedFlag: {
+        marginRight: 20,
+        marginTop: -5,
+        marginBottom: 10,
+        borderWidth: 3
     },
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
-        marginTop: 20
+        marginTop: 20,
     },
     button: {
         borderRadius: 20,
