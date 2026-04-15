@@ -6,6 +6,7 @@ import { fetchCategories, insertHistoryEntry } from "../utilities/sqlite";
 import DatePicker from "react-native-date-picker";
 import { Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { ScrollView , Switch } from "react-native";
 
 type NavigationStackParams = {
   navigate: Function;
@@ -17,16 +18,24 @@ export default function AddHistoryScreen() {
     const [date, setDate] = useState(new Date());
     const [category, setCategory] = useState('');
     const [description, setDescription] = useState('');
+    const [isDebit, setIsDebit] = useState(true);
+
+    function toggleSwitch() {
+        setIsDebit(previousState => !previousState);
+    }
 
     const [categories, setCategories] = useState<{label: string, value: string}[]>([]);
     const [initialCategory, setInitialCategory] = useState('Select a category');
 
-    const [types, setTypes] = useState<{label: string, value: string}[]>([]);
-    const [type, setType] = useState(''); 
-    const [initialType, setInitialType] = useState('Debit');
-
     // Navigation hook
     const navigation = useNavigation<NavigationStackParams>();
+
+    // Notes amount.
+    const [fiveAmount, setFiveAmount] = useState(0);
+    const [tenAmount, setTenAmount] = useState(0);
+    const [twentyAmount, setTwentyAmount] = useState(0);
+    const [fiftyAmount, setFiftyAmount] = useState(0);
+    const [hundredAmount, setHundredAmount] = useState(0);
 
     useEffect(() => {
         async function prepare() {
@@ -36,10 +45,6 @@ export default function AddHistoryScreen() {
                 setCategories(dropdownCategories);
                 setInitialCategory(dbCategories[0]?.name || 'No categories available');
                 setCategory(dbCategories[0]?.name || 'Unassigned');
-
-                setTypes([{ label: 'Debit', value: 'debit' }, { label: 'Credit', value: 'credit' }]);
-                setInitialType('Debit');
-                setType('debit');
             } catch (err) {
                 console.log(err);
             }
@@ -83,14 +88,14 @@ export default function AddHistoryScreen() {
             convertedAmount = amount.replace(',', '.');
         }
         // Now save the entry to the database.
-        if ( await insertHistoryEntry(convertedAmount, description, category, date.toISOString(), type) ) {
+        if ( await insertHistoryEntry(convertedAmount, description, category, date.toISOString(), isDebit ? 'debit' : 'credit') ) {
             Alert.alert('History Entry Added', `History entry added successfully.`);
             setAmount(''); 
             setDate(new Date());
             setCategory('');
             setDescription('');
-            setType('debit');
-            navigation.navigate('Home', { screen: 'History' });
+            setIsDebit(true);
+            navigation.navigate('HistoryScreen');
         } else {
             Alert.alert('Error', `History entry could not be added.`);
         }
@@ -103,36 +108,81 @@ export default function AddHistoryScreen() {
         setDescription('');
     }
 
+    function increaseFiveAmount() {
+        setFiveAmount(fiveAmount + 1);
+    }
+
+    function increaseTenAmount() {
+        setTenAmount(tenAmount + 1);
+    }
+
+    function increaseTwentyAmount() {
+        setTwentyAmount(twentyAmount + 1);
+    }
+
+    function increaseFiftyAmount() {
+        setFiftyAmount(fiftyAmount + 1);
+    }
+
+    function increaseHundredAmount() {
+        setHundredAmount(hundredAmount + 1);
+    }
+
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#A2574F', }}>
-            {/*<ScrollView >*/}
+            <ScrollView>
                 <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.centeredView}>
-                <View style={styles.formFieldContainer}>
-                    <Text style={[styles.formFieldLabel]}>Amount:</Text>
+                <View style={styles.switchFieldContainer}>
+                    <Text style={[styles.formFieldLabel]}>Credit</Text>
+                    <Switch
+                        style={{marginBottom: 10, marginRight: 10}}
+                        trackColor={{false: '#767577', true: '#81b0ff'}}
+                        thumbColor={isDebit ? '#f5dd4b' : '#f4f3f4'}
+                        ios_backgroundColor="#3e3e3e"
+                        onValueChange={toggleSwitch}
+                        value={isDebit}
+                    />
+                    <Text style={[styles.formFieldLabel]}>Debit</Text>
                     <View style={styles.amountType}>
-                        <Dropdown
-                            style={styles.amountFieldDropdown}
-                            data={types}
-                            labelField="label"
-                            valueField="value"
-                            placeholder={initialType}
-                            value={type}
-                            onChange={item => {
-                                setType(item.value);                
-                            }}
-                            renderItem={item => _renderCategoryItem(item)}
-                        />
                         <TextInput style={styles.amountFieldValue} placeholder='0,00' onChangeText={amountInputHandler} value={amount}/>
                     </View>
-                    
                 </View>
                 <View style={styles.formFieldContainer}>
-                    <Text style={[styles.formFieldLabel]}>Description:</Text>
+                    <Text style={[styles.formFieldLabel]}>Title:</Text>
                     <TextInput style={styles.formFieldValue} placeholder='A short description explaining why...' onChangeText={descriptionInputHandler} value={description}/>
                 </View>
                 <View style={styles.formFieldContainer}>
                     <Text style={[styles.formFieldLabel]}>Date:</Text>
                     <DatePicker theme="dark" date={date} onDateChange={setDate} />
+                </View>
+                <View style={styles.formFieldContainer}>
+                    <Text style={[styles.formFieldLabel]}>Notes:</Text>
+                    <View style={styles.notesContainer}>
+                        <View style={styles.noteContainer}>
+                            <Pressable onPress={increaseFiveAmount}><Text style={styles.fiveColour}>5</Text></Pressable>
+                            <Text style={styles.noteAmount}>({fiveAmount})</Text>
+                        </View>
+                        <View style={styles.noteContainer}>
+                            <Pressable onPress={increaseTenAmount}><Text style={styles.tenColour}>10</Text></Pressable>
+                            <Text style={styles.noteAmount}>({tenAmount})</Text>
+                        </View>
+                        <View style={styles.noteContainer}>
+                            <Pressable onPress={increaseTwentyAmount}><Text style={styles.twentyColour}>20</Text></Pressable>
+                            <Text style={styles.noteAmount}>({twentyAmount})</Text>
+                        </View>
+                    </View>
+                </View>
+                <View style={styles.formFieldContainer}>
+                    <View style={styles.notesContainer}>
+                        <View style={styles.noteContainer}>
+                            <Pressable onPress={increaseFiftyAmount}><Text style={styles.fiftyColour}>50</Text></Pressable>
+                            <Text style={styles.noteAmount50}>({fiftyAmount})</Text>
+                        </View>
+                        <View style={styles.noteContainer}>
+                            <Pressable onPress={increaseHundredAmount}><Text style={styles.hundredColour}>100</Text></Pressable>
+                            <Text style={styles.noteAmount}>({hundredAmount})</Text>
+                        </View>
+                    </View>
                 </View>
                 <View style={styles.formFieldContainer}>
                     <Text style={[styles.formFieldLabel]}>Category:</Text>
@@ -158,7 +208,7 @@ export default function AddHistoryScreen() {
                     </Pressable>
                 </View>
                 </KeyboardAvoidingView>
-            {/*</ScrollView>*/}
+            </ScrollView>
         </SafeAreaView>
     );
 
@@ -168,10 +218,17 @@ const styles = StyleSheet.create({
     centeredView: {
         flex: 1,
     },
-    formFieldContainer: {
-        flexDirection: 'column',
+    switchFieldContainer: {
+        flexDirection: 'row',
         width: '100%',
-        marginTop: 20
+        marginTop: 20,
+        marginLeft: 5
+    },
+    formFieldContainer: {
+        flexDirection: 'row',
+        width: '100%',
+        marginTop: 20,
+        marginLeft: 5
     },
     amountType: {
         flexDirection: 'row',
@@ -203,10 +260,11 @@ const styles = StyleSheet.create({
         padding: 8
     },
     formFieldLabel: {
-        fontSize: 16,
+        fontSize: 20,
         fontWeight: 'bold',
         textAlign: 'center',
         paddingBottom: 16,
+        width: '25%',
         color: 'white',
     },
     formFieldValue: {
@@ -215,7 +273,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         color: 'black',
         borderRadius: 6,
-        width: '80%',
+        width: '60%',
         alignItems: 'center',
         justifyContent: 'center',
         textAlign: 'center',
@@ -228,7 +286,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         color: 'black',
         borderRadius: 6,
-        width: '80%',
+        width: '60%',
         alignItems: 'center',
         justifyContent: 'center',
         textAlign: 'center',
@@ -257,5 +315,79 @@ const styles = StyleSheet.create({
         color: 'black',
         fontWeight: 'bold',
         textAlign: 'center',
+    },
+    notesContainer: {
+        flexDirection: 'row',
+    },
+    noteContainer: {
+        flexDirection: 'column'
+    },
+    noteAmount: {
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 20,
+        color: 'white',
+    },
+    noteAmount50: {
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 20,
+        color: 'white',
+        marginLeft: 70
+    },
+    fiveColour: {
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 28,
+        marginRight: 10,
+        marginLeft: 10,
+        width: 80,
+        height: 40,
+        backgroundColor: 'gray',
+        color: 'white',
+    },
+    tenColour: {
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 28,
+        marginRight: 10,
+        marginLeft: 10,
+        width: 80,
+        height: 40,
+        backgroundColor: 'red',
+        color: 'white',
+    },
+    twentyColour: {
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 28,
+        marginRight: 10,
+        marginLeft: 10,
+        width: 80,
+        height: 40,
+        backgroundColor: 'blue',
+        color: 'white',
+    },
+    fiftyColour: {
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 28,
+        marginRight: 10,
+        marginLeft: 100,
+        width: 80,
+        height: 40,
+        backgroundColor: 'orange',
+        color: 'white',
+    },
+    hundredColour: {
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 28,
+        marginRight: 10,
+        marginLeft: 10,
+        width: 80,
+        height: 40,
+        backgroundColor: 'green',
+        color: 'white',
     },
 });
