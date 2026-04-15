@@ -8,6 +8,9 @@ import { fetchMinimumBalance } from '../utilities/sqlite';
 import notifee from '@notifee/react-native';
 import { formatCurrency } from "react-native-format-currency";
 import { getCurrencies } from 'react-native-localize';
+import { fetchLanguage } from '../utilities/sqlite';
+import de from './../languages/de.js';
+import en from './../languages/en.js';
 
 /**
  * Show the credit / debit screen with the various categories of notes and the quantities to increase and decrease the amount of notes.
@@ -21,9 +24,9 @@ export default function CreditDebitScreen() {
     const [fiftyAmount, setFiftyAmount] = useState(0);
     const [hundredAmount, setHundredAmount] = useState(0);
 
-    const colorScheme = Appearance.getColorScheme();
+    const [translation, setTranslation] = useState<any>([]);
 
-    const logoImage = require('./../assets/images/logo-1024.png');
+    const colorScheme = Appearance.getColorScheme();
 
     const [withSymbol, withoutSymbol, symbol] = formatCurrency({
             amount: 0.00,
@@ -36,7 +39,18 @@ export default function CreditDebitScreen() {
     useEffect(() => {
 
         async function prepare() {
+            await loadLanguage();
             await calculateBalance();
+        }
+
+        async function loadLanguage() {
+          console.log('Attempting to load language file for credit/debit screen');
+          const language = await fetchLanguage();
+          if ( language === 'de' ) {
+            setTranslation(de);
+          } else {
+            setTranslation(en);
+          }
         }
 
         /**
@@ -213,12 +227,8 @@ export default function CreditDebitScreen() {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#A2574F', }}>
         <ScrollView contentContainerStyle={styles.container}>
-          <Image
-            style={{ marginTop: 10, width: 128, height: 128 }}
-            source={logoImage}
-          />
           <View style={styles.titleContainer}>
-            <Text style={styles.balanceText}>Balance:</Text>
+            <Text style={styles.balanceText}>{translation.balance}:</Text>
             <Text style={styles.balanceText}>{balance}€</Text>
           </View>
           <View style={styles.stepContainer}>
