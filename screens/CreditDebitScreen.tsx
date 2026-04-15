@@ -1,6 +1,6 @@
 import {Appearance, StyleSheet} from 'react-native';
 import { useEffect, useState } from 'react';
-import {Image, ScrollView, Text, View} from "react-native";
+import {Pressable, ScrollView, Text, View} from "react-native";
 import { TouchableOpacity } from 'react-native';
 import { updateValueAmount, fetchAmount, insertValueAmount } from '../utilities/sqlite';
 import {SafeAreaView} from "react-native-safe-area-context";
@@ -8,9 +8,11 @@ import { fetchMinimumBalance } from '../utilities/sqlite';
 import notifee from '@notifee/react-native';
 import { formatCurrency } from "react-native-format-currency";
 import { getCurrencies } from 'react-native-localize';
-import { fetchLanguage } from '../utilities/sqlite';
-import de from './../languages/de.js';
-import en from './../languages/en.js';
+import { useNavigation } from '@react-navigation/native';
+
+type NavigationStackParams = {
+  navigate: Function;
+}
 
 /**
  * Show the credit / debit screen with the various categories of notes and the quantities to increase and decrease the amount of notes.
@@ -24,11 +26,11 @@ export default function CreditDebitScreen() {
     const [fiftyAmount, setFiftyAmount] = useState(0);
     const [hundredAmount, setHundredAmount] = useState(0);
 
-    const [translation, setTranslation] = useState<any>([]);
+    const navigation = useNavigation<NavigationStackParams>();
 
     const colorScheme = Appearance.getColorScheme();
 
-    const [withSymbol, withoutSymbol, symbol] = formatCurrency({
+    const [symbol] = formatCurrency({
             amount: 0.00,
             code: getCurrencies()[0],
     });
@@ -39,18 +41,7 @@ export default function CreditDebitScreen() {
     useEffect(() => {
 
         async function prepare() {
-            await loadLanguage();
             await calculateBalance();
-        }
-
-        async function loadLanguage() {
-          console.log('Attempting to load language file for credit/debit screen');
-          const language = await fetchLanguage();
-          if ( language === 'de' ) {
-            setTranslation(de);
-          } else {
-            setTranslation(en);
-          }
         }
 
         /**
@@ -221,6 +212,10 @@ export default function CreditDebitScreen() {
         await getNoteAmount(noteValue);
     }
 
+    function viewCategories() {
+        navigation.navigate('CategoriesScreen')
+    }
+
     /**
      * Display the screen to the user.
      */
@@ -228,7 +223,7 @@ export default function CreditDebitScreen() {
       <SafeAreaView style={{ flex: 1, backgroundColor: '#A2574F', }}>
         <ScrollView contentContainerStyle={styles.container}>
           <View style={styles.titleContainer}>
-            <Text style={styles.balanceText}>{translation.balance}:</Text>
+            <Text style={styles.balanceText}>Balance:</Text>
             <Text style={styles.balanceText}>{balance}€</Text>
           </View>
           <View style={styles.stepContainer}>
@@ -375,6 +370,11 @@ export default function CreditDebitScreen() {
               </Text>
             </TouchableOpacity>
           </View>
+          <View style={styles.buttonContainer}>
+              <Pressable style={[styles.button]} onPress={viewCategories}>
+                  <Text style={styles.textStyle}>Categories</Text>
+              </Pressable>
+          </View>
         </ScrollView>
       </SafeAreaView>
     );
@@ -518,5 +518,25 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginTop: 20,
+    },
+  button: {
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2,
+        width: 300,
+        height: 50,
+        marginRight: 10,
+        backgroundColor: '#f2d6d3ff'
+  },
+  textStyle: {
+        color: 'black',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        fontSize: 20
   },
 });
