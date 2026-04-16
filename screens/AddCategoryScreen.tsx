@@ -58,7 +58,7 @@ export default function AddCategoryScreen() {
             Alert.alert('Category Added', `Category ${name} added successfully.`);
             setName('');
             setColour('');
-            navigation.navigate('Home', { screen: 'Categories'});
+            navigation.navigate('CategoriesScreen');
         } else {
             Alert.alert('Error', `Category ${name} could not be added. The name of the category already exists.`);
         }
@@ -73,11 +73,11 @@ export default function AddCategoryScreen() {
     return ( 
         <View style={styles.centeredView}>
             <View style={styles.categoryNameContainer}>
-                <Text style={[styles.bodyText]}>Name:</Text>
+                <Text style={[styles.fieldLabel]}>Name:</Text>
                 <TextInput style={styles.textInput} placeholder='Your Category Name' onChangeText={nameInputHandler} value={name}/>
             </View>
             <View style={styles.categoryNameContainer}>
-                <Text style={[styles.bodyText]}>Colour:</Text>
+                <Text style={[styles.fieldLabel]}>Colour:</Text>
                     <Dropdown
                         style={styles.colourDropdownLight}
                         data={colourItems}
@@ -112,7 +112,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     elevation: 2,
-    width: 80,
+    width: '40%',
+    height: 50,
     marginRight: 10,
     backgroundColor: '#f2d6d3ff'
  },
@@ -120,6 +121,7 @@ const styles = StyleSheet.create({
     color: 'black',
     fontWeight: 'bold',
     textAlign: 'center',
+    fontSize: 20
   },
   modalText: {
     marginBottom: 15,
@@ -128,16 +130,18 @@ const styles = StyleSheet.create({
     fontSize: 20
   },
   categoryNameContainer: {
-        flexDirection: 'column',
+        flexDirection: 'row',
         width: '100%',
         marginTop: 20
   },
-  bodyText: {
+  fieldLabel: {
     fontSize: 20,
     fontWeight: 'bold',
-    textAlign: 'center',
+    textAlign: 'left',
     paddingBottom: 16,
     color: 'white',
+    marginLeft: 5,
+    width: '25%'
 },
  categoryButtonContainer: {
     flexDirection: 'row',
@@ -150,10 +154,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     color: 'black',
     borderRadius: 6,
-    width: '80%',
+    width: '60%',
     alignItems: 'center',
     justifyContent: 'center',
-    textAlign: 'center',
+    textAlign: 'left',
     marginLeft: '10%',
     padding: 8
 },
@@ -163,7 +167,7 @@ colourDropdownLight: {
     backgroundColor: 'white',
     color: 'black',
     borderRadius: 6,
-    width: '80%',
+    width: '60%',
     alignItems: 'center',
     justifyContent: 'center',
     textAlign: 'center',

@@ -69,11 +69,11 @@ export default function SettingsScreen() {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#A2574F', }}>
             <View style={styles.minimumBalanceContainer}>
-                <Text style={[styles.bodyText]}>Minimum Balance:</Text>
+                <Text style={[styles.fieldLabel]}>Minimum Balance:</Text>
                 <TextInput style={styles.textInput} placeholder='Your Minimum Balance' onChangeText={minimumBalanceInputHandler} value={minimumBalance}/>
             </View>
             <View style={styles.languageContainer}>
-                <Text style={[styles.bodyText]}>Language:</Text>
+                <Text style={[styles.fieldLabel]}>Language:</Text>
                 <View style={styles.flagsContainer}>
                     <View style={language === 'DE' ? styles.selectedFlag : styles.flag}>
                         <TouchableOpacity onPress={() => changeLanguage('DE')}>
@@ -100,27 +100,15 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-    text: {
-        color: 'white',
-        marginLeft: 10,
-        fontSize: 30,
-        fontWeight: "bold"
-    },
-    modalText: {
-        marginBottom: 15,
-        textAlign: 'center',
-        fontWeight: 'bold',
-        fontSize: 20
-    },
     minimumBalanceContainer: {
         flexDirection: 'row',
         width: '100%',
         marginTop: 20,
     },
-    bodyText: {
+    fieldLabel: {
         fontSize: 20,
         fontWeight: 'bold',
-        textAlign: 'right',
+        textAlign: 'left',
         width: '50%',
         paddingBottom: 10,
         paddingLeft: 10,
@@ -135,9 +123,10 @@ const styles = StyleSheet.create({
         borderRadius: 6,
         alignItems: 'center',
         justifyContent: 'center',
-        textAlign: 'center',
+        textAlign: 'left',
+        width: '35%',
         marginLeft: '10%',
-        paddingRight: 20,
+        marginRight: 20
     },
     languageContainer: {
         flexDirection: 'row',
@@ -170,7 +159,8 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         padding: 10,
         elevation: 2,
-        width: 80,
+        width: '40%',
+        height: 50,
         marginRight: 10,
         backgroundColor: '#f2d6d3ff'
     },
@@ -178,5 +168,6 @@ const styles = StyleSheet.create({
         color: 'black',
         fontWeight: 'bold',
         textAlign: 'center',
+        fontSize: 20
     },
 });

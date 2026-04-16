@@ -9,6 +9,7 @@ import notifee from '@notifee/react-native';
 import { formatCurrency } from "react-native-format-currency";
 import { getCurrencies } from 'react-native-localize';
 import { useNavigation } from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 
 type NavigationStackParams = {
   navigate: Function;
@@ -34,6 +35,8 @@ export default function CreditDebitScreen() {
             amount: 0.00,
             code: getCurrencies()[0],
     });
+
+    const isFocused = useIsFocused();
 
     /**
      * Whenever we visit the screen, we want to retrieve the current balance.
@@ -83,7 +86,7 @@ export default function CreditDebitScreen() {
 
         prepare();
 
-    }, [symbol]);
+    }, [symbol, isFocused]);
 
     /**
      * Retrieve the amount of a particular note.
@@ -212,6 +215,14 @@ export default function CreditDebitScreen() {
         await getNoteAmount(noteValue);
     }
 
+    function addCreditHistory() {
+        navigation.navigate('AddHistoryScreen', { isDebit: false });
+    }
+
+    function addDebitHistory() {
+        navigation.navigate('AddHistoryScreen', { isDebit: true });
+    }
+
     function viewCategories() {
         navigation.navigate('CategoriesScreen')
     }
@@ -225,6 +236,14 @@ export default function CreditDebitScreen() {
           <View style={styles.titleContainer}>
             <Text style={styles.balanceText}>Balance:</Text>
             <Text style={styles.balanceText}>{balance}€</Text>
+          </View>
+          <View style={styles.buttonContainer}>
+              <Pressable style={[styles.button]} onPress={addCreditHistory}>
+                  <Text style={styles.textStyle}>Credit</Text>
+              </Pressable>
+              <Pressable style={[styles.button]} onPress={addDebitHistory}>
+                  <Text style={styles.textStyle}>Debit</Text>
+              </Pressable>
           </View>
           <View style={styles.stepContainer}>
             <Text style={styles.fiveColour}>5</Text>
@@ -371,7 +390,7 @@ export default function CreditDebitScreen() {
             </TouchableOpacity>
           </View>
           <View style={styles.buttonContainer}>
-              <Pressable style={[styles.button]} onPress={viewCategories}>
+              <Pressable style={[styles.buttonLarge]} onPress={viewCategories}>
                   <Text style={styles.textStyle}>Categories</Text>
               </Pressable>
           </View>
@@ -399,8 +418,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     justifyContent: 'center',
-    marginTop: 48,
-    marginBottom: 48,
+    marginBottom: 24,
   },
   darkModeText: {
     color: 'white',
@@ -520,18 +538,29 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        marginTop: 20,
-    },
+    flexDirection: 'row',
+    marginTop: 10,
+    marginBottom: 20,
+  },
   button: {
         borderRadius: 20,
         padding: 10,
         elevation: 2,
-        width: 300,
-        height: 50,
         marginRight: 10,
+        marginLeft: 10,
+        height: 50,
+        width: '40%',  
         backgroundColor: '#f2d6d3ff'
+  },
+  buttonLarge: {
+      borderRadius: 20,
+      padding: 10,
+      elevation: 2,
+      marginRight: 10,
+      marginLeft: 10,
+      height: 50,
+      width: '80%',  
+      backgroundColor: '#f2d6d3ff'
   },
   textStyle: {
         color: 'black',

@@ -6,23 +6,20 @@ import { fetchCategories, insertHistoryEntry } from "../utilities/sqlite";
 import DatePicker from "react-native-date-picker";
 import { Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { ScrollView , Switch } from "react-native";
+import { ScrollView } from "react-native";
+import { fetchAmount, updateValueAmount, insertValueAmount } from "../utilities/sqlite";
 
 type NavigationStackParams = {
   navigate: Function;
+  setOptions: Function;
 }
 
-export default function AddHistoryScreen() {
+export default function AddHistoryScreen({route}: any) {
 
     const [amount, setAmount] = useState('');
     const [date, setDate] = useState(new Date());
     const [category, setCategory] = useState('');
     const [description, setDescription] = useState('');
-    const [isDebit, setIsDebit] = useState(true);
-
-    function toggleSwitch() {
-        setIsDebit(previousState => !previousState);
-    }
 
     const [categories, setCategories] = useState<{label: string, value: string}[]>([]);
     const [initialCategory, setInitialCategory] = useState('Select a category');
@@ -40,6 +37,7 @@ export default function AddHistoryScreen() {
     useEffect(() => {
         async function prepare() {
             try {
+                navigation.setOptions({title: 'Add History Entry - ' + (route.params.isDebit ? 'Debit' : 'Credit')});
                 let dbCategories = await fetchCategories();
                 let dropdownCategories = dbCategories.map((cat) => ({ label: cat.name, value: cat.name }));
                 setCategories(dropdownCategories);
@@ -50,7 +48,7 @@ export default function AddHistoryScreen() {
             }
         }
         prepare();
-    }, []);
+    }, [navigation, route.params.isDebit]);
 
     /**
      * Set the amount that the user entered.
@@ -88,16 +86,68 @@ export default function AddHistoryScreen() {
             convertedAmount = amount.replace(',', '.');
         }
         // Now save the entry to the database.
-        if ( await insertHistoryEntry(convertedAmount, description, category, date.toISOString(), isDebit ? 'debit' : 'credit') ) {
+        if ( await insertHistoryEntry(convertedAmount, description, category, date.toISOString(), route.params.isDebit ? 'debit' : 'credit') ) {
             Alert.alert('History Entry Added', `History entry added successfully.`);
             setAmount(''); 
             setDate(new Date());
             setCategory('');
             setDescription('');
-            setIsDebit(true);
+            // Now we take care of notes.
+            if ( route.params.isDebit ) {
+                if ( fiveAmount > 0 ) {
+                    await onDecreaseNote(5, fiveAmount);
+                }
+                if ( tenAmount > 0 ) {
+                    await onDecreaseNote(10, tenAmount);
+                }
+                if ( twentyAmount > 0 ) {
+                    await onDecreaseNote(20, twentyAmount);
+                }
+                if ( fiftyAmount > 0 ) {
+                    await onDecreaseNote(50, fiftyAmount);
+                }
+                if ( hundredAmount > 0 ) {
+                    await onDecreaseNote(100, hundredAmount);
+                }
+            } else {
+                if ( fiveAmount > 0 ) {
+                    await onIncreaseNote(5, fiveAmount);
+                }
+                if ( tenAmount > 0 ) {
+                    await onIncreaseNote(10, tenAmount);
+                }
+                if ( twentyAmount > 0 ) {
+                    await onIncreaseNote(20, twentyAmount);
+                }
+                if ( fiftyAmount > 0 ) {
+                    await onIncreaseNote(50, fiftyAmount);
+                }
+                if ( hundredAmount > 0 ) {
+                    await onIncreaseNote(100, hundredAmount);
+                }
+            }
+            // Redirect to history screen.
             navigation.navigate('HistoryScreen');
         } else {
             Alert.alert('Error', `History entry could not be added.`);
+        }
+    }
+
+    async function onIncreaseNote(noteValue: number, quantity: number) {
+        let currentValue:number = await fetchAmount(noteValue);
+        if ( currentValue ) {
+            await updateValueAmount(noteValue, currentValue + quantity);
+        } else {
+            await insertValueAmount(noteValue, quantity);
+        }
+    }
+    
+    async function onDecreaseNote(noteValue: number, quantity: number) {
+        let currentValue:number = await fetchAmount(noteValue);
+        if ( currentValue && (currentValue - quantity >= 0) ) {
+            await updateValueAmount(noteValue, currentValue - quantity);
+        } else {
+            await updateValueAmount(noteValue, 0);
         }
     }
     
@@ -132,57 +182,9 @@ export default function AddHistoryScreen() {
         <SafeAreaView style={{ flex: 1, backgroundColor: '#A2574F', }}>
             <ScrollView>
                 <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.centeredView}>
-                <View style={styles.switchFieldContainer}>
-                    <Text style={[styles.formFieldLabel]}>Credit</Text>
-                    <Switch
-                        style={{marginBottom: 10, marginRight: 10}}
-                        trackColor={{false: '#767577', true: '#81b0ff'}}
-                        thumbColor={isDebit ? '#f5dd4b' : '#f4f3f4'}
-                        ios_backgroundColor="#3e3e3e"
-                        onValueChange={toggleSwitch}
-                        value={isDebit}
-                    />
-                    <Text style={[styles.formFieldLabel]}>Debit</Text>
-                    <View style={styles.amountType}>
-                        <TextInput style={styles.amountFieldValue} placeholder='0,00' onChangeText={amountInputHandler} value={amount}/>
-                    </View>
-                </View>
                 <View style={styles.formFieldContainer}>
-                    <Text style={[styles.formFieldLabel]}>Title:</Text>
-                    <TextInput style={styles.formFieldValue} placeholder='A short description explaining why...' onChangeText={descriptionInputHandler} value={description}/>
-                </View>
-                <View style={styles.formFieldContainer}>
-                    <Text style={[styles.formFieldLabel]}>Date:</Text>
-                    <DatePicker theme="dark" date={date} onDateChange={setDate} />
-                </View>
-                <View style={styles.formFieldContainer}>
-                    <Text style={[styles.formFieldLabel]}>Notes:</Text>
-                    <View style={styles.notesContainer}>
-                        <View style={styles.noteContainer}>
-                            <Pressable onPress={increaseFiveAmount}><Text style={styles.fiveColour}>5</Text></Pressable>
-                            <Text style={styles.noteAmount}>({fiveAmount})</Text>
-                        </View>
-                        <View style={styles.noteContainer}>
-                            <Pressable onPress={increaseTenAmount}><Text style={styles.tenColour}>10</Text></Pressable>
-                            <Text style={styles.noteAmount}>({tenAmount})</Text>
-                        </View>
-                        <View style={styles.noteContainer}>
-                            <Pressable onPress={increaseTwentyAmount}><Text style={styles.twentyColour}>20</Text></Pressable>
-                            <Text style={styles.noteAmount}>({twentyAmount})</Text>
-                        </View>
-                    </View>
-                </View>
-                <View style={styles.formFieldContainer}>
-                    <View style={styles.notesContainer}>
-                        <View style={styles.noteContainer}>
-                            <Pressable onPress={increaseFiftyAmount}><Text style={styles.fiftyColour}>50</Text></Pressable>
-                            <Text style={styles.noteAmount50}>({fiftyAmount})</Text>
-                        </View>
-                        <View style={styles.noteContainer}>
-                            <Pressable onPress={increaseHundredAmount}><Text style={styles.hundredColour}>100</Text></Pressable>
-                            <Text style={styles.noteAmount}>({hundredAmount})</Text>
-                        </View>
-                    </View>
+                    <Text style={[styles.formFieldLabel]}>Amount:</Text>
+                    <TextInput style={styles.formFieldValue} placeholder='0,00' onChangeText={amountInputHandler} value={amount}/> 
                 </View>
                 <View style={styles.formFieldContainer}>
                     <Text style={[styles.formFieldLabel]}>Category:</Text>
@@ -198,6 +200,39 @@ export default function AddHistoryScreen() {
                         }}
                         renderItem={item => _renderCategoryItem(item)}
                     />
+                </View>
+                <View style={styles.formFieldContainer}>
+                    <Text style={[styles.formFieldLabel]}>Title:</Text>
+                    <TextInput style={styles.formFieldValue} placeholder='Where & why...' onChangeText={descriptionInputHandler} value={description}/>
+                </View>
+                <View style={styles.formFieldContainer}>
+                    <Text style={[styles.formFieldLabel]}>Date:</Text>
+                    <DatePicker theme="dark" date={date} onDateChange={setDate} />
+                </View>
+                <View style={styles.formFieldContainer}>
+                    <Text style={[styles.formFieldLabel]}>Notes:</Text>
+                    <View style={styles.notesContainer}>
+                        <View style={styles.noteContainer}>
+                            <Pressable onPress={increaseFiveAmount}><Text style={[styles.noteText, styles.fiveColour]}>5</Text></Pressable>
+                            <Text style={styles.noteAmount}>({fiveAmount})</Text>
+                        </View>
+                        <View style={styles.noteContainer}>
+                            <Pressable onPress={increaseTenAmount}><Text style={[styles.noteText, styles.tenColour]}>10</Text></Pressable>
+                            <Text style={styles.noteAmount}>({tenAmount})</Text>
+                        </View>
+                        <View style={styles.noteContainer}>
+                            <Pressable onPress={increaseTwentyAmount}><Text style={[styles.noteText, styles.twentyColour]}>20</Text></Pressable>
+                            <Text style={styles.noteAmount}>({twentyAmount})</Text>
+                        </View>
+                        <View style={styles.noteContainer}>
+                            <Pressable onPress={increaseFiftyAmount}><Text style={[styles.noteText, styles.fiftyColour]}>50</Text></Pressable>
+                            <Text style={styles.noteAmount}>({fiftyAmount})</Text>
+                        </View>
+                        <View style={styles.noteContainer}>
+                            <Pressable onPress={increaseHundredAmount}><Text style={[styles.noteText, styles.hundredColour]}>100</Text></Pressable>
+                            <Text style={styles.noteAmount}>({hundredAmount})</Text>
+                        </View>
+                    </View>
                 </View>
                 <View style={styles.buttonContainer}>
                     <Pressable style={[styles.button]} onPress={save}>
@@ -218,54 +253,19 @@ const styles = StyleSheet.create({
     centeredView: {
         flex: 1,
     },
-    switchFieldContainer: {
-        flexDirection: 'row',
-        width: '100%',
-        marginTop: 20,
-        marginLeft: 5
-    },
     formFieldContainer: {
         flexDirection: 'row',
         width: '100%',
-        marginTop: 20,
-        marginLeft: 5
-    },
-    amountType: {
-        flexDirection: 'row',
-    },
-    amountFieldDropdown: {
-        borderWidth: 1,
-        borderColor: '#e4d0ff',
-        backgroundColor: 'white',
-        color: 'black',
-        borderRadius: 6,
-        width: '30%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        textAlign: 'center',
-        marginLeft: '10%',
-        padding: 8
-    },
-    amountFieldValue: {
-        borderWidth: 1,
-        borderColor: '#e4d0ff',
-        backgroundColor: 'white',
-        color: 'black',
-        borderRadius: 6,
-        width: '40%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        textAlign: 'center',
-        marginLeft: '10%',
-        padding: 8
+        marginTop: 20
     },
     formFieldLabel: {
         fontSize: 20,
         fontWeight: 'bold',
-        textAlign: 'center',
+        textAlign: 'left',
         paddingBottom: 16,
         width: '25%',
         color: 'white',
+        marginLeft: 10
     },
     formFieldValue: {
         borderWidth: 1,
@@ -274,9 +274,8 @@ const styles = StyleSheet.create({
         color: 'black',
         borderRadius: 6,
         width: '60%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        textAlign: 'center',
+        justifyContent: 'flex-end',
+        textAlign: 'left',
         marginLeft: '10%',
         padding: 8
     },
@@ -289,25 +288,28 @@ const styles = StyleSheet.create({
         width: '60%',
         alignItems: 'center',
         justifyContent: 'center',
-        textAlign: 'center',
+        textAlign: 'right',
         marginLeft: '10%',
         padding: 8
     },
     categoryItem: {
         color: 'black',
         fontSize: 18,
-        marginLeft: 5
+        textAlign: 'left',
+        marginLeft: 10
     },
     buttonContainer: {
         flexDirection: 'row',
+        marginTop: 20,
         justifyContent: 'center',
-        marginTop: 20
+        marginBottom: 20
     },
     button: {
         borderRadius: 20,
         padding: 10,
         elevation: 2,
-        width: 80,
+        width: '40%',
+        height: 50,
         marginRight: 10,
         backgroundColor: '#f2d6d3ff'
     },
@@ -315,79 +317,57 @@ const styles = StyleSheet.create({
         color: 'black',
         fontWeight: 'bold',
         textAlign: 'center',
+        fontSize: 20
     },
     notesContainer: {
-        flexDirection: 'row',
+        borderWidth: 1,
+        borderColor: '#e4d0ff',
+        color: 'black',
+        borderRadius: 6,
+        width: '60%',
+        justifyContent: 'flex-end',
+        textAlign: 'right',
+        marginLeft: '10%',
+        padding: 8
     },
     noteContainer: {
-        flexDirection: 'column'
+        flexDirection: 'row',
+        width: '100%',
+        marginBottom: 10,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    noteText: {
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 28,
+        marginRight: 40,
+        marginLeft: 5,
+        width: 60,
+        height: 40,
+        color: 'white',
     },
     noteAmount: {
-        textAlign: 'center',
+        textAlign: 'right',
         fontWeight: 'bold',
-        fontSize: 20,
+        fontSize: 24,
         color: 'white',
-    },
-    noteAmount50: {
-        textAlign: 'center',
-        fontWeight: 'bold',
-        fontSize: 20,
-        color: 'white',
-        marginLeft: 70
+        marginRight: 10,
+        justifyContent: 'flex-end'
     },
     fiveColour: {
-        textAlign: 'center',
-        fontWeight: 'bold',
-        fontSize: 28,
-        marginRight: 10,
-        marginLeft: 10,
-        width: 80,
-        height: 40,
         backgroundColor: 'gray',
-        color: 'white',
     },
     tenColour: {
-        textAlign: 'center',
-        fontWeight: 'bold',
-        fontSize: 28,
-        marginRight: 10,
-        marginLeft: 10,
-        width: 80,
-        height: 40,
         backgroundColor: 'red',
-        color: 'white',
     },
     twentyColour: {
-        textAlign: 'center',
-        fontWeight: 'bold',
-        fontSize: 28,
-        marginRight: 10,
-        marginLeft: 10,
-        width: 80,
-        height: 40,
         backgroundColor: 'blue',
-        color: 'white',
     },
     fiftyColour: {
-        textAlign: 'center',
-        fontWeight: 'bold',
-        fontSize: 28,
-        marginRight: 10,
-        marginLeft: 100,
-        width: 80,
-        height: 40,
         backgroundColor: 'orange',
-        color: 'white',
     },
     hundredColour: {
-        textAlign: 'center',
-        fontWeight: 'bold',
-        fontSize: 28,
-        marginRight: 10,
-        marginLeft: 10,
-        width: 80,
-        height: 40,
         backgroundColor: 'green',
-        color: 'white',
     },
 });

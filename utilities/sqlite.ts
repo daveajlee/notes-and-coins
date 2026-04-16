@@ -47,7 +47,6 @@ export async function init(): Promise<void> {
   // Ensure backward compatibility by adding the type column to history table.
   await database.execute(`ALTER TABLE settings ADD COLUMN language TEXT`);
   await database.execute(`ALTER TABLE history ADD COLUMN type TEXT NOT NULL DEFAULT 'debit'`);
-  await database.execute(`ALTER TABLE settings ADD COLUMN language TEXT`);
   // Print that database has been created.
   console.log('Database initialized.');
 }
@@ -202,6 +201,25 @@ export async function getCategoryColour(categoryName: string): Promise<string> {
         return rows[0].colour;
     }
     return 'darkgray'; // Default dark gray colour.
+}
+
+/**
+ * Insert the language to the database.
+ * @param language A string representing the language.
+ * @returns a promise with either the inserted id or 0 if insert was not successful.
+ */
+export async function insertLanguage(language: string): Promise<number> {
+    let insertResult: QueryResult = await database.execute(`INSERT INTO settings (language) VALUES (?)`, [language]);
+    return insertResult.insertId ? insertResult.insertId : 0;
+}
+
+/**
+ * Insert the minimum balance to the database.
+ * @param minimumBalance A string representing the minimum balance.
+ * @returns a promise with either the inserted id or 0 if insert was not successful.
+ */
+export async function insertMinimumBalance(minimumBalance: string): Promise<number> {
+    
 }
 
 /**
