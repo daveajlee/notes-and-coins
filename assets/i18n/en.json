@@ -1,0 +1,33 @@
+{
+    "translation": {
+        "overview":"Overview",
+        "balance":"Balance",
+        "credit":"Credit",
+        "debit":"Debit",
+        "categories":"Categories",
+        "amount":"Amount",
+        "category":"Category",
+        "title":"Title",
+        "date":"Date",
+        "notes":"Notes",
+        "placeholderTitle":"Where & why...",
+        "save":"Save",
+        "reset":"Reset",
+        "name":"Name",
+        "colour":"Colour",
+        "placeholderCategoryName":"Your Category Name",
+        "red":"Red",
+        "green":"Green",
+        "yellow":"Yellow",
+        "blue":"Blue",
+        "purple":"Purple",
+        "orange":"Orange",
+        "pink":"Pink",
+        "brown":"Brown",
+        "gray":"Gray",
+        "incomeChart": "Income Chart",
+        "expenseChart": "Expense Chart",
+        "minimumBalance":"Minimum Balance",
+        "language": "Language"
+    }
+}

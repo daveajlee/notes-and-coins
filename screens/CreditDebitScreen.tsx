@@ -10,15 +10,22 @@ import { formatCurrency } from "react-native-format-currency";
 import { getCurrencies } from 'react-native-localize';
 import { useNavigation } from '@react-navigation/native';
 import { useIsFocused } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
+import './../assets/i18n/i18n';
 
 type NavigationStackParams = {
   navigate: Function;
+  setOptions: Function;
 }
 
 /**
  * Show the credit / debit screen with the various categories of notes and the quantities to increase and decrease the amount of notes.
  */
 export default function CreditDebitScreen() {
+
+    const {t, i18n} = useTranslation();
+
+    //const [currentLanguage,setLanguage] =useState('en');
 
     const [balance, setBalance] = useState(0);
     const [fiveAmount, setFiveAmount] = useState(0);
@@ -38,6 +45,15 @@ export default function CreditDebitScreen() {
 
     const isFocused = useIsFocused();
 
+    /*const changeLanguage = (value: any) => {
+        i18n
+          .changeLanguage(value)
+          .then(() => setLanguage(value))
+          .catch(err => console.log(err));
+        };
+
+    changeLanguage('de');*/
+
     /**
      * Whenever we visit the screen, we want to retrieve the current balance.
      */
@@ -45,6 +61,8 @@ export default function CreditDebitScreen() {
 
         async function prepare() {
             await calculateBalance();
+            
+            //changeLanguage(await fetchLanguage());
         }
 
         /**
@@ -86,7 +104,7 @@ export default function CreditDebitScreen() {
 
         prepare();
 
-    }, [symbol, isFocused]);
+    }, [symbol, isFocused, /*currentLanguage,*/ i18n, navigation, t]);
 
     /**
      * Retrieve the amount of a particular note.
@@ -234,15 +252,15 @@ export default function CreditDebitScreen() {
       <SafeAreaView style={{ flex: 1, backgroundColor: '#A2574F', }}>
         <ScrollView contentContainerStyle={styles.container}>
           <View style={styles.titleContainer}>
-            <Text style={styles.balanceText}>Balance:</Text>
+            <Text style={styles.balanceText}>{t('balance')}:</Text>
             <Text style={styles.balanceText}>{balance}€</Text>
           </View>
           <View style={styles.buttonContainer}>
               <Pressable style={[styles.button]} onPress={addCreditHistory}>
-                  <Text style={styles.textStyle}>Credit</Text>
+                  <Text style={styles.textStyle}>{t('credit')}</Text>
               </Pressable>
               <Pressable style={[styles.button]} onPress={addDebitHistory}>
-                  <Text style={styles.textStyle}>Debit</Text>
+                  <Text style={styles.textStyle}>{t('debit')}</Text>
               </Pressable>
           </View>
           <View style={styles.stepContainer}>
@@ -391,7 +409,7 @@ export default function CreditDebitScreen() {
           </View>
           <View style={styles.buttonContainer}>
               <Pressable style={[styles.buttonLarge]} onPress={viewCategories}>
-                  <Text style={styles.textStyle}>Categories</Text>
+                  <Text style={styles.textStyle}>{t('categories')}</Text>
               </Pressable>
           </View>
         </ScrollView>

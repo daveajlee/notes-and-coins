@@ -1,0 +1,33 @@
+{
+    "translation": {
+        "overview":"Übersicht",
+        "balance":"Guthaben",
+        "credit":"Hinzufügen",
+        "debit":"Abziehen",
+        "categories":"Kategorien",
+        "amount":"Betrag",
+        "category":"Kategorie",
+        "title":"Titel",
+        "date":"Datum",
+        "notes":"Scheine",
+        "placeholderTitle":"Wo & warum...",
+        "save":"Speichern",
+        "reset":"Zurücksetzen",
+        "name":"Name",
+        "colour":"Farbe",
+        "placeholderCategoryName":"Ihre Kategoriename",
+        "red":"Rot",
+        "green":"Grün",
+        "yellow":"Gelb",
+        "blue":"Blau",
+        "purple":"Lila",
+        "orange":"Orange",
+        "pink":"Pink",
+        "brown":"Braun",
+        "gray":"Grau",
+        "incomeChart": "Einnahmen Chart",
+        "expenseChart": "Ausgaben Chart",
+        "minimumBalance":"Mindestguthaben",
+        "language": "Sprache"
+    }
+}

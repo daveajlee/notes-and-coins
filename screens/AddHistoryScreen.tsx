@@ -8,6 +8,8 @@ import { Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { ScrollView } from "react-native";
 import { fetchAmount, updateValueAmount, insertValueAmount } from "../utilities/sqlite";
+import { useTranslation } from "react-i18next";
+import './../assets/i18n/i18n';
 
 type NavigationStackParams = {
   navigate: Function;
@@ -15,6 +17,8 @@ type NavigationStackParams = {
 }
 
 export default function AddHistoryScreen({route}: any) {
+
+    const {t, i18n} = useTranslation();
 
     const [amount, setAmount] = useState('');
     const [date, setDate] = useState(new Date());
@@ -183,11 +187,11 @@ export default function AddHistoryScreen({route}: any) {
             <ScrollView>
                 <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.centeredView}>
                 <View style={styles.formFieldContainer}>
-                    <Text style={[styles.formFieldLabel]}>Amount:</Text>
+                    <Text style={[styles.formFieldLabel]}>{t('amount')}:</Text>
                     <TextInput style={styles.formFieldValue} placeholder='0,00' onChangeText={amountInputHandler} value={amount}/> 
                 </View>
                 <View style={styles.formFieldContainer}>
-                    <Text style={[styles.formFieldLabel]}>Category:</Text>
+                    <Text style={[styles.formFieldLabel]}>{t('category')}:</Text>
                     <Dropdown
                         style={styles.dropdown}
                         data={categories}
@@ -202,15 +206,15 @@ export default function AddHistoryScreen({route}: any) {
                     />
                 </View>
                 <View style={styles.formFieldContainer}>
-                    <Text style={[styles.formFieldLabel]}>Title:</Text>
-                    <TextInput style={styles.formFieldValue} placeholder='Where & why...' onChangeText={descriptionInputHandler} value={description}/>
+                    <Text style={[styles.formFieldLabel]}>{t('title')}:</Text>
+                    <TextInput style={styles.formFieldValue} placeholder={t('placeholderTitle')} onChangeText={descriptionInputHandler} value={description}/>
                 </View>
                 <View style={styles.formFieldContainer}>
-                    <Text style={[styles.formFieldLabel]}>Date:</Text>
+                    <Text style={[styles.formFieldLabel]}>{t('date')}:</Text>
                     <DatePicker theme="dark" date={date} onDateChange={setDate} />
                 </View>
                 <View style={styles.formFieldContainer}>
-                    <Text style={[styles.formFieldLabel]}>Notes:</Text>
+                    <Text style={[styles.formFieldLabel]}>{t('notes')}:</Text>
                     <View style={styles.notesContainer}>
                         <View style={styles.noteContainer}>
                             <Pressable onPress={increaseFiveAmount}><Text style={[styles.noteText, styles.fiveColour]}>5</Text></Pressable>
@@ -236,10 +240,10 @@ export default function AddHistoryScreen({route}: any) {
                 </View>
                 <View style={styles.buttonContainer}>
                     <Pressable style={[styles.button]} onPress={save}>
-                        <Text style={styles.textStyle}>Save</Text>
+                        <Text style={styles.textStyle}>{t('save')}</Text>
                     </Pressable>
                     <Pressable style={[styles.button]} onPress={reset}>
-                        <Text style={styles.textStyle}>Reset</Text>
+                        <Text style={styles.textStyle}>{t('reset')}</Text>
                     </Pressable>
                 </View>
                 </KeyboardAvoidingView>

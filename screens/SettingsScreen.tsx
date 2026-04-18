@@ -3,6 +3,8 @@ import { Alert, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View }
 import { useEffect, useState } from "react";
 import { fetchLanguage, fetchMinimumBalance, saveSettingsToDatabase } from "../utilities/sqlite";
 import CountryFlag from "react-native-country-flag";
+import { useTranslation } from "react-i18next";
+import './../assets/i18n/i18n';
 
 /**
  * Show the settings screen.
@@ -11,6 +13,8 @@ export default function SettingsScreen() {
 
     const [minimumBalance, setMinimumBalance] = useState('');
     const [language, setLanguage] = useState('');
+
+    const {t, i18n} = useTranslation();
 
     useEffect(() => {
         async function prepare() {
@@ -69,11 +73,11 @@ export default function SettingsScreen() {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#A2574F', }}>
             <View style={styles.minimumBalanceContainer}>
-                <Text style={[styles.fieldLabel]}>Minimum Balance:</Text>
+                <Text style={[styles.fieldLabel]}>{t('minimumBalance')}:</Text>
                 <TextInput style={styles.textInput} placeholder='Your Minimum Balance' onChangeText={minimumBalanceInputHandler} value={minimumBalance}/>
             </View>
             <View style={styles.languageContainer}>
-                <Text style={[styles.fieldLabel]}>Language:</Text>
+                <Text style={[styles.fieldLabel]}>{t('language')}:</Text>
                 <View style={styles.flagsContainer}>
                     <View style={language === 'DE' ? styles.selectedFlag : styles.flag}>
                         <TouchableOpacity onPress={() => changeLanguage('DE')}>
@@ -89,10 +93,10 @@ export default function SettingsScreen() {
             </View>
             <View style={styles.buttonContainer}>
                 <Pressable style={[styles.button]} onPress={saveSettings}>
-                    <Text style={styles.textStyle}>Save</Text>
+                    <Text style={styles.textStyle}>{t('save')}</Text>
                 </Pressable>
                 <Pressable style={[styles.button]} onPress={resetSettings}>
-                    <Text style={styles.textStyle}>Reset</Text>
+                    <Text style={styles.textStyle}>{t('reset')}</Text>
                 </Pressable>
             </View>
         </SafeAreaView>

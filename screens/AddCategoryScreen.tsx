@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { insertCategory } from '../utilities/sqlite';
 import { Dropdown } from 'react-native-element-dropdown';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
+import './../assets/i18n/i18n';
 
 type NavigationStackParams = {
   navigate: Function;
@@ -10,20 +12,22 @@ type NavigationStackParams = {
 
 export default function AddCategoryScreen() {
 
+    const {t, i18n} = useTranslation();
+
     const [name, setName] = useState('');
     const [colour, setColour] = useState('red');
     const [colourValue] = useState(null);
 
     const [colourItems] = useState([
-        {label: 'Red', value: 'red'},
-        {label: 'Green', value: 'green'},
-        {label: 'Yellow', value: 'yellow'},
-        {label: 'Blue', value: 'blue'},
-        {label: 'Purple', value: 'purple'},
-        {label: 'Orange', value: 'orange'},
-        {label: 'Pink', value: 'pink'},
-        {label: 'Brown', value: 'brown'},
-        {label: 'Gray', value: 'gray'},
+        {label: t('red'), value: 'red'},
+        {label: t('green'), value: 'green'},
+        {label: t('yellow'), value: 'yellow'},
+        {label: t('blue'), value: 'blue'},
+        {label: t('purple'), value: 'purple'},
+        {label: t('orange'), value: 'orange'},
+        {label: t('pink'), value: 'pink'},
+        {label: t('brown'), value: 'brown'},
+        {label: t('gray'), value: 'gray'},
     ]);
 
     // Navigation hook
@@ -73,17 +77,17 @@ export default function AddCategoryScreen() {
     return ( 
         <View style={styles.centeredView}>
             <View style={styles.categoryNameContainer}>
-                <Text style={[styles.fieldLabel]}>Name:</Text>
-                <TextInput style={styles.textInput} placeholder='Your Category Name' onChangeText={nameInputHandler} value={name}/>
+                <Text style={[styles.fieldLabel]}>{t('name')}:</Text>
+                <TextInput style={styles.textInput} placeholder={t('placeholderCategoryName')} onChangeText={nameInputHandler} value={name}/>
             </View>
             <View style={styles.categoryNameContainer}>
-                <Text style={[styles.fieldLabel]}>Colour:</Text>
+                <Text style={[styles.fieldLabel]}>{t('colour')}:</Text>
                     <Dropdown
                         style={styles.colourDropdownLight}
                         data={colourItems}
                         labelField="label"
                         valueField="value"
-                        placeholder="Red"
+                        placeholder={t('red')}
                         value={colourValue}
                         onChange={item => {
                             setColour(item.value);          
@@ -93,10 +97,10 @@ export default function AddCategoryScreen() {
                 </View>
                 <View style={styles.categoryButtonContainer}>
                     <Pressable style={[styles.button]} onPress={save}>
-                        <Text style={styles.textStyle}>Save</Text>
+                        <Text style={styles.textStyle}>{t('save')}</Text>
                     </Pressable>
                     <Pressable style={[styles.button]} onPress={reset}>
-                        <Text style={styles.textStyle}>Reset</Text>
+                        <Text style={styles.textStyle}>{t('reset')}</Text>
                     </Pressable>
                 </View>
             </View>
