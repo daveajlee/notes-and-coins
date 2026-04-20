@@ -84,8 +84,8 @@ export default function CreditDebitScreen() {
 
             // Display a notification
             await notifee.displayNotification({
-            title: 'Balance below Minimum Balance!',
-            body: 'Your balance of ' + calculatedBalance + symbol + ' is below the minimum balance of ' + await fetchMinimumBalance() + symbol + '!',
+            title: t('notificationTitle'),
+            body: t('notificationMessage', { calculatedBalance: calculatedBalance, symbol:symbol, minimumBalance: await fetchMinimumBalance() }),
             android: {
               channelId,
               // pressAction is needed if you want the notification to open the app when pressed

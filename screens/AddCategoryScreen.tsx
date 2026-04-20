@@ -56,15 +56,15 @@ export default function AddCategoryScreen() {
 
     async function save() {
         if ( name.trim().length === 0 ) {
-            Alert.alert('Please enter a valid category name.');
+            Alert.alert(t('validCategoryName'));
         }
         else if ( await insertCategory(name, colour) ) {
-            Alert.alert('Category Added', `Category ${name} added successfully.`);
+            Alert.alert(t('categoryAdded'), t('categoryAddedMessage', { categoryName: name }));
             setName('');
             setColour('');
             navigation.navigate('CategoriesScreen');
         } else {
-            Alert.alert('Error', `Category ${name} could not be added. The name of the category already exists.`);
+            Alert.alert(t('error'), t('errorDuplicateCategory', { categoryName: name }));
         }
         
     }

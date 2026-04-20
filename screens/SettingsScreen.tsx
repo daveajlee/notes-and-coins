@@ -5,6 +5,7 @@ import { fetchLanguage, fetchMinimumBalance, saveSettingsToDatabase } from "../u
 import CountryFlag from "react-native-country-flag";
 import { useTranslation } from "react-i18next";
 import './../assets/i18n/i18n';
+import { useNavigation } from "@react-navigation/native";
 
 /**
  * Show the settings screen.
@@ -13,6 +14,7 @@ export default function SettingsScreen() {
 
     const [minimumBalance, setMinimumBalance] = useState('');
     const [language, setLanguage] = useState('');
+    const navigation = useNavigation();
 
     const {t, i18n} = useTranslation();
 
@@ -48,19 +50,21 @@ export default function SettingsScreen() {
         var regExp = /[a-zA-Z]/;
         // Make sure minimum balance does not contain letters.
         if ( regExp.test(minimumBalance) ) {
-            Alert.alert('Please enter a valid minimum balance without letters.');
+            Alert.alert(t('minimumBalanceLetter'));
             return;
         }
         // Make sure minimum balance has a comma or full stop for decimals.
         if ( !minimumBalance.includes(',') && !minimumBalance.includes('.') ) {
-            Alert.alert('Please enter a valid minimum balance with notes and coins.');
+            Alert.alert(t('minimumBalanceDecimal'));
             return;
         }
         // Parse the number and then to two decimal places.
         let parsedMinimumBalance = parseFloat(minimumBalance.replace(',', '.')).toFixed(2);
         await setMinimumBalance(parsedMinimumBalance);
         await saveSettingsToDatabase(parsedMinimumBalance, language);
-        Alert.alert('Settings saved successfully.');
+        Alert.alert(t('confirmSaved'));
+        navigation.goBack();
+        
     }
 
     function resetSettings() {
@@ -74,7 +78,7 @@ export default function SettingsScreen() {
         <SafeAreaView style={{ flex: 1, backgroundColor: '#A2574F', }}>
             <View style={styles.minimumBalanceContainer}>
                 <Text style={[styles.fieldLabel]}>{t('minimumBalance')}:</Text>
-                <TextInput style={styles.textInput} placeholder='Your Minimum Balance' onChangeText={minimumBalanceInputHandler} value={minimumBalance}/>
+                <TextInput style={styles.textInput} placeholder={t('minimumBalance')} onChangeText={minimumBalanceInputHandler} value={minimumBalance}/>
             </View>
             <View style={styles.languageContainer}>
                 <Text style={[styles.fieldLabel]}>{t('language')}:</Text>

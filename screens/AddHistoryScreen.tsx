@@ -41,7 +41,7 @@ export default function AddHistoryScreen({route}: any) {
     useEffect(() => {
         async function prepare() {
             try {
-                navigation.setOptions({title: 'Add History Entry - ' + (route.params.isDebit ? 'Debit' : 'Credit')});
+                navigation.setOptions({title: t('addHistoryTitle', { type: route.params.isDebit ? t('debit') : t('credit') })});
                 let dbCategories = await fetchCategories();
                 let dropdownCategories = dbCategories.map((cat) => ({ label: cat.name, value: cat.name }));
                 setCategories(dropdownCategories);
@@ -52,7 +52,7 @@ export default function AddHistoryScreen({route}: any) {
             }
         }
         prepare();
-    }, [navigation, route.params.isDebit]);
+    }, [navigation, route.params.isDebit, t]);
 
     /**
      * Set the amount that the user entered.
@@ -91,7 +91,7 @@ export default function AddHistoryScreen({route}: any) {
         }
         // Now save the entry to the database.
         if ( await insertHistoryEntry(convertedAmount, description, category, date.toISOString(), route.params.isDebit ? 'debit' : 'credit') ) {
-            Alert.alert('History Entry Added', `History entry added successfully.`);
+            Alert.alert(t('historyAdded'), t('historyAddedMessage'));
             setAmount(''); 
             setDate(new Date());
             setCategory('');
@@ -133,7 +133,7 @@ export default function AddHistoryScreen({route}: any) {
             // Redirect to history screen.
             navigation.navigate('HistoryScreen');
         } else {
-            Alert.alert('Error', `History entry could not be added.`);
+            Alert.alert(t('error'), t('historyAddErrorMessage'));
         }
     }
 

@@ -28,7 +28,7 @@ export default function CategoryChartList() {
 
     if ( !loadedCategories || loadedCategories.length === 0 ) {
         return <View style={styles.fallbackContainer}>
-            <Text style={styles.fallbackTitle}>No categories added yet! {"\n"}{"\n"} Click on the plus button at the top right to add a category!</Text>
+            <Text style={styles.fallbackTitle}>{t('noCategories')}</Text>
         </View>
     }
     return (

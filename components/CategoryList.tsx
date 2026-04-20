@@ -4,6 +4,8 @@ import { fetchCategories } from "../utilities/sqlite";
 import { Category } from "../models/Category";
 import IconButton from "./IconButton";
 import { deleteCategory } from "../utilities/sqlite";
+import { useTranslation } from "react-i18next";
+import './../assets/i18n/i18n';
 
 /**
  * This component displays a list of categories from the database.
@@ -11,6 +13,7 @@ import { deleteCategory } from "../utilities/sqlite";
 function CategoryList() {
 
     const [loadedCategories, setLoadedCategories] = useState<Category[]>([]);
+    const {t, i18n} = useTranslation();
 
     /**
      * Load the categories from the database as soon as the screen is loaded.
@@ -35,7 +38,7 @@ function CategoryList() {
 
     if ( !loadedCategories || loadedCategories.length === 0 ) {
         return <View style={styles.fallbackContainer}>
-            <Text style={styles.fallbackTitle}>No categories added yet! {"\n"}{"\n"} Click on the plus button at the top right to add a category!</Text>
+            <Text style={styles.fallbackTitle}>{t('noCategories')}</Text>
         </View>
     }
     return <FlatList style={styles.list} data={loadedCategories} keyExtractor={(item: Category) => item.name} renderItem={({item}) =>
@@ -43,13 +46,13 @@ function CategoryList() {
             <Text style={[styles.categoryLabel, getBackgroundColour(item)]}>{item.name}</Text>
             <View style={styles.deleteIcon}>
             <IconButton color="white" onPress={() => { 
-                Alert.alert('Confirm deletion', 'Are you sure you want to delete ' + item.name + '?', [
+                Alert.alert(t('confirmDeletion'), t('deleteCategory', { categoryName: item.name }), [
                     {
-                        text: 'Cancel',
+                        text: t('cancel'),
                         onPress: () => console.log('Cancel Pressed'),
                     },
                     {
-                        text: 'OK', 
+                        text: t('ok'),
                         onPress: () => {
                             const categories = loadedCategories;
                             for ( let i = 0; i < categories.length; i++ ) {
