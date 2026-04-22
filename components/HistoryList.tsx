@@ -3,6 +3,8 @@ import { FlatList, StyleSheet, Text, View } from "react-native";
 import { fetchHistory } from "../utilities/sqlite";
 import { HistoryEntryResult } from "../models/HistoryEntryResult";
 import { DisplayHistoryEntry } from "./DisplayHistoryEntry";
+import { useTranslation } from "react-i18next";
+import './../assets/i18n/i18n';
 
 /**
  * This component displays a list of history entries from the database.
@@ -10,6 +12,7 @@ import { DisplayHistoryEntry } from "./DisplayHistoryEntry";
 export default function HistoryList() {
 
     const [loadedHistoryEntries, setLoadedHistoryEntries] = useState<HistoryEntryResult[]>([]);
+    const {t, i18n} = useTranslation();
 
     /**
      * Load the history entries from the database as soon as the screen is loaded.
@@ -25,7 +28,7 @@ export default function HistoryList() {
 
     if ( !loadedHistoryEntries || loadedHistoryEntries.length === 0 ) {
         return <View style={styles.fallbackContainer}>
-            <Text style={styles.fallbackTitle}>Your history is empty! {"\n"}{"\n"} Click on the plus button at the top right to create an entry!</Text>
+            <Text style={styles.fallbackTitle}>{t('noHistory')}</Text>
             </View>
     }
 

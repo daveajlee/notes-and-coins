@@ -1,6 +1,7 @@
 import { open, QueryResult } from '@op-engineering/op-sqlite';
 import { Category } from '../models/Category';
 import { HistoryEntryResult } from '../models/HistoryEntryResult';
+import { getCountry } from 'react-native-localize';
 
 /**
  * Define the file where the database will be stored by SQLite.
@@ -40,10 +41,9 @@ export async function init(): Promise<void> {
   // Create settings table.
   await database.execute(`CREATE TABLE IF NOT EXISTS settings (
                 id INTEGER PRIMARY KEY NOT NULL,
-                minimum_balance INTEGER NOT NULL
+                minimum_balance INTEGER NOT NULL,
+                language TEXT NOT NULL
   )`);
-  // Ensure backward compatibility by adding the type column to history table.
-  await database.execute(`ALTER TABLE history ADD COLUMN type TEXT NOT NULL DEFAULT 'debit'`);
   // Print that database has been created.
   console.log('Database initialized.');
 }
@@ -135,16 +135,6 @@ export async function deleteCategory(name: string): Promise<void> {
 }
 
 /**
- * Insert the minimum balance to the database.
- * @param minimumBalance A string representing the minimum balance.
- * @returns a promise with either the inserted id or 0 if insert was not successful.
- */
-export async function insertMinimumBalance(minimumBalance: string): Promise<number> {
-    let insertResult: QueryResult = await database.execute(`INSERT INTO settings (minimum_balance) VALUES (?)`, [minimumBalance]);
-    return insertResult.insertId ? insertResult.insertId : 0;
-}
-
-/**
  * Retrieve the minimum balance from the database.
  * @returns a promise with the minimum balance or "0,00" if no value is found.
  */
@@ -208,4 +198,48 @@ export async function getCategoryColour(categoryName: string): Promise<string> {
         return rows[0].colour;
     }
     return 'darkgray'; // Default dark gray colour.
+}
+
+/**
+ * Insert the language to the database.
+ * @param language A string representing the language.
+ * @returns a promise with either the inserted id or 0 if insert was not successful.
+ */
+export async function insertLanguage(language: string): Promise<number> {
+    let insertResult: QueryResult = await database.execute(`INSERT INTO settings (language) VALUES (?)`, [language]);
+    return insertResult.insertId ? insertResult.insertId : 0;
+}
+
+/**
+ * Insert the minimum balance to the database.
+ * @param minimumBalance A string representing the minimum balance.
+ * @returns a promise with either the inserted id or 0 if insert was not successful.
+ */
+export async function insertMinimumBalance(minimumBalance: string): Promise<number> {
+    
+}
+
+/**
+ * Save the settings to the database by deleting any existing entries and inserting the minimum balance and language.
+ */
+export async function saveSettingsToDatabase(minimumBalance: string, language: string): Promise<number> {
+    await database.execute('DELETE FROM settings');
+    let insertResult: QueryResult = await database.execute(`INSERT INTO settings (minimum_balance, language) VALUES (?, ?)`, [minimumBalance, language]);
+    return insertResult.insertId ? insertResult.insertId : 0;
+}
+
+/**
+ * Retrieve the minimum balance from the database.
+ * @returns a promise with the minimum balance or "0,00" if no value is found.
+ */
+export async function fetchLanguage(): Promise<string> {
+    let {rows} = await database.execute('SELECT * FROM settings');
+    if ( rows.length > 0 ) {
+        if ( rows[rows.length-1].language ) {
+            return rows[rows.length-1].language;
+        } else {
+            return getCountry();
+        }
+    }
+    return getCountry();
 }

@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { insertCategory } from '../utilities/sqlite';
 import { Dropdown } from 'react-native-element-dropdown';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
+import './../assets/i18n/i18n';
 
 type NavigationStackParams = {
   navigate: Function;
@@ -10,20 +12,22 @@ type NavigationStackParams = {
 
 export default function AddCategoryScreen() {
 
+    const {t, i18n} = useTranslation();
+
     const [name, setName] = useState('');
     const [colour, setColour] = useState('red');
     const [colourValue] = useState(null);
 
     const [colourItems] = useState([
-        {label: 'Red', value: 'red'},
-        {label: 'Green', value: 'green'},
-        {label: 'Yellow', value: 'yellow'},
-        {label: 'Blue', value: 'blue'},
-        {label: 'Purple', value: 'purple'},
-        {label: 'Orange', value: 'orange'},
-        {label: 'Pink', value: 'pink'},
-        {label: 'Brown', value: 'brown'},
-        {label: 'Gray', value: 'gray'},
+        {label: t('red'), value: 'red'},
+        {label: t('green'), value: 'green'},
+        {label: t('yellow'), value: 'yellow'},
+        {label: t('blue'), value: 'blue'},
+        {label: t('purple'), value: 'purple'},
+        {label: t('orange'), value: 'orange'},
+        {label: t('pink'), value: 'pink'},
+        {label: t('brown'), value: 'brown'},
+        {label: t('gray'), value: 'gray'},
     ]);
 
     // Navigation hook
@@ -52,15 +56,15 @@ export default function AddCategoryScreen() {
 
     async function save() {
         if ( name.trim().length === 0 ) {
-            Alert.alert('Please enter a valid category name.');
+            Alert.alert(t('validCategoryName'));
         }
         else if ( await insertCategory(name, colour) ) {
-            Alert.alert('Category Added', `Category ${name} added successfully.`);
+            Alert.alert(t('categoryAdded'), t('categoryAddedMessage', { categoryName: name }));
             setName('');
             setColour('');
-            navigation.navigate('Home', { screen: 'Categories'});
+            navigation.navigate('CategoriesScreen');
         } else {
-            Alert.alert('Error', `Category ${name} could not be added. The name of the category already exists.`);
+            Alert.alert(t('error'), t('errorDuplicateCategory', { categoryName: name }));
         }
         
     }
@@ -73,17 +77,17 @@ export default function AddCategoryScreen() {
     return ( 
         <View style={styles.centeredView}>
             <View style={styles.categoryNameContainer}>
-                <Text style={[styles.bodyText]}>Name:</Text>
-                <TextInput style={styles.textInput} placeholder='Your Category Name' onChangeText={nameInputHandler} value={name}/>
+                <Text style={[styles.fieldLabel]}>{t('name')}:</Text>
+                <TextInput style={styles.textInput} placeholder={t('placeholderCategoryName')} onChangeText={nameInputHandler} value={name}/>
             </View>
             <View style={styles.categoryNameContainer}>
-                <Text style={[styles.bodyText]}>Colour:</Text>
+                <Text style={[styles.fieldLabel]}>{t('colour')}:</Text>
                     <Dropdown
                         style={styles.colourDropdownLight}
                         data={colourItems}
                         labelField="label"
                         valueField="value"
-                        placeholder="Red"
+                        placeholder={t('red')}
                         value={colourValue}
                         onChange={item => {
                             setColour(item.value);          
@@ -93,10 +97,10 @@ export default function AddCategoryScreen() {
                 </View>
                 <View style={styles.categoryButtonContainer}>
                     <Pressable style={[styles.button]} onPress={save}>
-                        <Text style={styles.textStyle}>Save</Text>
+                        <Text style={styles.textStyle}>{t('save')}</Text>
                     </Pressable>
                     <Pressable style={[styles.button]} onPress={reset}>
-                        <Text style={styles.textStyle}>Reset</Text>
+                        <Text style={styles.textStyle}>{t('reset')}</Text>
                     </Pressable>
                 </View>
             </View>
@@ -112,7 +116,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     elevation: 2,
-    width: 80,
+    width: '40%',
+    height: 50,
     marginRight: 10,
     backgroundColor: '#f2d6d3ff'
  },
@@ -120,6 +125,7 @@ const styles = StyleSheet.create({
     color: 'black',
     fontWeight: 'bold',
     textAlign: 'center',
+    fontSize: 20
   },
   modalText: {
     marginBottom: 15,
@@ -128,16 +134,18 @@ const styles = StyleSheet.create({
     fontSize: 20
   },
   categoryNameContainer: {
-        flexDirection: 'column',
+        flexDirection: 'row',
         width: '100%',
         marginTop: 20
   },
-  bodyText: {
+  fieldLabel: {
     fontSize: 20,
     fontWeight: 'bold',
-    textAlign: 'center',
+    textAlign: 'left',
     paddingBottom: 16,
     color: 'white',
+    marginLeft: 5,
+    width: '25%'
 },
  categoryButtonContainer: {
     flexDirection: 'row',
@@ -150,10 +158,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     color: 'black',
     borderRadius: 6,
-    width: '80%',
+    width: '60%',
     alignItems: 'center',
     justifyContent: 'center',
-    textAlign: 'center',
+    textAlign: 'left',
     marginLeft: '10%',
     padding: 8
 },
@@ -163,7 +171,7 @@ colourDropdownLight: {
     backgroundColor: 'white',
     color: 'black',
     borderRadius: 6,
-    width: '80%',
+    width: '60%',
     alignItems: 'center',
     justifyContent: 'center',
     textAlign: 'center',

@@ -6,6 +6,8 @@ import IconButton from "./IconButton";
 import { deleteHistoryEntry } from "../utilities/sqlite";
 import { HistoryEntryResult } from "../models/HistoryEntryResult";
 import { getCurrencies, getLocales, getTimeZone } from "react-native-localize";
+import { useTranslation } from "react-i18next";
+import './../assets/i18n/i18n';
 
 type DisplayHistoryEntryProps = {
     entries: HistoryEntryResult[];
@@ -19,6 +21,13 @@ type DisplayHistoryEntryProps = {
 }
 
 export function DisplayHistoryEntry({entries, id, sum, datetime, categoryName, categoryColour, description, type}: DisplayHistoryEntryProps) {
+
+    const {t, i18n} = useTranslation();
+
+    // Translate the category name if it is unassigned.
+    if ( categoryName === "Unassigned" ) {
+        categoryName = t('unassigned');
+    }
 
     function getBackgroundColour() {
         if ( categoryColour === 'yellow' ) {
@@ -58,19 +67,19 @@ export function DisplayHistoryEntry({entries, id, sum, datetime, categoryName, c
                 <Text style={styles.leftRowText}>{convertUTCDateToLocal(datetime)}</Text>
             </View>
             <View style={styles.middleRow}>
-                {categoryName ? <Text style={[styles.listText, getBackgroundColour()]}>{categoryName}</Text> : <Text style={[styles.listText, styles.unassigned]}>Unassigned</Text>}
+                {(categoryName) ? <Text style={[styles.listText, getBackgroundColour()]}>{categoryName}</Text> : <Text style={[styles.listText, styles.unassigned]}>{t('unassigned')}</Text>}
                 <Text style={styles.listText}>{description}</Text>
             </View>
             <View style={styles.rightRow}>
                 <Text style={styles.rightRowText}>{getValueWithCurrency()}</Text>
                 <IconButton color="white" onPress={() => { 
-                    Alert.alert('Confirm deletion', 'Are you sure you want to delete this entry?', [
+                    Alert.alert(t('confirmDeletion'), t('deleteEntry'), [
                         {
-                            text: 'Cancel',
+                            text: t('cancel'),
                             onPress: () => console.log('Cancel Pressed'),
                         },
                         {
-                            text: 'OK', 
+                            text: t('ok'),
                             onPress: () => {
                                 for ( let i = 0; i < entries.length; i++ ) {
                                     if ( entries[i].id === id ) {

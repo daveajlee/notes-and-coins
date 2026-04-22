@@ -11,16 +11,16 @@ import CreditDebitScreen from "./screens/CreditDebitScreen.tsx";
 import CategoriesScreen from './screens/CategoriesScreen.tsx';
 import HistoryScreen from './screens/HistoryScreen.tsx';
 import SettingsScreen from './screens/SettingsScreen.tsx';
-import { init } from './utilities/sqlite';
+import { fetchLanguage, init } from './utilities/sqlite';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Ionicons from '@react-native-vector-icons/ionicons';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import AddCategoryScreen from './screens/AddCategoryScreen.tsx';
 import IconButton from './components/IconButton.tsx';
 import AddHistoryScreen from './screens/AddHistoryScreen.tsx';
 import { View } from 'react-native';
+import { useTranslation } from "react-i18next";
+import './assets/i18n/i18n';
 
 type NavigationStackParams = {
   navigate: Function;
@@ -28,11 +28,10 @@ type NavigationStackParams = {
 
 function App() {
 
-  // Define tab navigation
-  const Tab = createBottomTabNavigator();
-
   // Define stack navigation
   const Stack = createNativeStackNavigator();
+
+  const {t, i18n} = useTranslation();
 
   const MyDefaultTheme = {
     ...DefaultTheme,
@@ -46,77 +45,60 @@ function App() {
   useEffect(() => {
     async function prepare() {
       try {
-        init().then(() => {
-          console.log('DB Initialized');
-        })
+          await init();
+          let language = await fetchLanguage();
+          language = language.toLowerCase();
+          if (language) {
+            i18n.changeLanguage(language);
+          }
       } catch (err) {
-        console.log(err);
+          console.error(err);
       }
+     
+      
     }
 
     prepare();
-  }, []);
+  }, [i18n]);
 
-function BottomTabs() {
+function RootStack() {
 
   // Navigation hook
   const navigation = useNavigation<NavigationStackParams>();
 
-  return (
-    <Tab.Navigator screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
-
-          if (route.name === 'Credit / Debit') {
-            iconName = focused
-              ? 'cash'
-              : 'cash-outline';
-          } else if (route.name === 'Categories') {
-            iconName = focused ? 'folder' : 'folder-outline';
-          } else if (route.name === 'History') {
-            iconName = focused ? 'bar-chart' : 'bar-chart-outline';
-          } else if (route.name === 'Settings') {
-            iconName = focused ? 'settings' : 'settings-outline';
-          }
-
-          // You can return any component that you like here!
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
-        headerStyle: {
-            backgroundColor: '#f2d6d3ff'}, headerTitleStyle: {
-            fontWeight: 'bold',
-          },
-          headerTitleAlign: 'center',
-        tabBarStyle: { position: 'absolute', backgroundColor: '#f2d6d3ff', },
-      })}>
-            <Tab.Screen name="Credit / Debit" component={CreditDebitScreen} options={{ title: 'Credit & Debit', headerRight: () => <View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('AddHistoryScreen')} iconName='add-circle-outline' color="black" /></View> }} />
-            <Tab.Screen name="Categories" component={CategoriesScreen} options={{ title: 'Categories', headerRight: () => <View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('AddCategoryScreen')} iconName='add-circle-outline' color="black" /></View> }} />
-            <Tab.Screen name="History" component={HistoryScreen} options={{ title: 'History', headerRight: () => <View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('AddHistoryScreen')} iconName='add-circle-outline' color="black" /></View> }} />
-            <Tab.Screen name="Settings" component={SettingsScreen} options={{ title: 'Settings' }} />
-          </Tab.Navigator>
-  );
-}
-
-function RootStack() {
   return (
     <Stack.Navigator screenOptions={{ headerStyle: {
             backgroundColor: '#f2d6d3ff'}, headerTitleStyle: {
             fontWeight: 'bold',
           }, headerTitleAlign: 'center'}}>
       <Stack.Screen
-        name="Home"
-        component={BottomTabs}
-        options={{ headerShown: false }}
+        name="Credit / Debit"
+        component={CreditDebitScreen}
+        options={{ title: t('overview'), headerRight: () => <><View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('HistoryScreen')} iconName='list-outline' color="black" /></View><View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('SettingsScreen')} iconName='settings-outline' color="black" /></View></> }}
       />
       <Stack.Screen
         name="AddCategoryScreen"
         component={AddCategoryScreen}
-        options={{ title: 'Add Category' }}
+        options={{ title: t('addCategory') }}
       />
       <Stack.Screen
         name="AddHistoryScreen"
         component={AddHistoryScreen}
-        options={{ title: 'Add History' }}
+      />
+      <Stack.Screen
+        name="SettingsScreen"
+        component={SettingsScreen}
+        options={{ title: t('settings') }}
+      />
+      <Stack.Screen
+        name="HistoryScreen"
+        component={HistoryScreen}
+        options={{title: t('history')}}
+      />
+      <Stack.Screen
+        name="CategoriesScreen"
+        component={CategoriesScreen}
+        options={{ title: t('categories'), headerRight: () => <View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('AddCategoryScreen')} iconName='add-circle-outline' color="black" /></View> }} 
       />
     </Stack.Navigator>
   );

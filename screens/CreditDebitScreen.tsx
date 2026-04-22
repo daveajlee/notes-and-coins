@@ -1,6 +1,6 @@
 import {Appearance, StyleSheet} from 'react-native';
 import { useEffect, useState } from 'react';
-import {Image, ScrollView, Text, View} from "react-native";
+import {Pressable, ScrollView, Text, View} from "react-native";
 import { TouchableOpacity } from 'react-native';
 import { updateValueAmount, fetchAmount, insertValueAmount } from '../utilities/sqlite';
 import {SafeAreaView} from "react-native-safe-area-context";
@@ -8,11 +8,24 @@ import { fetchMinimumBalance } from '../utilities/sqlite';
 import notifee from '@notifee/react-native';
 import { formatCurrency } from "react-native-format-currency";
 import { getCurrencies } from 'react-native-localize';
+import { useNavigation } from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
+import './../assets/i18n/i18n';
+
+type NavigationStackParams = {
+  navigate: Function;
+  setOptions: Function;
+}
 
 /**
  * Show the credit / debit screen with the various categories of notes and the quantities to increase and decrease the amount of notes.
  */
 export default function CreditDebitScreen() {
+
+    const {t, i18n} = useTranslation();
+
+    //const [currentLanguage,setLanguage] =useState('en');
 
     const [balance, setBalance] = useState(0);
     const [fiveAmount, setFiveAmount] = useState(0);
@@ -21,14 +34,25 @@ export default function CreditDebitScreen() {
     const [fiftyAmount, setFiftyAmount] = useState(0);
     const [hundredAmount, setHundredAmount] = useState(0);
 
+    const navigation = useNavigation<NavigationStackParams>();
+
     const colorScheme = Appearance.getColorScheme();
 
-    const logoImage = require('./../assets/images/logo-1024.png');
-
-    const [withSymbol, withoutSymbol, symbol] = formatCurrency({
+    const [symbol] = formatCurrency({
             amount: 0.00,
             code: getCurrencies()[0],
     });
+
+    const isFocused = useIsFocused();
+
+    /*const changeLanguage = (value: any) => {
+        i18n
+          .changeLanguage(value)
+          .then(() => setLanguage(value))
+          .catch(err => console.log(err));
+        };
+
+    changeLanguage('de');*/
 
     /**
      * Whenever we visit the screen, we want to retrieve the current balance.
@@ -37,6 +61,8 @@ export default function CreditDebitScreen() {
 
         async function prepare() {
             await calculateBalance();
+            
+            //changeLanguage(await fetchLanguage());
         }
 
         /**
@@ -58,8 +84,8 @@ export default function CreditDebitScreen() {
 
             // Display a notification
             await notifee.displayNotification({
-            title: 'Balance below Minimum Balance!',
-            body: 'Your balance of ' + calculatedBalance + symbol + ' is below the minimum balance of ' + await fetchMinimumBalance() + symbol + '!',
+            title: t('notificationTitle'),
+            body: t('notificationMessage', { calculatedBalance: calculatedBalance, symbol:symbol, minimumBalance: await fetchMinimumBalance() }),
             android: {
               channelId,
               // pressAction is needed if you want the notification to open the app when pressed
@@ -78,7 +104,7 @@ export default function CreditDebitScreen() {
 
         prepare();
 
-    }, [symbol]);
+    }, [symbol, isFocused, /*currentLanguage,*/ i18n, navigation, t]);
 
     /**
      * Retrieve the amount of a particular note.
@@ -207,19 +233,35 @@ export default function CreditDebitScreen() {
         await getNoteAmount(noteValue);
     }
 
+    function addCreditHistory() {
+        navigation.navigate('AddHistoryScreen', { isDebit: false });
+    }
+
+    function addDebitHistory() {
+        navigation.navigate('AddHistoryScreen', { isDebit: true });
+    }
+
+    function viewCategories() {
+        navigation.navigate('CategoriesScreen')
+    }
+
     /**
      * Display the screen to the user.
      */
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#A2574F', }}>
         <ScrollView contentContainerStyle={styles.container}>
-          <Image
-            style={{ marginTop: 10, width: 128, height: 128 }}
-            source={logoImage}
-          />
           <View style={styles.titleContainer}>
-            <Text style={styles.balanceText}>Balance:</Text>
+            <Text style={styles.balanceText}>{t('balance')}:</Text>
             <Text style={styles.balanceText}>{balance}€</Text>
+          </View>
+          <View style={styles.buttonContainer}>
+              <Pressable style={[styles.button]} onPress={addCreditHistory}>
+                  <Text style={styles.textStyle}>{t('credit')}</Text>
+              </Pressable>
+              <Pressable style={[styles.button]} onPress={addDebitHistory}>
+                  <Text style={styles.textStyle}>{t('debit')}</Text>
+              </Pressable>
           </View>
           <View style={styles.stepContainer}>
             <Text style={styles.fiveColour}>5</Text>
@@ -365,6 +407,11 @@ export default function CreditDebitScreen() {
               </Text>
             </TouchableOpacity>
           </View>
+          <View style={styles.buttonContainer}>
+              <Pressable style={[styles.buttonLarge]} onPress={viewCategories}>
+                  <Text style={styles.textStyle}>{t('categories')}</Text>
+              </Pressable>
+          </View>
         </ScrollView>
       </SafeAreaView>
     );
@@ -389,8 +436,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     justifyContent: 'center',
-    marginTop: 48,
-    marginBottom: 48,
+    marginBottom: 24,
   },
   darkModeText: {
     color: 'white',
@@ -508,5 +554,36 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  button: {
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2,
+        marginRight: 10,
+        marginLeft: 10,
+        height: 50,
+        width: '40%',  
+        backgroundColor: '#f2d6d3ff'
+  },
+  buttonLarge: {
+      borderRadius: 20,
+      padding: 10,
+      elevation: 2,
+      marginRight: 10,
+      marginLeft: 10,
+      height: 50,
+      width: '80%',  
+      backgroundColor: '#f2d6d3ff'
+  },
+  textStyle: {
+        color: 'black',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        fontSize: 20
   },
 });

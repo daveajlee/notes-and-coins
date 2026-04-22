@@ -6,12 +6,19 @@ import { fetchCategories, insertHistoryEntry } from "../utilities/sqlite";
 import DatePicker from "react-native-date-picker";
 import { Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { ScrollView } from "react-native";
+import { fetchAmount, updateValueAmount, insertValueAmount } from "../utilities/sqlite";
+import { useTranslation } from "react-i18next";
+import './../assets/i18n/i18n';
 
 type NavigationStackParams = {
   navigate: Function;
+  setOptions: Function;
 }
 
-export default function AddHistoryScreen() {
+export default function AddHistoryScreen({route}: any) {
+
+    const {t, i18n} = useTranslation();
 
     const [amount, setAmount] = useState('');
     const [date, setDate] = useState(new Date());
@@ -21,31 +28,31 @@ export default function AddHistoryScreen() {
     const [categories, setCategories] = useState<{label: string, value: string}[]>([]);
     const [initialCategory, setInitialCategory] = useState('Select a category');
 
-    const [types, setTypes] = useState<{label: string, value: string}[]>([]);
-    const [type, setType] = useState(''); 
-    const [initialType, setInitialType] = useState('Debit');
-
     // Navigation hook
     const navigation = useNavigation<NavigationStackParams>();
+
+    // Notes amount.
+    const [fiveAmount, setFiveAmount] = useState(0);
+    const [tenAmount, setTenAmount] = useState(0);
+    const [twentyAmount, setTwentyAmount] = useState(0);
+    const [fiftyAmount, setFiftyAmount] = useState(0);
+    const [hundredAmount, setHundredAmount] = useState(0);
 
     useEffect(() => {
         async function prepare() {
             try {
+                navigation.setOptions({title: t('addHistoryTitle', { type: route.params.isDebit ? t('debit') : t('credit') })});
                 let dbCategories = await fetchCategories();
                 let dropdownCategories = dbCategories.map((cat) => ({ label: cat.name, value: cat.name }));
                 setCategories(dropdownCategories);
                 setInitialCategory(dbCategories[0]?.name || 'No categories available');
                 setCategory(dbCategories[0]?.name || 'Unassigned');
-
-                setTypes([{ label: 'Debit', value: 'debit' }, { label: 'Credit', value: 'credit' }]);
-                setInitialType('Debit');
-                setType('debit');
             } catch (err) {
                 console.log(err);
             }
         }
         prepare();
-    }, []);
+    }, [navigation, route.params.isDebit, t]);
 
     /**
      * Set the amount that the user entered.
@@ -77,59 +84,114 @@ export default function AddHistoryScreen() {
     };
 
     async function save() {
-        if ( await insertHistoryEntry(amount, description, category, date.toISOString(), type) ) {
-            Alert.alert('History Entry Added', `History entry added successfully.`);
+        // Convert any commas to dots for decimal representation.
+        let convertedAmount = amount;
+        if ( amount.includes(',') ) {
+            convertedAmount = amount.replace(',', '.');
+        }
+        // Now save the entry to the database.
+        if ( await insertHistoryEntry(convertedAmount, description, category, date.toISOString(), route.params.isDebit ? 'debit' : 'credit') ) {
+            Alert.alert(t('historyAdded'), t('historyAddedMessage'));
             setAmount(''); 
             setDate(new Date());
             setCategory('');
             setDescription('');
-            setType('debit');
-            navigation.navigate('Home', { screen: 'History' });
+            // Now we take care of notes.
+            if ( route.params.isDebit ) {
+                if ( fiveAmount > 0 ) {
+                    await onDecreaseNote(5, fiveAmount);
+                }
+                if ( tenAmount > 0 ) {
+                    await onDecreaseNote(10, tenAmount);
+                }
+                if ( twentyAmount > 0 ) {
+                    await onDecreaseNote(20, twentyAmount);
+                }
+                if ( fiftyAmount > 0 ) {
+                    await onDecreaseNote(50, fiftyAmount);
+                }
+                if ( hundredAmount > 0 ) {
+                    await onDecreaseNote(100, hundredAmount);
+                }
+            } else {
+                if ( fiveAmount > 0 ) {
+                    await onIncreaseNote(5, fiveAmount);
+                }
+                if ( tenAmount > 0 ) {
+                    await onIncreaseNote(10, tenAmount);
+                }
+                if ( twentyAmount > 0 ) {
+                    await onIncreaseNote(20, twentyAmount);
+                }
+                if ( fiftyAmount > 0 ) {
+                    await onIncreaseNote(50, fiftyAmount);
+                }
+                if ( hundredAmount > 0 ) {
+                    await onIncreaseNote(100, hundredAmount);
+                }
+            }
+            // Redirect to history screen.
+            navigation.navigate('CreditDebitScreen');
         } else {
-            Alert.alert('Error', `History entry could not be added.`);
+            Alert.alert(t('error'), t('historyAddErrorMessage'));
+        }
+    }
+
+    async function onIncreaseNote(noteValue: number, quantity: number) {
+        let currentValue:number = await fetchAmount(noteValue);
+        if ( currentValue ) {
+            await updateValueAmount(noteValue, currentValue + quantity);
+        } else {
+            await insertValueAmount(noteValue, quantity);
+        }
+    }
+    
+    async function onDecreaseNote(noteValue: number, quantity: number) {
+        let currentValue:number = await fetchAmount(noteValue);
+        if ( currentValue && (currentValue - quantity >= 0) ) {
+            await updateValueAmount(noteValue, currentValue - quantity);
+        } else {
+            await updateValueAmount(noteValue, 0);
         }
     }
     
     function reset() {
-        setAmount("0.00");
+        setAmount("0,00");
         setDate(new Date());
         setCategory('');
         setDescription('');
     }
 
+    function increaseFiveAmount() {
+        setFiveAmount(fiveAmount + 1);
+    }
+
+    function increaseTenAmount() {
+        setTenAmount(tenAmount + 1);
+    }
+
+    function increaseTwentyAmount() {
+        setTwentyAmount(twentyAmount + 1);
+    }
+
+    function increaseFiftyAmount() {
+        setFiftyAmount(fiftyAmount + 1);
+    }
+
+    function increaseHundredAmount() {
+        setHundredAmount(hundredAmount + 1);
+    }
+
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#A2574F', }}>
-            {/*<ScrollView >*/}
+            <ScrollView>
                 <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.centeredView}>
                 <View style={styles.formFieldContainer}>
-                    <Text style={[styles.formFieldLabel]}>Amount:</Text>
-                    <View style={styles.amountType}>
-                        <Dropdown
-                            style={styles.amountFieldDropdown}
-                            data={types}
-                            labelField="label"
-                            valueField="value"
-                            placeholder={initialType}
-                            value={type}
-                            onChange={item => {
-                                setType(item.value);                
-                            }}
-                            renderItem={item => _renderCategoryItem(item)}
-                        />
-                        <TextInput style={styles.amountFieldValue} placeholder='0.00' onChangeText={amountInputHandler} value={amount}/>
-                    </View>
-                    
+                    <Text style={[styles.formFieldLabel]}>{t('amount')}:</Text>
+                    <TextInput style={styles.formFieldValue} placeholder='0,00' onChangeText={amountInputHandler} value={amount}/> 
                 </View>
                 <View style={styles.formFieldContainer}>
-                    <Text style={[styles.formFieldLabel]}>Description:</Text>
-                    <TextInput style={styles.formFieldValue} placeholder='A short description explaining why...' onChangeText={descriptionInputHandler} value={description}/>
-                </View>
-                <View style={styles.formFieldContainer}>
-                    <Text style={[styles.formFieldLabel]}>Date:</Text>
-                    <DatePicker theme="dark" date={date} onDateChange={setDate} />
-                </View>
-                <View style={styles.formFieldContainer}>
-                    <Text style={[styles.formFieldLabel]}>Category:</Text>
+                    <Text style={[styles.formFieldLabel]}>{t('category')}:</Text>
                     <Dropdown
                         style={styles.dropdown}
                         data={categories}
@@ -143,16 +205,49 @@ export default function AddHistoryScreen() {
                         renderItem={item => _renderCategoryItem(item)}
                     />
                 </View>
+                <View style={styles.formFieldContainer}>
+                    <Text style={[styles.formFieldLabel]}>{t('title')}:</Text>
+                    <TextInput style={styles.formFieldValue} placeholder={t('placeholderTitle')} onChangeText={descriptionInputHandler} value={description}/>
+                </View>
+                <View style={styles.formFieldContainer}>
+                    <Text style={[styles.formFieldLabel]}>{t('date')}:</Text>
+                    <DatePicker theme="dark" date={date} onDateChange={setDate} />
+                </View>
+                <View style={styles.formFieldContainer}>
+                    <Text style={[styles.formFieldLabel]}>{t('notes')}:</Text>
+                    <View style={styles.notesContainer}>
+                        <View style={styles.noteContainer}>
+                            <Pressable onPress={increaseFiveAmount}><Text style={[styles.noteText, styles.fiveColour]}>5</Text></Pressable>
+                            <Text style={styles.noteAmount}>({fiveAmount})</Text>
+                        </View>
+                        <View style={styles.noteContainer}>
+                            <Pressable onPress={increaseTenAmount}><Text style={[styles.noteText, styles.tenColour]}>10</Text></Pressable>
+                            <Text style={styles.noteAmount}>({tenAmount})</Text>
+                        </View>
+                        <View style={styles.noteContainer}>
+                            <Pressable onPress={increaseTwentyAmount}><Text style={[styles.noteText, styles.twentyColour]}>20</Text></Pressable>
+                            <Text style={styles.noteAmount}>({twentyAmount})</Text>
+                        </View>
+                        <View style={styles.noteContainer}>
+                            <Pressable onPress={increaseFiftyAmount}><Text style={[styles.noteText, styles.fiftyColour]}>50</Text></Pressable>
+                            <Text style={styles.noteAmount}>({fiftyAmount})</Text>
+                        </View>
+                        <View style={styles.noteContainer}>
+                            <Pressable onPress={increaseHundredAmount}><Text style={[styles.noteText, styles.hundredColour]}>100</Text></Pressable>
+                            <Text style={styles.noteAmount}>({hundredAmount})</Text>
+                        </View>
+                    </View>
+                </View>
                 <View style={styles.buttonContainer}>
                     <Pressable style={[styles.button]} onPress={save}>
-                        <Text style={styles.textStyle}>Save</Text>
+                        <Text style={styles.textStyle}>{t('save')}</Text>
                     </Pressable>
                     <Pressable style={[styles.button]} onPress={reset}>
-                        <Text style={styles.textStyle}>Reset</Text>
+                        <Text style={styles.textStyle}>{t('reset')}</Text>
                     </Pressable>
                 </View>
                 </KeyboardAvoidingView>
-            {/*</ScrollView>*/}
+            </ScrollView>
         </SafeAreaView>
     );
 
@@ -163,45 +258,18 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     formFieldContainer: {
-        flexDirection: 'column',
+        flexDirection: 'row',
         width: '100%',
         marginTop: 20
     },
-    amountType: {
-        flexDirection: 'row',
-    },
-    amountFieldDropdown: {
-        borderWidth: 1,
-        borderColor: '#e4d0ff',
-        backgroundColor: 'white',
-        color: 'black',
-        borderRadius: 6,
-        width: '30%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        textAlign: 'center',
-        marginLeft: '10%',
-        padding: 8
-    },
-    amountFieldValue: {
-        borderWidth: 1,
-        borderColor: '#e4d0ff',
-        backgroundColor: 'white',
-        color: 'black',
-        borderRadius: 6,
-        width: '40%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        textAlign: 'center',
-        marginLeft: '10%',
-        padding: 8
-    },
     formFieldLabel: {
-        fontSize: 16,
+        fontSize: 20,
         fontWeight: 'bold',
-        textAlign: 'center',
+        textAlign: 'left',
         paddingBottom: 16,
+        width: '25%',
         color: 'white',
+        marginLeft: 10
     },
     formFieldValue: {
         borderWidth: 1,
@@ -209,10 +277,9 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         color: 'black',
         borderRadius: 6,
-        width: '80%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        textAlign: 'center',
+        width: '60%',
+        justifyContent: 'flex-end',
+        textAlign: 'left',
         marginLeft: '10%',
         padding: 8
     },
@@ -222,28 +289,31 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         color: 'black',
         borderRadius: 6,
-        width: '80%',
+        width: '60%',
         alignItems: 'center',
         justifyContent: 'center',
-        textAlign: 'center',
+        textAlign: 'right',
         marginLeft: '10%',
         padding: 8
     },
     categoryItem: {
         color: 'black',
         fontSize: 18,
-        marginLeft: 5
+        textAlign: 'left',
+        marginLeft: 10
     },
     buttonContainer: {
         flexDirection: 'row',
+        marginTop: 20,
         justifyContent: 'center',
-        marginTop: 20
+        marginBottom: 20
     },
     button: {
         borderRadius: 20,
         padding: 10,
         elevation: 2,
-        width: 80,
+        width: '40%',
+        height: 50,
         marginRight: 10,
         backgroundColor: '#f2d6d3ff'
     },
@@ -251,5 +321,57 @@ const styles = StyleSheet.create({
         color: 'black',
         fontWeight: 'bold',
         textAlign: 'center',
+        fontSize: 20
+    },
+    notesContainer: {
+        borderWidth: 1,
+        borderColor: '#e4d0ff',
+        color: 'black',
+        borderRadius: 6,
+        width: '60%',
+        justifyContent: 'flex-end',
+        textAlign: 'right',
+        marginLeft: '10%',
+        padding: 8
+    },
+    noteContainer: {
+        flexDirection: 'row',
+        width: '100%',
+        marginBottom: 10,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    noteText: {
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 28,
+        marginRight: 40,
+        marginLeft: 5,
+        width: 60,
+        height: 40,
+        color: 'white',
+    },
+    noteAmount: {
+        textAlign: 'right',
+        fontWeight: 'bold',
+        fontSize: 24,
+        color: 'white',
+        marginRight: 10,
+        justifyContent: 'flex-end'
+    },
+    fiveColour: {
+        backgroundColor: 'gray',
+    },
+    tenColour: {
+        backgroundColor: 'red',
+    },
+    twentyColour: {
+        backgroundColor: 'blue',
+    },
+    fiftyColour: {
+        backgroundColor: 'orange',
+    },
+    hundredColour: {
+        backgroundColor: 'green',
     },
 });

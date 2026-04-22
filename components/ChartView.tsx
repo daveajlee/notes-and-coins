@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { fetchHistoryForCategory } from "../utilities/sqlite";
 import { getCurrencies } from "react-native-localize";
 import { formatCurrency } from "react-native-format-currency";
+import { useTranslation } from "react-i18next";
+import './../assets/i18n/i18n';
 
 type ChartViewProps = {
     categories: Category[];
@@ -19,6 +21,7 @@ export default function ChartView({categories, type}: ChartViewProps) {
     const [chartData, setChartData] = useState<any>(null);
     const [screenWidth, setScreenWidth] = useState<any>();
     const [chartConfig, setChartConfig] = useState<any>(null);
+    const {t, i18n} = useTranslation();
 
     const UNASSIGNED = "Unassigned";
 
@@ -90,7 +93,7 @@ export default function ChartView({categories, type}: ChartViewProps) {
                     }
                 }
                 if ( total !== 0 ) {
-                    categoryNames.push(UNASSIGNED);
+                    categoryNames.push(t('unassigned'));
                     categoryAmounts.push(total);
                     categoryColours.push(convertColourForChart('darkgray'));
                 }
