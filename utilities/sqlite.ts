@@ -44,9 +44,6 @@ export async function init(): Promise<void> {
                 minimum_balance INTEGER NOT NULL,
                 language TEXT NOT NULL
   )`);
-  // Ensure backward compatibility by adding the type column to history table.
-  await database.execute(`ALTER TABLE settings ADD COLUMN language TEXT`);
-  await database.execute(`ALTER TABLE history ADD COLUMN type TEXT NOT NULL DEFAULT 'debit'`);
   // Print that database has been created.
   console.log('Database initialized.');
 }

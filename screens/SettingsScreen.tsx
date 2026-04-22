@@ -25,7 +25,7 @@ export default function SettingsScreen() {
                 let parsedMinimumBalance = parseFloat(fetchedMinimumBalance.toString().replace(',', '.')).toFixed(2);
                 setMinimumBalance("" + parsedMinimumBalance);
                 const myLanguage = await fetchLanguage();
-                setLanguage(myLanguage);
+                setLanguage(myLanguage.toLowerCase());
               } catch (err) {
                 console.log(err);
               }

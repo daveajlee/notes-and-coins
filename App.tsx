@@ -44,18 +44,18 @@ function App() {
 
   useEffect(() => {
     async function prepare() {
-      let language = await fetchLanguage();
-      language = language.toLowerCase();
-      if (language) {
-        i18n.changeLanguage(language);
-      }
       try {
-        init().then(() => {
-          console.log('DB Initialized');
-        })
+          await init();
+          let language = await fetchLanguage();
+          language = language.toLowerCase();
+          if (language) {
+            i18n.changeLanguage(language);
+          }
       } catch (err) {
-        console.log(err);
+          console.error(err);
       }
+     
+      
     }
 
     prepare();
