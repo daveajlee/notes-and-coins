@@ -11,7 +11,7 @@ import CreditDebitScreen from "./screens/CreditDebitScreen.tsx";
 import CategoriesScreen from './screens/CategoriesScreen.tsx';
 import HistoryScreen from './screens/HistoryScreen.tsx';
 import SettingsScreen from './screens/SettingsScreen.tsx';
-import { init } from './utilities/sqlite';
+import { fetchLanguage, init } from './utilities/sqlite';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
@@ -44,6 +44,11 @@ function App() {
 
   useEffect(() => {
     async function prepare() {
+      let language = await fetchLanguage();
+      language = language.toLowerCase();
+      if (language) {
+        i18n.changeLanguage(language);
+      }
       try {
         init().then(() => {
           console.log('DB Initialized');
@@ -54,7 +59,7 @@ function App() {
     }
 
     prepare();
-  }, []);
+  }, [i18n]);
 
 function RootStack() {
 

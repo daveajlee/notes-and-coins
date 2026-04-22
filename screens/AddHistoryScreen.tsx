@@ -131,7 +131,7 @@ export default function AddHistoryScreen({route}: any) {
                 }
             }
             // Redirect to history screen.
-            navigation.navigate('HistoryScreen');
+            navigation.navigate('CreditDebitScreen');
         } else {
             Alert.alert(t('error'), t('historyAddErrorMessage'));
         }

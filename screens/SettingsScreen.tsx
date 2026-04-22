@@ -43,7 +43,7 @@ export default function SettingsScreen() {
     }
 
     function changeLanguage(languageCode: string) {
-        setLanguage(languageCode);
+        setLanguage(languageCode.toLowerCase());
     }
 
     async function saveSettings() {
@@ -60,9 +60,13 @@ export default function SettingsScreen() {
         }
         // Parse the number and then to two decimal places.
         let parsedMinimumBalance = parseFloat(minimumBalance.replace(',', '.')).toFixed(2);
-        await setMinimumBalance(parsedMinimumBalance);
+        setMinimumBalance(parsedMinimumBalance);
         await saveSettingsToDatabase(parsedMinimumBalance, language);
+        // Change the language of the app immediately after saving.
+        i18n.changeLanguage(language);
+        // Show confirmation alert that the settings have been saved.
         Alert.alert(t('confirmSaved'));
+        // Now go back to the previous screen.
         navigation.goBack();
         
     }
@@ -83,13 +87,13 @@ export default function SettingsScreen() {
             <View style={styles.languageContainer}>
                 <Text style={[styles.fieldLabel]}>{t('language')}:</Text>
                 <View style={styles.flagsContainer}>
-                    <View style={language === 'DE' ? styles.selectedFlag : styles.flag}>
+                    <View style={language === 'de' ? styles.selectedFlag : styles.flag}>
                         <TouchableOpacity onPress={() => changeLanguage('DE')}>
                             <CountryFlag isoCode="de" size={25} />
                         </TouchableOpacity>
                     </View>
-                    <View style={language === 'DE' ? styles.flag : styles.selectedFlag}>
-                        <TouchableOpacity onPress={() => changeLanguage('GB')}>
+                    <View style={language === 'de' ? styles.flag : styles.selectedFlag}>
+                        <TouchableOpacity onPress={() => changeLanguage('EN')}>
                             <CountryFlag isoCode="gb" size={25} />
                         </TouchableOpacity>
                     </View>
