@@ -72,7 +72,7 @@ function RootStack() {
             fontWeight: 'bold',
           }, headerTitleAlign: 'center'}}>
       <Stack.Screen
-        name="Credit / Debit"
+        name="CreditDebitScreen"
         component={CreditDebitScreen}
         options={{ title: t('overview'), headerRight: () => <><View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('HistoryScreen')} iconName='list-outline' color="black" /></View><View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('SettingsScreen')} iconName='settings-outline' color="black" /></View></> }}
       />
