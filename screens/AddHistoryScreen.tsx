@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Dropdown } from "react-native-element-dropdown";
-import { fetchCategories, insertHistoryEntry } from "../utilities/sqlite";
+import { fetchCategories, fetchLanguage, insertHistoryEntry } from "../utilities/sqlite";
 import DatePicker from "react-native-date-picker";
 import { Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -38,6 +38,8 @@ export default function AddHistoryScreen({route}: any) {
     const [fiftyAmount, setFiftyAmount] = useState(0);
     const [hundredAmount, setHundredAmount] = useState(0);
 
+    const [language, setLanguage] = useState('');
+
     useEffect(() => {
         async function prepare() {
             try {
@@ -47,6 +49,7 @@ export default function AddHistoryScreen({route}: any) {
                 setCategories(dropdownCategories);
                 setInitialCategory(dbCategories[0]?.name || 'No categories available');
                 setCategory(dbCategories[0]?.name || 'Unassigned');
+                setLanguage(await fetchLanguage());
             } catch (err) {
                 console.log(err);
             }
@@ -211,7 +214,7 @@ export default function AddHistoryScreen({route}: any) {
                 </View>
                 <View style={styles.formFieldContainer}>
                     <Text style={[styles.formFieldLabel]}>{t('date')}:</Text>
-                    <DatePicker theme="dark" date={date} onDateChange={setDate} />
+                    <DatePicker theme="dark" locale={language} date={date} onDateChange={setDate} />
                 </View>
                 <View style={styles.formFieldContainer}>
                     <Text style={[styles.formFieldLabel]}>{t('notes')}:</Text>
