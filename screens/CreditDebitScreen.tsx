@@ -61,8 +61,6 @@ export default function CreditDebitScreen() {
 
         async function prepare() {
             await calculateBalance();
-            
-            //changeLanguage(await fetchLanguage());
         }
 
         /**
