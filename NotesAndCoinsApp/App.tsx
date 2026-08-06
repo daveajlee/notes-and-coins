@@ -5,41 +5,113 @@
  * @format
  */
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import { useEffect } from 'react';
+import { SafeAreaProvider, } from 'react-native-safe-area-context';
+import CreditDebitScreen from "./screens/CreditDebitScreen.tsx";
+import CategoriesScreen from './screens/CategoriesScreen.tsx';
+import HistoryScreen from './screens/HistoryScreen.tsx';
+import SettingsScreen from './screens/SettingsScreen.tsx';
+//import { fetchLanguage, init } from './utilities/sqlite';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
+import AddCategoryScreen from './screens/AddCategoryScreen.tsx';
+import IconButton from './components/IconButton.tsx';
+import AddHistoryScreen from './screens/AddHistoryScreen.tsx';
+import { View } from 'react-native';
+import { useTranslation } from "react-i18next";
+import './assets/i18n/i18n';
+import { getCountry } from 'react-native-localize';
+
+type NavigationStackParams = {
+  navigate: Function;
+}
 
 function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+
+  // Define stack navigation
+  const Stack = createNativeStackNavigator();
+
+  const {t, i18n} = useTranslation();
+
+  const MyDefaultTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      background: '#A2574F',
+      primary: 'black'
+    },
+  };
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+          //await init();
+          let language = getCountry(); /*await fetchLanguage();*/
+          language = language.toLowerCase();
+          if (language) {
+            i18n.changeLanguage(language);
+          }
+      } catch (err) {
+          console.error(err);
+      }
+     
+      
+    }
+
+    prepare();
+  }, [i18n]);
+
+function RootStack() {
+
+  // Navigation hook
+  const navigation = useNavigation<NavigationStackParams>();
 
   return (
-    <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
-    </SafeAreaProvider>
-  );
-}
-
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
+    <Stack.Navigator screenOptions={{ headerStyle: {
+            backgroundColor: '#f2d6d3ff'}, headerTitleStyle: {
+            fontWeight: 'bold',
+          }, headerTitleAlign: 'center'}}>
+      <Stack.Screen
+        name="CreditDebitScreen"
+        component={CreditDebitScreen}
+        options={{ title: t('overview'), headerRight: () => <><View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('HistoryScreen')} iconName='list-outline' color="black" /></View><View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('SettingsScreen')} iconName='settings-outline' color="black" /></View></> }}
       />
-    </View>
+      <Stack.Screen
+        name="AddCategoryScreen"
+        component={AddCategoryScreen}
+        options={{ title: t('addCategory') }}
+      />
+      <Stack.Screen
+        name="AddHistoryScreen"
+        component={AddHistoryScreen}
+      />
+      <Stack.Screen
+        name="SettingsScreen"
+        component={SettingsScreen}
+        options={{ title: t('settings') }}
+      />
+      <Stack.Screen
+        name="HistoryScreen"
+        component={HistoryScreen}
+        options={{title: t('history')}}
+      />
+      <Stack.Screen
+        name="CategoriesScreen"
+        component={CategoriesScreen}
+        options={{ title: t('categories'), headerRight: () => <View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('AddCategoryScreen')} iconName='add-circle-outline' color="black" /></View> }} 
+      />
+    </Stack.Navigator>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+  return (
+      <SafeAreaProvider>
+        <NavigationContainer theme={MyDefaultTheme}>
+          <RootStack/>
+        </NavigationContainer>
+      </SafeAreaProvider>
+  );
+}
 
 export default App;
