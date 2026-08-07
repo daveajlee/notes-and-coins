@@ -3,7 +3,7 @@
  */
 import { Alert, StyleSheet, Text, View } from "react-native";
 import IconButton from "./IconButton";
-//import { deleteHistoryEntry } from "../utilities/sqlite";
+import { deleteHistoryEntry } from "../utilities/sqlite";
 import { HistoryEntryResult } from "../models/HistoryEntryResult";
 import { getCurrencies, getLocales, getTimeZone } from "react-native-localize";
 import { useTranslation } from "react-i18next";
@@ -86,7 +86,7 @@ export function DisplayHistoryEntry({entries, id, sum, datetime, categoryName, c
                                         entries.splice(id, 1);
                                     }
                                 }
-                                //deleteHistoryEntry(id)
+                                deleteHistoryEntry(id)
                             }
                         },
                     ]); 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Category } from "../models/Category";
-//import { fetchCategories } from "../utilities/sqlite";
+import { fetchCategories } from "../utilities/sqlite";
 import { StyleSheet, Text, View } from "react-native";
 import ChartView from "./ChartView";
 import { useTranslation } from "react-i18next";
@@ -19,8 +19,7 @@ export default function CategoryChartList() {
      */
     useEffect(() => {
         async function loadCategories() {
-            const categories = [];
-            /*const categories = await fetchCategories();*/
+            const categories = await fetchCategories();
             setLoadedCategories(categories);
         }
 

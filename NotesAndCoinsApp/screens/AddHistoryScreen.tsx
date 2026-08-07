@@ -2,12 +2,11 @@ import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 //import { Dropdown } from "react-native-element-dropdown";
-//import { fetchCategories, insertHistoryEntry } from "../utilities/sqlite";
+import { fetchCategories, insertHistoryEntry, fetchAmount, updateValueAmount, insertValueAmount } from "../utilities/sqlite";
 //import DatePicker from "react-native-date-picker";
 import { Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { ScrollView } from "react-native";
-//import { fetchAmount, updateValueAmount, insertValueAmount } from "../utilities/sqlite";
 import { useTranslation } from "react-i18next";
 import './../assets/i18n/i18n';
 
@@ -42,7 +41,7 @@ export default function AddHistoryScreen({route}: any) {
         async function prepare() {
             try {
                 navigation.setOptions({title: t('addHistoryTitle', { type: route.params.isDebit ? t('debit') : t('credit') })});
-                let dbCategories = [] /*await fetchCategories();*/
+                let dbCategories = await fetchCategories();
                 let dropdownCategories = dbCategories.map((cat) => ({ label: cat.name, value: cat.name }));
                 setCategories(dropdownCategories);
                 setInitialCategory(dbCategories[0]?.name || 'No categories available');
@@ -90,7 +89,7 @@ export default function AddHistoryScreen({route}: any) {
             convertedAmount = amount.replace(',', '.');
         }
         // Now save the entry to the database.
-        /*if ( await insertHistoryEntry(convertedAmount, description, category, date.toISOString(), route.params.isDebit ? 'debit' : 'credit') ) {
+        if ( await insertHistoryEntry(convertedAmount, description, category, date.toISOString(), route.params.isDebit ? 'debit' : 'credit') ) {
             Alert.alert(t('historyAdded'), t('historyAddedMessage'));
             setAmount(''); 
             setDate(new Date());
@@ -132,27 +131,27 @@ export default function AddHistoryScreen({route}: any) {
             }
             // Redirect to history screen.
             navigation.navigate('CreditDebitScreen');
-        } else {*/
+        } else {
             Alert.alert(t('error'), t('historyAddErrorMessage'));
-        //}
+        }
     }
 
     async function onIncreaseNote(noteValue: number, quantity: number) {
-        /*let currentValue:number = await fetchAmount(noteValue);
+        let currentValue:number = await fetchAmount(noteValue);
         if ( currentValue ) {
             await updateValueAmount(noteValue, currentValue + quantity);
         } else {
             await insertValueAmount(noteValue, quantity);
-        }*/
+        }
     }
     
     async function onDecreaseNote(noteValue: number, quantity: number) {
-        /*let currentValue:number = await fetchAmount(noteValue);
+        let currentValue:number = await fetchAmount(noteValue);
         if ( currentValue && (currentValue - quantity >= 0) ) {
             await updateValueAmount(noteValue, currentValue - quantity);
         } else {
             await updateValueAmount(noteValue, 0);
-        }*/
+        }
     }
     
     function reset() {

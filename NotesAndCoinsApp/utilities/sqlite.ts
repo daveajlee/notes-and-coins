@@ -1,4 +1,4 @@
-import { open, QueryResult } from '@op-engineering/op-sqlite';
+import { open } from 'react-native-nitro-sqlite';
 import { Category } from '../models/Category';
 import { HistoryEntryResult } from '../models/HistoryEntryResult';
 import { getCountry } from 'react-native-localize';
@@ -17,33 +17,14 @@ export const database = open({
  */
 export async function init(): Promise<void> {
   console.log('Initializing database...');
-  // Create balance table.
-  await database.execute(`CREATE TABLE IF NOT EXISTS balances (
-                id INTEGER PRIMARY KEY NOT NULL,
-                value INTEGER NOT NULL,
-                amount INTEGER NOT NULL
-            )`);
-  // Create categories table.
-  await database.execute(`CREATE TABLE IF NOT EXISTS categories (
-                id INTEGER PRIMARY KEY NOT NULL,
-                name TEXT NOT NULL,
-                colour TEXT NOT NULL
-  )`);
-  // Create history table.
-  await database.execute(`CREATE TABLE IF NOT EXISTS history (
-                id INTEGER PRIMARY KEY NOT NULL,
-                sum INTEGER NOT NULL,
-                description TEXT NOT NULL,
-                type TEXT NOT NULL,
-                categoryName TEXT NOT NULL,
-                datetime DATETIME NOT NULL
-  )`);
-  // Create settings table.
-  await database.execute(`CREATE TABLE IF NOT EXISTS settings (
-                id INTEGER PRIMARY KEY NOT NULL,
-                minimum_balance INTEGER NOT NULL,
-                language TEXT NOT NULL
-  )`);
+  // Create tables.
+  const commands = [
+    {query: 'CREATE TABLE IF NOT EXISTS balances (id INTEGER PRIMARY KEY NOT NULL, value INTEGER NOT NULL, amount INTEGER NOT NULL)'},
+    {query: 'CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY NOT NULL, name TEXT NOT NULL, colour TEXT NOT NULL)'},
+    {query: 'CREATE TABLE IF NOT EXISTS history (id INTEGER PRIMARY KEY NOT NULL, sum INTEGER NOT NULL, description TEXT NOT NULL, type TEXT NOT NULL, categoryName TEXT NOT NULL, datetime DATETIME NOT NULL)'},
+    {query: 'CREATE TABLE IF NOT EXISTS settings (id INTEGER PRIMARY KEY NOT NULL, minimum_balance INTEGER NOT NULL, language TEXT NOT NULL)'},
+  ];
+  const { rowsAffected } = database.executeBatch(commands);
   // Print that database has been created.
   console.log('Database initialized.');
 }
@@ -52,21 +33,18 @@ export async function init(): Promise<void> {
  * Insert a value and amount to the database.
  * @param {number} value the value of the note to be saved.
  * @param {number} amount the amount of the note that should be saved.
- * @returns a promise with either a success result or an error message.
  */
-export async function insertValueAmount(value: number, amount: number): Promise<number> {
-    let insertResult: QueryResult = await database.execute(`INSERT INTO balances (value, amount) VALUES (?, ?)`, [value, amount]);
-    return insertResult.insertId ? insertResult.insertId : 0;
+export async function insertValueAmount(value: number, amount: number): Promise<void> {
+    await database.executeAsync(`INSERT INTO balances (value, amount) VALUES (?, ?)`, [value, amount]);
 }
 
 /**
  * Update the amount for a value in the database.
  * @param {number} value the value of the note to be saved.
  * @param {number} amount the amount of the note that should be saved.
- * @returns a promise with either a success result or an error message.
  */
 export async function updateValueAmount(value: number, amount: number): Promise<void> {
-  await database.execute(`UPDATE balances SET amount = ? WHERE value = ?`, [amount, value]);
+  await database.executeAsync(`UPDATE balances SET amount = ? WHERE value = ?`, [amount, value]);
 }
 
 /**
@@ -76,11 +54,11 @@ export async function updateValueAmount(value: number, amount: number): Promise<
  */
 export async function fetchAmount(value: number): Promise<number> {
     try {
-      let {rows} = await database.execute('SELECT * FROM balances WHERE value = ' + value);
-      if ( rows.length > 0 ) {
-        return rows[rows.length-1].amount;
-      }
-      return 0;
+        const {rows} = await database.execute('SELECT * FROM balances WHERE value = ' + value);
+        if ( rows && rows.length > 0 ) {
+            return rows._array[rows.length-1].amount;
+        }
+        return 0;
     } catch ( error ) {
         await insertValueAmount(value, 0);
         console.error(error);
@@ -94,7 +72,7 @@ export async function fetchAmount(value: number): Promise<number> {
  * @param value the note value to retrieve.
  */
 export async function deleteAmount(value: number): Promise<void> {
-    await database.execute('DELETE FROM balances WHERE value = ?', [value]);
+    await database.executeAsync('DELETE FROM balances WHERE value = ?', [value]);
 }
 
 /**
@@ -112,8 +90,8 @@ export async function insertCategory(name: string, colour: string): Promise<bool
         }
     }
     // Add it to the db.
-    let insertResult: QueryResult = await database.execute(`INSERT INTO categories (name, colour) VALUES (?, ?)`, [name, colour]);
-    return insertResult.insertId ? true : false;
+    await database.execute(`INSERT INTO categories (name, colour) VALUES (?, ?)`, [name, colour]);
+    return true;
 }
 
 /**
@@ -121,8 +99,11 @@ export async function insertCategory(name: string, colour: string): Promise<bool
  * @returns an array of categories.
  */
 export async function fetchCategories(): Promise<Category[]> {
-    let {rows} = await database.execute('SELECT * FROM categories');
-    return rows;
+    let {rows} = await database.executeAsync('SELECT * FROM categories');
+    if ( rows && rows.length > 0 ) {
+        return rows._array;
+    }
+    return [];
 }
 
 /**
@@ -130,8 +111,8 @@ export async function fetchCategories(): Promise<Category[]> {
  * Change any history entries with this category to Unassigned.
  */
 export async function deleteCategory(name: string): Promise<void> {
-    await database.execute('DELETE FROM categories WHERE name = ?', [name]);
-    await database.execute('UPDATE history SET categoryName = ? WHERE categoryName = ?', ['Unassigned', name]);
+    await database.executeAsync('DELETE FROM categories WHERE name = ?', [name]);
+    await database.executeAsync('UPDATE history SET categoryName = ? WHERE categoryName = ?', ['Unassigned', name]);
 }
 
 /**
@@ -139,9 +120,9 @@ export async function deleteCategory(name: string): Promise<void> {
  * @returns a promise with the minimum balance or "0,00" if no value is found.
  */
 export async function fetchMinimumBalance(): Promise<string> {
-    let {rows} = await database.execute('SELECT * FROM settings');
-    if ( rows.length > 0 ) {
-        return rows[rows.length-1].minimum_balance;
+    let {rows} = await database.executeAsync('SELECT * FROM settings');
+    if ( rows && rows.length > 0 ) {
+        return rows._array[rows.length-1].minimum_balance;
     }
     return "0,00";
 }
@@ -153,11 +134,11 @@ export async function fetchMinimumBalance(): Promise<string> {
  * @param categoryName the category name of the history entry.
  * @param datetime the date and time of the history entry.
  * @param type the type of the history entry (debit or credit).
- * @returns a promise with either the inserted id or 0 if insert was not successful.  
+ * @returns a promise with true if insert was successful.  
  */
 export async function insertHistoryEntry(sum: string, description: string, categoryName: string, datetime: string, type: string): Promise<boolean> {
-    let insertResult: QueryResult = await database.execute(`INSERT INTO history (sum, description, categoryName, datetime, type) VALUES (?, ?, ?, ?, ?)`, [sum, description, categoryName, datetime, type]);
-    return insertResult.insertId ? true : false;
+    await database.executeAsync(`INSERT INTO history (sum, description, categoryName, datetime, type) VALUES (?, ?, ?, ?, ?)`, [sum, description, categoryName, datetime, type]);
+    return true;
 } 
 
 /**
@@ -165,12 +146,15 @@ export async function insertHistoryEntry(sum: string, description: string, categ
  * @returns an array of categories.
  */
 export async function fetchHistory(): Promise<HistoryEntryResult[]> {
-    let {rows} = await database.execute('SELECT * FROM history order by datetime DESC');
-    for ( let i = 0; i < rows.length; i++ ) {
-        let categoryColour = await getCategoryColour(rows[i].categoryName);
-        rows[i].categoryColour = categoryColour;
+    let {rows} = await database.executeAsync('SELECT * FROM history order by datetime DESC');
+    if ( rows && rows.length > 0 ) {
+        for ( let i = 0; i < rows._array.length; i++ ) {
+            let categoryColour = await getCategoryColour(rows._array[i].categoryName);
+            rows._array[i].categoryColour = categoryColour;
+        }
+        return rows._array;
     }
-    return rows;
+    return [];
 }
 
 /**
@@ -179,8 +163,11 @@ export async function fetchHistory(): Promise<HistoryEntryResult[]> {
  * @returns an array of categories.
  */
 export async function fetchHistoryForCategory(categoryName: string): Promise<HistoryEntryResult[]> {
-    let {rows} = await database.execute('SELECT * FROM history WHERE categoryName = ? order by datetime DESC', [categoryName]);
-    return rows;
+    let {rows} = await database.executeAsync('SELECT * FROM history WHERE categoryName = ? order by datetime DESC', [categoryName]);
+    if ( rows && rows.length > 0 ) {
+        return rows._array;
+    }
+    return [];
 }
 
 /**
@@ -189,13 +176,13 @@ export async function fetchHistoryForCategory(categoryName: string): Promise<His
  * @returns 
  */
 export async function deleteHistoryEntry(id: number): Promise<void> {
-  await database.execute('DELETE FROM history WHERE id = ?', [id]);
+  await database.executeAsync('DELETE FROM history WHERE id = ?', [id]);
 }
 
 export async function getCategoryColour(categoryName: string): Promise<string> {
-    let {rows} = await database.execute('SELECT * FROM categories WHERE name = ?', [categoryName]);
-    if ( rows.length > 0 ) {
-        return rows[0].colour;
+    let {rows} = await database.executeAsync('SELECT * FROM categories WHERE name = ?', [categoryName]);
+    if ( rows && rows.length > 0 ) {
+        return rows._array[0].colour;
     }
     return 'darkgray'; // Default dark gray colour.
 }
@@ -203,29 +190,25 @@ export async function getCategoryColour(categoryName: string): Promise<string> {
 /**
  * Insert the language to the database.
  * @param language A string representing the language.
- * @returns a promise with either the inserted id or 0 if insert was not successful.
  */
-export async function insertLanguage(language: string): Promise<number> {
-    let insertResult: QueryResult = await database.execute(`INSERT INTO settings (language) VALUES (?)`, [language]);
-    return insertResult.insertId ? insertResult.insertId : 0;
+export async function insertLanguage(language: string): Promise<void> {
+    await database.executeAsync(`INSERT INTO settings (language) VALUES (?)`, [language]);
 }
 
 /**
  * Insert the minimum balance to the database.
  * @param minimumBalance A string representing the minimum balance.
- * @returns a promise with either the inserted id or 0 if insert was not successful.
  */
-export async function insertMinimumBalance(minimumBalance: string): Promise<number> {
-    
+export async function insertMinimumBalance(minimumBalance: string): Promise<void> {
+    await database.executeAsync(`INSERT INTO settings (minimum_balance) VALUES (?)`, [minimumBalance]);
 }
 
 /**
  * Save the settings to the database by deleting any existing entries and inserting the minimum balance and language.
  */
-export async function saveSettingsToDatabase(minimumBalance: string, language: string): Promise<number> {
-    await database.execute('DELETE FROM settings');
-    let insertResult: QueryResult = await database.execute(`INSERT INTO settings (minimum_balance, language) VALUES (?, ?)`, [minimumBalance, language]);
-    return insertResult.insertId ? insertResult.insertId : 0;
+export async function saveSettingsToDatabase(minimumBalance: string, language: string): Promise<void> {
+    await database.executeAsync('DELETE FROM settings');
+    await database.executeAsync(`INSERT INTO settings (minimum_balance, language) VALUES (?, ?)`, [minimumBalance, language]);
 }
 
 /**
@@ -234,9 +217,9 @@ export async function saveSettingsToDatabase(minimumBalance: string, language: s
  */
 export async function fetchLanguage(): Promise<string> {
     let {rows} = await database.execute('SELECT * FROM settings');
-    if ( rows.length > 0 ) {
-        if ( rows[rows.length-1].language ) {
-            return rows[rows.length-1].language;
+    if ( rows && rows.length > 0 ) {
+        if ( rows._array[rows.length-1].language ) {
+            return rows._array[rows.length-1].language;
         } else {
             return getCountry();
         }

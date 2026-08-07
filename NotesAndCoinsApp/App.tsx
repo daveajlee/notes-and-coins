@@ -11,7 +11,7 @@ import CreditDebitScreen from "./screens/CreditDebitScreen.tsx";
 import CategoriesScreen from './screens/CategoriesScreen.tsx';
 import HistoryScreen from './screens/HistoryScreen.tsx';
 import SettingsScreen from './screens/SettingsScreen.tsx';
-//import { fetchLanguage, init } from './utilities/sqlite';
+import { fetchLanguage, init } from './utilities/sqlite';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
@@ -21,7 +21,6 @@ import AddHistoryScreen from './screens/AddHistoryScreen.tsx';
 import { View } from 'react-native';
 import { useTranslation } from "react-i18next";
 import './assets/i18n/i18n';
-import { getCountry } from 'react-native-localize';
 
 type NavigationStackParams = {
   navigate: Function;
@@ -46,8 +45,8 @@ function App() {
   useEffect(() => {
     async function prepare() {
       try {
-          //await init();
-          let language = getCountry(); /*await fetchLanguage();*/
+          await init();
+          let language = await fetchLanguage();
           language = language.toLowerCase();
           if (language) {
             i18n.changeLanguage(language);

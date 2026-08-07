@@ -1,6 +1,6 @@
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useState } from 'react';
-//import { insertCategory } from '../utilities/sqlite';
+import { insertCategory } from '../utilities/sqlite';
 //import { Dropdown } from 'react-native-element-dropdown';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -58,14 +58,14 @@ export default function AddCategoryScreen() {
         if ( name.trim().length === 0 ) {
             Alert.alert(t('validCategoryName'));
         }
-        /*else if ( await insertCategory(name, colour) ) {
+        else if ( await insertCategory(name, colour) ) {
             Alert.alert(t('categoryAdded'), t('categoryAddedMessage', { categoryName: name }));
             setName('');
             setColour('');
             navigation.navigate('CategoriesScreen');
         } else {
             Alert.alert(t('error'), t('errorDuplicateCategory', { categoryName: name }));
-        }*/
+        }
         
     }
 

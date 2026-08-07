@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
-//import { fetchHistory } from "../utilities/sqlite";
+import { fetchHistory } from "../utilities/sqlite";
 import { HistoryEntryResult } from "../models/HistoryEntryResult";
 import { DisplayHistoryEntry } from "./DisplayHistoryEntry";
 import { useTranslation } from "react-i18next";
@@ -19,8 +19,7 @@ export default function HistoryList() {
      */
     useEffect(() => {
         async function loadHistoryEntries() {
-            const historyEntries = []; 
-            /*const historyEntries = await fetchHistory();*/
+            const historyEntries = await fetchHistory();
             setLoadedHistoryEntries(historyEntries);
         }
     

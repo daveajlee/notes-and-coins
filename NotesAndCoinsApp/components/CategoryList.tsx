@@ -1,6 +1,6 @@
 import { Alert, FlatList, View, Text, StyleSheet } from "react-native";
 import { useEffect, useState } from "react";
-//import { fetchCategories, deleteCategory } from "../utilities/sqlite";
+import { fetchCategories, deleteCategory } from "../utilities/sqlite";
 import { Category } from "../models/Category";
 import IconButton from "./IconButton";
 import { useTranslation } from "react-i18next";
@@ -19,8 +19,7 @@ function CategoryList() {
      */
     useEffect(() => {
         async function loadCategories() {
-            const categories = [];
-            //const categories = await fetchCategories();
+            const categories = await fetchCategories();
             setLoadedCategories(categories);
         }
 
@@ -61,7 +60,7 @@ function CategoryList() {
                                 }
                             }
                             setLoadedCategories(categories);
-                            //deleteCategory(item.name);
+                            deleteCategory(item.name);
                         }
                     },
                 ]); 

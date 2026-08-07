@@ -1,12 +1,11 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Alert, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useEffect, useState } from "react";
-//import { fetchLanguage, fetchMinimumBalance, saveSettingsToDatabase } from "../utilities/sqlite";
+import { fetchLanguage, fetchMinimumBalance, saveSettingsToDatabase } from "../utilities/sqlite";
 import CountryFlag from "react-native-country-flag";
 import { useTranslation } from "react-i18next";
 import './../assets/i18n/i18n';
 import { useNavigation } from "@react-navigation/native";
-import { getCountry } from "react-native-localize";
 
 /**
  * Show the settings screen.
@@ -22,10 +21,10 @@ export default function SettingsScreen() {
     useEffect(() => {
         async function prepare() {
             try {
-                /*let fetchedMinimumBalance = await fetchMinimumBalance();
+                let fetchedMinimumBalance = await fetchMinimumBalance();
                 let parsedMinimumBalance = parseFloat(fetchedMinimumBalance.toString().replace(',', '.')).toFixed(2);
-                setMinimumBalance("" + parsedMinimumBalance);*/
-                const myLanguage = getCountry(); /*await fetchLanguage();*/
+                setMinimumBalance("" + parsedMinimumBalance);
+                const myLanguage = await fetchLanguage();
                 setLanguage(myLanguage.toLowerCase());
               } catch (err) {
                 console.log(err);
@@ -62,7 +61,7 @@ export default function SettingsScreen() {
         // Parse the number and then to two decimal places.
         let parsedMinimumBalance = parseFloat(minimumBalance.replace(',', '.')).toFixed(2);
         setMinimumBalance(parsedMinimumBalance);
-        //await saveSettingsToDatabase(parsedMinimumBalance, language);
+        await saveSettingsToDatabase(parsedMinimumBalance, language);
         // Change the language of the app immediately after saving.
         i18n.changeLanguage(language);
         // Show confirmation alert that the settings have been saved.

@@ -2,7 +2,7 @@ import {Appearance, StyleSheet} from 'react-native';
 import { useEffect, useState } from 'react';
 import {Pressable, ScrollView, Text, View} from "react-native";
 import { TouchableOpacity } from 'react-native';
-//import { updateValueAmount, fetchAmount, insertValueAmount, fetchMinimumBalance } from '../utilities/sqlite';
+import { updateValueAmount, fetchAmount, insertValueAmount, fetchMinimumBalance } from '../utilities/sqlite';
 import {SafeAreaView} from "react-native-safe-area-context";
 import notifee from '@notifee/react-native';
 import { formatCurrency } from "react-native-format-currency";
@@ -68,7 +68,7 @@ export default function CreditDebitScreen() {
         async function calculateBalance() {
           let calculatedBalance = (await (getNoteAmount(5)) * 5) + ((await getNoteAmount(10)) * 10) + ((await getNoteAmount(20)) * 20) + ((await getNoteAmount(50)) * 50) + ((await getNoteAmount(100)) * 100);
           setBalance(calculatedBalance);
-          /*if ( calculatedBalance < parseFloat(await fetchMinimumBalance()) ) {
+          if ( calculatedBalance < parseFloat(await fetchMinimumBalance()) ) {
             //Alert.alert('Your balance is below the minimum balance of ' + await fetchMinimumBalance() + '€! Please add more money to your balance.');
             // Request permissions (required for iOS)
             await notifee.requestPermission()
@@ -96,7 +96,7 @@ export default function CreditDebitScreen() {
               color: '#A2574F'
             },
           });
-          }*/
+          }
         }
 
         prepare();
@@ -109,7 +109,7 @@ export default function CreditDebitScreen() {
      * @returns the amount of the note currently saved in the database and update the UI.
      */
     async function getNoteAmount(noteValue: number) {
-        /*if ( noteValue === 5 ) {
+        if ( noteValue === 5 ) {
             setFiveAmount(await fetchAmount(noteValue));
         } else if ( noteValue === 10 ) {
             setTenAmount(await fetchAmount(noteValue));
@@ -120,7 +120,7 @@ export default function CreditDebitScreen() {
         } else if ( noteValue === 100 ) {
             setHundredAmount(await fetchAmount(noteValue));
         }
-        return await(fetchAmount(noteValue));*/
+        return await(fetchAmount(noteValue));
     }
 
     async function onIncreaseNote5(): Promise<void> {
@@ -208,12 +208,12 @@ export default function CreditDebitScreen() {
      * @param noteValue the value of the note to increase the amount for.
      */
     async function onIncreaseNote(noteValue: number) {
-        /*let currentValue:number = await fetchAmount(noteValue);
+        let currentValue:number = await fetchAmount(noteValue);
         if ( currentValue ) {
             await updateValueAmount(noteValue, currentValue + 1);
         } else {
             await insertValueAmount(noteValue, 1);
-        }*/
+        }
     }
 
     /**
@@ -221,13 +221,13 @@ export default function CreditDebitScreen() {
      * @param noteValue the value of the note to decrease the amount for.
      */
     async function onDecreaseNote(noteValue: number) {
-        /*let currentValue:number = await fetchAmount(noteValue);
+        let currentValue:number = await fetchAmount(noteValue);
         if ( currentValue ) {
             await updateValueAmount(noteValue, currentValue - 1);
         } else {
             await updateValueAmount(noteValue, 0);
         }
-        await getNoteAmount(noteValue);*/
+        await getNoteAmount(noteValue);
     }
 
     function addCreditHistory() {

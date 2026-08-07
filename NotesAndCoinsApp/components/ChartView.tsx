@@ -2,7 +2,7 @@ import { Dimensions, StyleSheet, View } from "react-native";
 //import { BarChart } from "react-native-chart-kit";
 import { Category } from "../models/Category";
 import { useEffect, useState } from "react";
-//import { fetchHistoryForCategory } from "../utilities/sqlite";
+import { fetchHistoryForCategory } from "../utilities/sqlite";
 import { getCurrencies } from "react-native-localize";
 import { formatCurrency } from "react-native-format-currency";
 import { useTranslation } from "react-i18next";
@@ -68,7 +68,7 @@ export default function ChartView({categories, type}: ChartViewProps) {
             const categoryAmounts = [];
             const categoryColours = [];
 
-            /*for ( let i = 0; i < categories.length; i++ ) {
+            for ( let i = 0; i < categories.length; i++ ) {
                 let historyForCategory = await fetchHistoryForCategory(categories[i].name);
                 let total = 0;
                 for ( let j = 0; j < historyForCategory.length; j++ ) {
@@ -81,9 +81,8 @@ export default function ChartView({categories, type}: ChartViewProps) {
                     categoryColours.push(convertColourForChart(categories[i].colour));
                     categoryAmounts.push(total);
                 } 
-            }*/
-
-            /*let unassignedEntries = await fetchHistoryForCategory(UNASSIGNED);
+            }
+            let unassignedEntries = await fetchHistoryForCategory(UNASSIGNED);
             if ( unassignedEntries && unassignedEntries.length > 0 ) {
                 
                 let total = 0;
@@ -97,9 +96,9 @@ export default function ChartView({categories, type}: ChartViewProps) {
                     categoryAmounts.push(total);
                     categoryColours.push(convertColourForChart('darkgray'));
                 }
-            }*/
+            }
 
-            /*const myChartData = {
+            const myChartData = {
                 labels: categoryNames,
                 datasets: [
                     {
@@ -108,7 +107,7 @@ export default function ChartView({categories, type}: ChartViewProps) {
                     }
                 ]
             };
-            setChartData(myChartData);*/
+            setChartData(myChartData);
 
             setScreenWidth(Dimensions.get("window").width);
 

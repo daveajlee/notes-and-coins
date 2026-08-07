@@ -1,6 +1,6 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useState } from "react";
-//import { fetchCategories } from "../utilities/sqlite";
+import { fetchCategories } from "../utilities/sqlite";
 import CategoryList from "../components/CategoryList";
 import { useNavigation } from "@react-navigation/native";
 import IconButton from "../components/IconButton";
@@ -26,7 +26,7 @@ export default function CategoriesScreen() {
     useEffect(() => {
         async function prepare() {
           try {
-            //await fetchCategories();
+            await fetchCategories();
             mode === 'list' && navigation.setOptions({ headerRight: () => <><View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('AddCategoryScreen')} iconName='add-outline' color="black" /></View><View style={{marginLeft: 10}}><IconButton onPress={() => { setMode('chart') }} iconName='bar-chart-outline' color="black" /></View></> });
             mode === 'chart' && navigation.setOptions({ headerRight: () => <><View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('AddCategoryScreen')} iconName='add-outline' color="black" /></View><View style={{marginLeft: 10}}><IconButton onPress={() => { setMode('list') }} iconName='list-outline' color="black" /></View></> });
           } catch (err) {
