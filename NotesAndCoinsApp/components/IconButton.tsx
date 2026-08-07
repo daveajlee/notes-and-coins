@@ -1,15 +1,30 @@
-import { Pressable } from "react-native";
+import { Pressable, StyleSheet } from "react-native";
 import Ionicons from "@react-native-vector-icons/ionicons";
 
 type IconButtonProps = {
-    onPress: any;
-    iconName: any;
-    color: any;
+    icon: any;
+    size: number;
+    color: string;
+    onPress: Event;
 }
 
-export default function IconButton({onPress, iconName, color}: IconButtonProps) {
+function IconButton({icon, size, color, onPress}: IconButtonProps) {
 
     return (
-        <Pressable onPress={onPress}><Ionicons name={iconName} size={30} color={color} /></Pressable>
+        <Pressable style={({pressed}) => [styles.button, pressed && styles.pressed]} onPress={onPress}>
+            <Ionicons name={icon} size={size} color={color} />
+        </Pressable>
     );
 }
+
+export default IconButton;
+
+const styles = StyleSheet.create({
+    button: {
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    pressed: {
+        opacity: 0.7
+    }
+})

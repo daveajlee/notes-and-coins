@@ -1,10 +1,11 @@
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useState } from 'react';
 import { insertCategory } from '../utilities/sqlite';
-//import { Dropdown } from 'react-native-element-dropdown';
+import IconButton from '../components/IconButton';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import './../assets/i18n/i18n';
+import SelectModal from '../modals/SelectModal';
 
 type NavigationStackParams = {
   navigate: Function;
@@ -15,10 +16,11 @@ export default function AddCategoryScreen() {
     const {t, i18n} = useTranslation();
 
     const [name, setName] = useState('');
-    const [colour, setColour] = useState('red');
-    const [colourValue] = useState(null);
+    const [colourValue, setColourValue] = useState('');
 
-    const [colourItems] = useState([
+    const [modalVisible, setModalVisible] = useState(false);
+
+    const colourItems = [
         {label: t('red'), value: 'red'},
         {label: t('green'), value: 'green'},
         {label: t('yellow'), value: 'yellow'},
@@ -28,7 +30,7 @@ export default function AddCategoryScreen() {
         {label: t('pink'), value: 'pink'},
         {label: t('brown'), value: 'brown'},
         {label: t('gray'), value: 'gray'},
-    ]);
+    ];
 
     // Navigation hook
     const navigation = useNavigation<NavigationStackParams>();
@@ -41,27 +43,14 @@ export default function AddCategoryScreen() {
         setName(enteredText);
     }
 
-    /**
-     * Render the item on the colour dropdown list with the label and the appropriate styling.
-     * @param item the item to be displayed on the colour dropdown list.
-     * @returns the appropriate components to display to the user.
-     */
-    const _renderColourItem = (item: any) => {
-        return (
-            <View>
-                <Text style={styles.colourItemLight}>{item.label}</Text>
-            </View>
-        );
-    };
-
     async function save() {
         if ( name.trim().length === 0 ) {
             Alert.alert(t('validCategoryName'));
         }
-        else if ( await insertCategory(name, colour) ) {
+        else if ( await insertCategory(name, colourValue) ) {
             Alert.alert(t('categoryAdded'), t('categoryAddedMessage', { categoryName: name }));
             setName('');
-            setColour('');
+            setColourValue('');
             navigation.navigate('CategoriesScreen');
         } else {
             Alert.alert(t('error'), t('errorDuplicateCategory', { categoryName: name }));
@@ -71,7 +60,11 @@ export default function AddCategoryScreen() {
 
     function reset() {
         setName('');
-        setColour('');
+        setColourValue('');
+    }
+
+    function chooseColour() {
+        setModalVisible(true);
     }
 
     return ( 
@@ -81,29 +74,20 @@ export default function AddCategoryScreen() {
                 <TextInput style={styles.textInput} placeholder={t('placeholderCategoryName')} onChangeText={nameInputHandler} value={name}/>
             </View>
             <View style={styles.categoryNameContainer}>
-                <Text style={[styles.fieldLabel]}>{t('colour')}:</Text>
-                    {/*<Dropdown
-                        style={styles.colourDropdownLight}
-                        data={colourItems}
-                        labelField="label"
-                        valueField="value"
-                        placeholder={t('red')}
-                        value={colourValue}
-                        onChange={item => {
-                            setColour(item.value);          
-                        }}
-                        renderItem={item => _renderColourItem(item)}
-                    />*/}
-                </View>
-                <View style={styles.categoryButtonContainer}>
-                    <Pressable style={[styles.button]} onPress={save}>
-                        <Text style={styles.textStyle}>{t('save')}</Text>
-                    </Pressable>
-                    <Pressable style={[styles.button]} onPress={reset}>
-                        <Text style={styles.textStyle}>{t('reset')}</Text>
-                    </Pressable>
-                </View>
+                <Text style={[styles.fieldText, styles.fieldLabel]}>{t('colour')}:</Text>
+                <Text style={[styles.entryText, styles.fieldLabel]}>{colourValue}</Text>
+                <IconButton icon="chevron-forward" size={24} color="black" onPress={chooseColour}/>
             </View>
+            <View style={styles.categoryButtonContainer}>
+                <Pressable style={[styles.button]} onPress={save}>
+                    <Text style={styles.textStyle}>{t('save')}</Text>
+                </Pressable>
+                <Pressable style={[styles.button]} onPress={reset}>
+                    <Text style={styles.textStyle}>{t('reset')}</Text>
+                </Pressable>
+            </View>
+            <SelectModal modalVisible={modalVisible} setModalVisible={setModalVisible} setOriginSelectedItem={setColourValue} data={colourItems} headerTitle='Colour'/>
+        </View>
     );
 
 }

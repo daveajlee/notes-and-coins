@@ -90,7 +90,7 @@ export function DisplayHistoryEntry({entries, id, sum, datetime, categoryName, c
                             }
                         },
                     ]); 
-                    ; }} iconName='trash-outline' /> 
+                    ; }} icon='trash-outline' size={30} /> 
             </View>
         </View>
     );

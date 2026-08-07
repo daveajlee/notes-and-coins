@@ -27,8 +27,8 @@ export default function CategoriesScreen() {
         async function prepare() {
           try {
             await fetchCategories();
-            mode === 'list' && navigation.setOptions({ headerRight: () => <><View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('AddCategoryScreen')} iconName='add-outline' color="black" /></View><View style={{marginLeft: 10}}><IconButton onPress={() => { setMode('chart') }} iconName='bar-chart-outline' color="black" /></View></> });
-            mode === 'chart' && navigation.setOptions({ headerRight: () => <><View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('AddCategoryScreen')} iconName='add-outline' color="black" /></View><View style={{marginLeft: 10}}><IconButton onPress={() => { setMode('list') }} iconName='list-outline' color="black" /></View></> });
+            mode === 'list' && navigation.setOptions({ headerRight: () => <><View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('AddCategoryScreen')} icon='add-outline' color="black" size={30} /></View><View style={{marginLeft: 10}}><IconButton onPress={() => { setMode('chart') }} icon='bar-chart-outline' color="black" size={30} /></View></> });
+            mode === 'chart' && navigation.setOptions({ headerRight: () => <><View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('AddCategoryScreen')} icon='add-outline' color="black" size={30} /></View><View style={{marginLeft: 10}}><IconButton onPress={() => { setMode('list') }} icon='list-outline' color="black" size={30} /></View></> });
           } catch (err) {
             console.log(err);
           }

@@ -190,6 +190,11 @@ export default function AddHistoryScreen({route}: any) {
                     <TextInput style={styles.formFieldValue} placeholder='0,00' onChangeText={amountInputHandler} value={amount}/> 
                 </View>
                 <View style={styles.formFieldContainer}>
+                    <Text style={[styles.fieldText, styles.formFieldLabel]}>{t('category')}:</Text>
+                    <Text style={[styles.entryText, styles.formFieldLabel]}>{levelValue}</Text>
+                    <IconButton icon="chevron-forward" size={24} color="black" onPress={chooseLevel}/>
+                </View>
+                <View style={styles.formFieldContainer}>
                     <Text style={[styles.formFieldLabel]}>{t('category')}:</Text>
                     {/*<Dropdown
                         style={styles.dropdown}

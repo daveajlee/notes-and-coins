@@ -64,7 +64,7 @@ function CategoryList() {
                         }
                     },
                 ]); 
-            ; }} iconName='trash-outline' /> 
+            ; }} icon='trash-outline' size={30} /> 
             </View>
         </View> 
         }/>

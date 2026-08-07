@@ -74,7 +74,7 @@ function RootStack() {
       <Stack.Screen
         name="CreditDebitScreen"
         component={CreditDebitScreen}
-        options={{ title: t('overview'), headerRight: () => <><View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('HistoryScreen')} iconName='list-outline' color="black" /></View><View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('SettingsScreen')} iconName='settings-outline' color="black" /></View></> }}
+        options={{ title: t('overview'), headerRight: () => <><View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('HistoryScreen')} icon='list-outline' size={30} color="black" /></View><View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('SettingsScreen')} icon='settings-outline' size={30} color="black" /></View></> }}
       />
       <Stack.Screen
         name="AddCategoryScreen"
@@ -98,7 +98,7 @@ function RootStack() {
       <Stack.Screen
         name="CategoriesScreen"
         component={CategoriesScreen}
-        options={{ title: t('categories'), headerRight: () => <View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('AddCategoryScreen')} iconName='add-circle-outline' color="black" /></View> }} 
+        options={{ title: t('categories'), headerRight: () => <View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('AddCategoryScreen')} icon='add-circle-outline' color="black" size={30} /></View> }} 
       />
     </Stack.Navigator>
   );
