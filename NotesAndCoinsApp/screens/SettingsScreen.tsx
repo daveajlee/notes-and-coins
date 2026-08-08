@@ -79,32 +79,36 @@ export default function SettingsScreen() {
      * Display the screen to the user.
      */
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#A2574F', }}>
-            <View style={styles.minimumBalanceContainer}>
-                <Text style={[styles.fieldLabel]}>{t('minimumBalance')}:</Text>
-                <TextInput style={styles.textInput} placeholder={t('minimumBalance')} onChangeText={minimumBalanceInputHandler} value={minimumBalance}/>
-            </View>
-            <View style={styles.languageContainer}>
-                <Text style={[styles.fieldLabel]}>{t('language')}:</Text>
-                <View style={styles.flagsContainer}>
-                    <View style={language === 'de' ? styles.selectedFlag : styles.flag}>
-                        <TouchableOpacity onPress={() => changeLanguage('DE')}>
-                            <CountryFlag isoCode="de" size={25} />
-                        </TouchableOpacity>
-                    </View>
-                    <View style={language === 'de' ? styles.flag : styles.selectedFlag}>
-                        <TouchableOpacity onPress={() => changeLanguage('EN')}>
-                            <CountryFlag isoCode="gb" size={25} />
-                        </TouchableOpacity>
+        <SafeAreaView style={styles.centeredView}>
+            <View style={styles.inputContainer}>
+                <View style={styles.textFieldContainer}>
+                    <Text style={[styles.fieldText]}>{t('minimumBalance')}:</Text>
+                    <TextInput style={styles.textInput} placeholder={t('minimumBalance')} onChangeText={minimumBalanceInputHandler} value={minimumBalance}/>
+                </View>
+                <View style={styles.textFieldContainer}>
+                    <Text style={[styles.fieldText]}>{t('language')}:</Text>
+                    <View style={styles.flagsContainer}>
+                        <View style={language === 'de' ? styles.selectedFlag : styles.flag}>
+                            <TouchableOpacity onPress={() => changeLanguage('DE')}>
+                                <CountryFlag isoCode="de" size={25} />
+                            </TouchableOpacity>
+                        </View>
+                        <View style={language === 'de' ? styles.flag : styles.selectedFlag}>
+                            <TouchableOpacity onPress={() => changeLanguage('EN')}>
+                                <CountryFlag isoCode="gb" size={25} />
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
             </View>
+            
+            
             <View style={styles.buttonContainer}>
                 <Pressable style={[styles.button]} onPress={saveSettings}>
-                    <Text style={styles.textStyle}>{t('save')}</Text>
+                    <Text style={styles.buttonText}>{t('save')}</Text>
                 </Pressable>
                 <Pressable style={[styles.button]} onPress={resetSettings}>
-                    <Text style={styles.textStyle}>{t('reset')}</Text>
+                    <Text style={styles.buttonText}>{t('reset')}</Text>
                 </Pressable>
             </View>
         </SafeAreaView>
@@ -112,33 +116,37 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-    minimumBalanceContainer: {
-        flexDirection: 'row',
+    centeredView: {
+        flex: 1,
+        paddingTop: 20,
         width: '100%',
-        marginTop: 20,
+        alignItems: 'center',
     },
-    fieldLabel: {
-        fontSize: 20,
+    inputContainer: {
+        flexDirection: 'column',
+        width: '90%',
+        borderRadius: 25,
+        backgroundColor: '#f2d6d3ff',
+        paddingBottom: 10
+    },
+    textFieldContainer: {
+        flexDirection: 'row',
+        paddingTop: 20,
+        paddingLeft: 10,
+        paddingRight: 10
+    },
+    fieldText: {
+        fontSize: 18,
         fontWeight: 'bold',
         textAlign: 'left',
         width: '50%',
-        paddingBottom: 10,
-        paddingLeft: 10,
-        paddingTop: 10,
-        color: 'white',
+        color: 'black'
     },
     textInput: {
-        borderWidth: 1,
-        borderColor: '#e4d0ff',
-        backgroundColor: 'white',
-        color: 'black',
-        borderRadius: 6,
-        alignItems: 'center',
-        justifyContent: 'center',
-        textAlign: 'left',
-        width: '35%',
-        marginLeft: '10%',
-        marginRight: 20
+        paddingLeft: 10,
+        fontSize: 18,
+        textAlign: 'right',
+        width: '45%'
     },
     languageContainer: {
         flexDirection: 'row',
@@ -147,8 +155,8 @@ const styles = StyleSheet.create({
     },
     flagsContainer: {
         flexDirection: 'row',
+        alignItems: 'flex-end',
         width: '40%',
-        marginTop: 20,
         marginLeft: '10%'
     },
     flag: {
@@ -167,14 +175,24 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginTop: 20,
     },
+    buttonContainer: {
+        marginTop: 40,
+        flexDirection: 'row',
+    },
     button: {
-        borderRadius: 20,
-        padding: 10,
-        elevation: 2,
+        alignItems: "center",
+        backgroundColor: "#A2574F",
         width: '40%',
-        height: 50,
+        padding: 10,
+        marginBottom: 30,
         marginRight: 10,
-        backgroundColor: '#f2d6d3ff'
+        borderRadius: 25
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 20,
+        fontWeight: 'bold',
+        textAlign: 'center',
     },
     textStyle: {
         color: 'black',

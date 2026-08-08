@@ -47,14 +47,13 @@ const styles = StyleSheet.create({
     },
     fallbackContainer: {
         flex: 1,
-        justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 20,
-        color: 'white'
+        color: 'black'
     },
     fallbackTitle: {
         fontSize: 24,
-        color: 'white',
+        color: 'black',
         textAlign: 'center',
         fontWeight: 'bold'
     },

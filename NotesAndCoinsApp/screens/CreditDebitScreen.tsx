@@ -246,7 +246,7 @@ export default function CreditDebitScreen() {
      * Display the screen to the user.
      */
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#A2574F', }}>
+      <SafeAreaView style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={styles.container}>
           <View style={styles.titleContainer}>
             <Text style={styles.balanceText}>{t('balance')}:</Text>
@@ -416,14 +416,12 @@ export default function CreditDebitScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#A2574F',
-    color: 'white',
+    color: 'black',
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
   },
   balanceText: {
-    color: 'white',
+    color: 'black',
     marginLeft: 10,
     fontSize: 30,
     fontWeight: "bold"
@@ -436,7 +434,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   darkModeText: {
-    color: 'white',
+    color: 'black',
   },
   lightModeText: {
     color: 'black',
@@ -541,7 +539,7 @@ const styles = StyleSheet.create({
   amount: {
     textAlign: 'center',
     fontWeight: 'bold',
-    color: 'white',
+    color: 'black',
     fontSize: 28,
     marginTop: 10,
     width: 100,

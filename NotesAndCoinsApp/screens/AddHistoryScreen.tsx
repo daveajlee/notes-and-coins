@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-//import { Dropdown } from "react-native-element-dropdown";
 import { fetchCategories, insertHistoryEntry, fetchAmount, updateValueAmount, insertValueAmount } from "../utilities/sqlite";
 //import DatePicker from "react-native-date-picker";
 import { Alert } from "react-native";
@@ -9,6 +8,7 @@ import { useNavigation } from "@react-navigation/native";
 import { ScrollView } from "react-native";
 import { useTranslation } from "react-i18next";
 import './../assets/i18n/i18n';
+import IconButton from "../components/IconButton";
 
 type NavigationStackParams = {
   navigate: Function;
@@ -181,8 +181,12 @@ export default function AddHistoryScreen({route}: any) {
         setHundredAmount(hundredAmount + 1);
     }
 
+    function openModal() {
+        console.log('Coming Soon!');
+    }
+
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#A2574F', }}>
+        <SafeAreaView style={{ flex: 1, }}>
             <ScrollView>
                 <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.centeredView}>
                 <View style={styles.formFieldContainer}>
@@ -191,23 +195,8 @@ export default function AddHistoryScreen({route}: any) {
                 </View>
                 <View style={styles.formFieldContainer}>
                     <Text style={[styles.fieldText, styles.formFieldLabel]}>{t('category')}:</Text>
-                    <Text style={[styles.entryText, styles.formFieldLabel]}>{levelValue}</Text>
-                    <IconButton icon="chevron-forward" size={24} color="black" onPress={chooseLevel}/>
-                </View>
-                <View style={styles.formFieldContainer}>
-                    <Text style={[styles.formFieldLabel]}>{t('category')}:</Text>
-                    {/*<Dropdown
-                        style={styles.dropdown}
-                        data={categories}
-                        labelField="label"
-                        valueField="value"
-                        placeholder={initialCategory}
-                        value={category}
-                        onChange={item => {
-                            setCategory(item.value);                 
-                        }}
-                        renderItem={item => _renderCategoryItem(item)}
-                    />*/}
+                    <Text style={[styles.entryText, styles.formFieldLabel]}>{}</Text>
+                    <IconButton icon="chevron-forward" size={24} color="black" onPress={openModal}/>
                 </View>
                 <View style={styles.formFieldContainer}>
                     <Text style={[styles.formFieldLabel]}>{t('title')}:</Text>
@@ -272,7 +261,7 @@ const styles = StyleSheet.create({
         textAlign: 'left',
         paddingBottom: 16,
         width: '25%',
-        color: 'white',
+        color: 'black',
         marginLeft: 10
     },
     formFieldValue: {
@@ -359,7 +348,7 @@ const styles = StyleSheet.create({
         textAlign: 'right',
         fontWeight: 'bold',
         fontSize: 24,
-        color: 'white',
+        color: 'black',
         marginRight: 10,
         justifyContent: 'flex-end'
     },

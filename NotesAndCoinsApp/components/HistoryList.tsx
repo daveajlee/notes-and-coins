@@ -39,14 +39,13 @@ export default function HistoryList() {
 const styles = StyleSheet.create({
     fallbackContainer: {
         flex: 1,
-        justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 20,
         color: 'white'
     },
     fallbackTitle: {
         fontSize: 24,
-        color: 'white',
+        color: 'black',
         textAlign: 'center',
         fontWeight: 'bold'
     },
@@ -57,7 +56,7 @@ const styles = StyleSheet.create({
     },
     listText: {
         fontSize: 18,
-        color: 'white',
+        color: 'black',
         fontWeight: 'bold',
         textAlign: 'center'
     }

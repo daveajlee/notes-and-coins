@@ -41,7 +41,7 @@ export default function CategoriesScreen() {
      * Display the screen to the user.
      */
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#A2574F', }}>
+        <SafeAreaView style={{ flex: 1, }}>
             { mode === 'list' && <CategoryList/> }
             { mode === 'chart' && <CategoryChartList/>}
         </SafeAreaView>
