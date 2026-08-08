@@ -14,17 +14,9 @@ function SelectModal({modalVisible, setModalVisible, setOriginSelectedItem, data
 
     const [selectedEntry, setSelectedEntry] = useState<any>();
 
-    useEffect(() => {
-        async function loadSelectedEntry() {
-            setSelectedEntry(data[0]);
-        }
-    
-        loadSelectedEntry();
-    }, [data]);
-
     function selectValue(selected: any) {
         setSelectedEntry(selected);
-        setOriginSelectedItem(selected.value);
+        setOriginSelectedItem(selected);
     }
 
     return (

@@ -37,7 +37,7 @@ function App() {
     ...DefaultTheme,
     colors: {
       ...DefaultTheme.colors,
-      background: '#A2574F',
+      background: '#f9f7f6',
       primary: 'black'
     },
   };
@@ -68,7 +68,7 @@ function RootStack() {
 
   return (
     <Stack.Navigator screenOptions={{ headerStyle: {
-            backgroundColor: '#f2d6d3ff'}, headerTitleStyle: {
+            backgroundColor: '#f9f7f6'}, headerTitleStyle: {
             fontWeight: 'bold',
           }, headerTitleAlign: 'center'}}>
       <Stack.Screen

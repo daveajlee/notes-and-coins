@@ -1,4 +1,4 @@
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useState } from 'react';
 import { insertCategory } from '../utilities/sqlite';
 import IconButton from '../components/IconButton';
@@ -16,7 +16,7 @@ export default function AddCategoryScreen() {
     const {t, i18n} = useTranslation();
 
     const [name, setName] = useState('');
-    const [colourValue, setColourValue] = useState('');
+    const [colourValue, setColourValue] = useState<any>();
 
     const [modalVisible, setModalVisible] = useState(false);
 
@@ -47,7 +47,7 @@ export default function AddCategoryScreen() {
         if ( name.trim().length === 0 ) {
             Alert.alert(t('validCategoryName'));
         }
-        else if ( await insertCategory(name, colourValue) ) {
+        else if ( await insertCategory(name, colourValue.value) ) {
             Alert.alert(t('categoryAdded'), t('categoryAddedMessage', { categoryName: name }));
             setName('');
             setColourValue('');
@@ -67,104 +67,103 @@ export default function AddCategoryScreen() {
         setModalVisible(true);
     }
 
+    function setMyColour(value) {
+        console.log('Attempting to set colour');
+        console.log(value);
+        setColourValue(value);
+    }
+
     return ( 
         <View style={styles.centeredView}>
-            <View style={styles.categoryNameContainer}>
-                <Text style={[styles.fieldLabel]}>{t('name')}:</Text>
-                <TextInput style={styles.textInput} placeholder={t('placeholderCategoryName')} onChangeText={nameInputHandler} value={name}/>
+            <View style={styles.inputContainer}>
+                <View style={styles.textFieldContainer}>
+                    <Text style={styles.fieldText}>{t('name')}:</Text>
+                    <TextInput style={styles.textInput} placeholder={t('placeholderCategoryName')} onChangeText={nameInputHandler} value={name}/>
+                </View>
+                <View style={styles.textFieldContainer}>
+                    <Text style={styles.fieldText}>{t('colour')}:</Text>
+                    <Text style={styles.entryText}>{colourValue && colourValue.label}</Text>
+                    <View style={styles.moreChevron}>
+                        <IconButton icon="chevron-forward" size={24} color="black" onPress={chooseColour}/>
+                    </View>
+                </View>
             </View>
-            <View style={styles.categoryNameContainer}>
-                <Text style={[styles.fieldText, styles.fieldLabel]}>{t('colour')}:</Text>
-                <Text style={[styles.entryText, styles.fieldLabel]}>{colourValue}</Text>
-                <IconButton icon="chevron-forward" size={24} color="black" onPress={chooseColour}/>
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity style={styles.button} onPress={save}>
+                    <Text style={styles.buttonText}>{t('save')}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={reset}>
+                    <Text style={styles.buttonText}>{t('reset')}</Text>
+                </TouchableOpacity>
             </View>
-            <View style={styles.categoryButtonContainer}>
-                <Pressable style={[styles.button]} onPress={save}>
-                    <Text style={styles.textStyle}>{t('save')}</Text>
-                </Pressable>
-                <Pressable style={[styles.button]} onPress={reset}>
-                    <Text style={styles.textStyle}>{t('reset')}</Text>
-                </Pressable>
-            </View>
-            <SelectModal modalVisible={modalVisible} setModalVisible={setModalVisible} setOriginSelectedItem={setColourValue} data={colourItems} headerTitle='Colour'/>
+            <SelectModal modalVisible={modalVisible} setModalVisible={setModalVisible} setOriginSelectedItem={setMyColour} data={colourItems} headerTitle='Colour'/>
         </View>
     );
 
 }
 
 const styles = StyleSheet.create({
-  centeredView: {
-    flex: 1,
-  },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-    width: '40%',
-    height: 50,
-    marginRight: 10,
-    backgroundColor: '#f2d6d3ff'
- },
-  textStyle: {
-    color: 'black',
-    fontWeight: 'bold',
-    textAlign: 'center',
-    fontSize: 20
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center',
-    fontWeight: 'bold',
-    fontSize: 20
-  },
-  categoryNameContainer: {
-        flexDirection: 'row',
+    centeredView: {
+        flex: 1,
+        paddingTop: 20,
         width: '100%',
-        marginTop: 20
-  },
-  fieldLabel: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'left',
-    paddingBottom: 16,
-    color: 'white',
-    marginLeft: 5,
-    width: '25%'
-},
- categoryButtonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 20
- },
- textInput: {
-    borderWidth: 1,
-    borderColor: '#e4d0ff',
-    backgroundColor: 'white',
-    color: 'black',
-    borderRadius: 6,
-    width: '60%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    textAlign: 'left',
-    marginLeft: '10%',
-    padding: 8
-},
-colourDropdownLight: {
-    borderWidth: 1,
-    borderColor: '#e4d0ff',
-    backgroundColor: 'white',
-    color: 'black',
-    borderRadius: 6,
-    width: '60%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    textAlign: 'center',
-    marginLeft: '10%',
-    padding: 8
-},
-colourItemLight: {
-    color: 'black',
-    fontSize: 18,
-    marginLeft: 5
-},
+        alignItems: 'center',
+    },
+    inputContainer: {
+        flexDirection: 'column',
+        width: '90%',
+        borderRadius: 25,
+        backgroundColor: '#f2d6d3ff',
+        paddingBottom: 10
+    },
+    textFieldContainer: {
+        flexDirection: 'row',
+        paddingTop: 20,
+        paddingLeft: 10,
+        paddingRight: 10
+    },
+    fieldText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        textAlign: 'left',
+        width: '35%',
+        color: 'black'
+    },
+    textInput: {
+        paddingLeft: 10,
+        fontSize: 18,
+        textAlign: 'right',
+        width: '55%'
+    },
+    entryText: {
+        paddingLeft: 10,
+        fontSize: 18,
+        width: '55%',
+        color: 'black',
+        textAlign: 'right'
+    },
+    buttonContainer: {
+        marginTop: 40,
+        flexDirection: 'row',
+    },
+    button: {
+        alignItems: "center",
+        backgroundColor: "#A2574F",
+        width: '40%',
+        padding: 10,
+        marginBottom: 30,
+        marginRight: 10,
+        borderRadius: 25
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 20,
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    moreChevron: {
+        display: 'flex',
+        width: '5%',
+        alignItems: 'flex-end',
+    }
 });
