@@ -10,7 +10,8 @@ import { getCurrencies } from 'react-native-localize';
 import { useNavigation } from '@react-navigation/native';
 import { useIsFocused } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import './../assets/i18n/i18n';
+import '../assets/i18n/i18n';
+import IconButton from '../components/IconButton';
 
 type NavigationStackParams = {
   navigate: Function;
@@ -18,9 +19,9 @@ type NavigationStackParams = {
 }
 
 /**
- * Show the credit / debit screen with the various categories of notes and the quantities to increase and decrease the amount of notes.
+ * Show the main menu screen with the various categories of notes and buttons for other options.
  */
-export default function CreditDebitScreen() {
+export default function MainMenuScreen() {
 
     const {t, i18n} = useTranslation();
 
@@ -242,172 +243,90 @@ export default function CreditDebitScreen() {
         navigation.navigate('CategoriesScreen')
     }
 
+    function viewHistory() {
+        navigation.navigate('HistoryScreen');
+    }
+
+    function viewSettings() {
+        navigation.navigate('SettingsScreen');
+    }
+
     /**
      * Display the screen to the user.
      */
     return (
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={styles.centeredView}>
         <ScrollView contentContainerStyle={styles.container}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.balanceText}>{t('balance')}:</Text>
-            <Text style={styles.balanceText}>{balance}€</Text>
+          <View style={styles.infoContainer}>
+            <View style={styles.titleContainer}>
+              <IconButton icon="information-circle" size={36} color="black"/>
+              <Text style={styles.balanceText}>{t('balance')}:</Text>
+              <Text style={styles.balanceText}>{balance}€</Text>
+            </View>
+            <View style={styles.notesContainer}>
+              <View style={styles.noteContainer}>
+                <Text style={[styles.noteText, styles.fiveColour]}>5</Text>
+                <Text style={styles.amount}>{fiveAmount}</Text>
+              </View>
+              <View style={styles.noteContainer}>
+                <Text style={[styles.noteText, styles.tenColour]}>10</Text>
+                <Text style={styles.amount}>{tenAmount}</Text>
+              </View>
+            </View>
+            <View style={styles.notesContainer}>
+              <View style={styles.noteContainer}>
+                <Text style={[styles.noteText, styles.twentyColour]}>20</Text>
+                <Text style={styles.amount}>{twentyAmount}</Text>
+              </View>
+              <View style={styles.noteContainer}>
+                <Text style={[styles.noteText, styles.fiftyColour]}>50</Text>
+                <Text style={styles.amount}>{fiftyAmount}</Text>
+              </View>
+            </View>
+            <View style={styles.notesContainer}>
+              <View style={styles.noteContainer}>
+                <Text style={[styles.noteText, styles.hundredColour]}>100</Text>
+                <Text style={styles.amount}>{hundredAmount}</Text>
+              </View>
+            </View>
+          </View> 
+          
+          
+          <View style={styles.menuContainer}>
+                <View style={styles.menuButtonLeft}>
+                    <Pressable onPress={addCreditHistory}></Pressable>
+                    <IconButton icon="trending-up" size={48} color="black" onPress={addCreditHistory}/>
+                    <Text style={styles.textStyle}>{t('credit')}</Text>
+                </View>
+                <View style={styles.menuButtonRight}>
+                    <Pressable onPress={addDebitHistory}></Pressable>
+                    <IconButton icon="trending-down" size={48} color="black" onPress={addDebitHistory}/>
+                    <Text style={styles.textStyle}>{t('debit')}</Text>
+                </View>
           </View>
-          <View style={styles.buttonContainer}>
-              <Pressable style={[styles.button]} onPress={addCreditHistory}>
-                  <Text style={styles.textStyle}>{t('credit')}</Text>
-              </Pressable>
-              <Pressable style={[styles.button]} onPress={addDebitHistory}>
-                  <Text style={styles.textStyle}>{t('debit')}</Text>
-              </Pressable>
+          <View style={styles.menuContainer}>
+                <View style={styles.menuButtonLeft}>
+                    <Pressable onPress={viewHistory}></Pressable>
+                    <IconButton icon="bar-chart-outline" size={48} color="black" onPress={viewHistory}/>
+                    <Text style={styles.textStyle}>{t('analysis')}</Text>
+                </View>
+                <View style={styles.menuButtonRight}>
+                    <Pressable onPress={viewCategories}></Pressable>
+                    <IconButton icon="apps-sharp" size={48} color="black" onPress={viewCategories}/>
+                    <Text style={styles.textStyle}>{t('categories')}</Text>
+                </View>
           </View>
-          <View style={styles.stepContainer}>
-            <Text style={styles.fiveColour}>5</Text>
-            <Text style={styles.amount}>{fiveAmount}</Text>
-            <TouchableOpacity
-              style={styles.fiveButton}
-              onPress={onIncreaseNote5}
-            >
-              <Text style={styles.buttonText}>+</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.fiveButton}
-              onPress={onDecreaseNote5}
-            >
-              <Text style={styles.buttonText}>-</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.stepContainer}>
-            <Text style={styles.tenColour}>10</Text>
-            <Text style={styles.amount}>{tenAmount}</Text>
-            <TouchableOpacity
-              style={styles.tenButton}
-              onPress={onIncreaseNote10}
-            >
-              <Text
-                style={
-                  colorScheme === 'dark'
-                    ? [styles.darkModeText, styles.buttonText]
-                    : [styles.lightModeText, styles.buttonText]
-                }
-              >
-                +
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.tenButton}
-              onPress={onDecreaseNote10}
-            >
-              <Text
-                style={
-                  colorScheme === 'dark'
-                    ? [styles.darkModeText, styles.buttonText]
-                    : [styles.lightModeText, styles.buttonText]
-                }
-              >
-                -
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.stepContainer}>
-            <Text style={styles.twentyColour}>20</Text>
-            <Text style={styles.amount}>{twentyAmount}</Text>
-            <TouchableOpacity
-              style={styles.twentyButton}
-              onPress={onIncreaseNote20}
-            >
-              <Text
-                style={
-                  colorScheme === 'dark'
-                    ? [styles.darkModeText, styles.buttonText]
-                    : [styles.lightModeText, styles.buttonText]
-                }
-              >
-                +
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.twentyButton}
-              onPress={onDecreaseNote20}
-            >
-              <Text
-                style={
-                  colorScheme === 'dark'
-                    ? [styles.darkModeText, styles.buttonText]
-                    : [styles.lightModeText, styles.buttonText]
-                }
-              >
-                -
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.stepContainer}>
-            <Text style={styles.fiftyColour}>50</Text>
-            <Text style={styles.amount}>{fiftyAmount}</Text>
-            <TouchableOpacity
-              style={styles.fiftyButton}
-              onPress={onIncreaseNote50}
-            >
-              <Text
-                style={
-                  colorScheme === 'dark'
-                    ? [styles.darkModeText, styles.buttonText]
-                    : [styles.lightModeText, styles.buttonText]
-                }
-              >
-                +
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.fiftyButton}
-              onPress={onDecreaseNote50}
-            >
-              <Text
-                style={
-                  colorScheme === 'dark'
-                    ? [styles.darkModeText, styles.buttonText]
-                    : [styles.lightModeText, styles.buttonText]
-                }
-              >
-                -
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.stepContainer}>
-            <Text style={styles.hundredColour}>100</Text>
-            <Text style={styles.amount}>{hundredAmount}</Text>
-            <TouchableOpacity
-              style={styles.hundredButton}
-              onPress={onIncreaseNote100}
-            >
-              <Text
-                style={
-                  colorScheme === 'dark'
-                    ? [styles.darkModeText, styles.buttonText]
-                    : [styles.lightModeText, styles.buttonText]
-                }
-              >
-                +
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.hundredButton}
-              onPress={onDecreaseNote100}
-            >
-              <Text
-                style={
-                  colorScheme === 'dark'
-                    ? [styles.darkModeText, styles.buttonText]
-                    : [styles.lightModeText, styles.buttonText]
-                }
-              >
-                -
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.buttonContainer}>
-              <Pressable style={[styles.buttonLarge]} onPress={viewCategories}>
-                  <Text style={styles.textStyle}>{t('categories')}</Text>
-              </Pressable>
+          <View style={styles.menuContainer}>
+                <View style={styles.menuButtonLeft}>
+                    <Pressable onPress={viewCategories}></Pressable>
+                    <IconButton icon="settings-outline" size={48} color="black" onPress={viewSettings}/>
+                    <Text style={styles.textStyle}>{t('settings')}</Text>
+                </View>
+                <View style={styles.menuButtonRight}>
+                    <Pressable onPress={viewHistory}></Pressable>
+                    <IconButton icon="list-outline" size={48} color="black" onPress={viewHistory}/>
+                    <Text style={styles.textStyle}>{t('history')}</Text>
+                </View>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -415,15 +334,29 @@ export default function CreditDebitScreen() {
 }
 
 const styles = StyleSheet.create({
+  centeredView: {
+        flex: 1,
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center'
+  },
   container: {
     color: 'black',
-    flex: 1,
     alignItems: 'center',
+  },
+  infoContainer: {
+    borderRadius: 25,
+    backgroundColor: '#f2e9e9',
+    width: '90%',
+    marginBottom: '10%',
+    borderStyle: 'solid',
+    borderWidth: 3,
+    borderColor: 'black'
   },
   balanceText: {
     color: 'black',
     marginLeft: 10,
-    fontSize: 30,
+    fontSize: 24,
     fontWeight: "bold"
   },
   titleContainer: {
@@ -431,7 +364,48 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     justifyContent: 'center',
-    marginBottom: 24,
+    marginTop: 5,
+  },
+  menuContainer: {
+    flexDirection: 'row',
+    marginTop: 10,
+  },
+  menuButtonLeft: {
+    flexDirection: 'column',
+    width: '45%',
+    borderRadius: 25,
+    backgroundColor: '#f2d6d3ff',
+    padding: 10,
+    marginBottom: 10,
+    marginRight: 10,
+  },
+  menuButtonRight: {
+    flexDirection: 'column',
+    width: '45%',
+    borderRadius: 25,
+    backgroundColor: '#f2d6d3ff',
+    padding: 10,
+    marginLeft: 10,
+    marginBottom: 10
+  },
+  notesContainer: {
+    flexDirection: 'row',
+    marginLeft: 20,
+    marginBottom: 10,
+  },
+  noteContainer: {
+    flexDirection: 'row'
+  },
+  noteText: {
+    alignItems: 'center',
+    width: '30%',
+    padding: 0,
+    marginTop: 10,
+    height: 35,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 24,
+    color: 'white'
   },
   darkModeText: {
     color: 'black',
@@ -452,97 +426,27 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   fiveColour: {
-    textAlign: 'center',
-    fontWeight: 'bold',
-    fontSize: 28,
-    marginTop: 10,
-    width: 100,
     backgroundColor: 'gray',
-    color: 'white',
-  },
-  fiveButton: {
-    alignItems: 'center',
-    backgroundColor: 'gray',
-    width: '10%',
-    padding: 0,
-    marginTop: 10,
-    height: 30,
   },
   tenColour: {
-    textAlign: 'center',
-    fontWeight: 'bold',
-    fontSize: 28,
-    marginTop: 10,
-    width: 100,
     backgroundColor: 'red',
-    color: 'white',
-  },
-  tenButton: {
-    alignItems: 'center',
-    backgroundColor: 'red',
-    width: '10%',
-    padding: 0,
-    marginTop: 10,
-    height: 30,
   },
   twentyColour: {
-    textAlign: 'center',
-    fontWeight: 'bold',
-    fontSize: 28,
-    marginTop: 10,
-    width: 100,
     backgroundColor: 'blue',
-    color: 'white',
-  },
-  twentyButton: {
-    alignItems: 'center',
-    backgroundColor: 'blue',
-    width: '10%',
-    padding: 0,
-    marginTop: 10,
-    height: 30,
   },
   fiftyColour: {
-    textAlign: 'center',
-    fontWeight: 'bold',
-    fontSize: 28,
-    marginTop: 10,
-    width: 100,
     backgroundColor: 'orange',
-    color: 'white',
-  },
-  fiftyButton: {
-    alignItems: 'center',
-    backgroundColor: 'orange',
-    width: '10%',
-    padding: 0,
-    marginTop: 10,
-    height: 30,
   },
   hundredColour: {
-    textAlign: 'center',
-    fontWeight: 'bold',
-    fontSize: 28,
-    marginTop: 10,
-    width: 100,
     backgroundColor: 'green',
-    color: 'white',
-  },
-  hundredButton: {
-    alignItems: 'center',
-    backgroundColor: 'green',
-    width: '10%',
-    padding: 0,
-    marginTop: 10,
-    height: 30,
   },
   amount: {
     textAlign: 'center',
     fontWeight: 'bold',
     color: 'black',
-    fontSize: 28,
+    fontSize: 24,
     marginTop: 10,
-    width: 100,
+    width: 75,
   },
   buttonText: {
     color: 'white',
@@ -565,20 +469,11 @@ const styles = StyleSheet.create({
         width: '40%',  
         backgroundColor: '#f2d6d3ff'
   },
-  buttonLarge: {
-      borderRadius: 20,
-      padding: 10,
-      elevation: 2,
-      marginRight: 10,
-      marginLeft: 10,
-      height: 50,
-      width: '80%',  
-      backgroundColor: '#f2d6d3ff'
-  },
   textStyle: {
         color: 'black',
         fontWeight: 'bold',
         textAlign: 'center',
-        fontSize: 20
+        fontSize: 20,
+        marginTop: 10
   },
 });

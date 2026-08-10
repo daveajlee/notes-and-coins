@@ -7,7 +7,7 @@
 
 import { useEffect } from 'react';
 import { SafeAreaProvider, } from 'react-native-safe-area-context';
-import CreditDebitScreen from "./screens/CreditDebitScreen.tsx";
+import MainMenuScreen from "./screens/MainMenuScreen.tsx";
 import CategoriesScreen from './screens/CategoriesScreen.tsx';
 import HistoryScreen from './screens/HistoryScreen.tsx';
 import SettingsScreen from './screens/SettingsScreen.tsx';
@@ -18,7 +18,7 @@ import { useNavigation } from '@react-navigation/native';
 import AddCategoryScreen from './screens/AddCategoryScreen.tsx';
 import IconButton from './components/IconButton.tsx';
 import AddHistoryScreen from './screens/AddHistoryScreen.tsx';
-import { View } from 'react-native';
+import { Image, View } from 'react-native';
 import { useTranslation } from "react-i18next";
 import './assets/i18n/i18n';
 
@@ -69,12 +69,19 @@ function RootStack() {
   return (
     <Stack.Navigator screenOptions={{ headerStyle: {
             backgroundColor: '#f9f7f6'}, headerTitleStyle: {
-            fontWeight: 'bold',
-          }, headerTitleAlign: 'center'}}>
+            fontWeight: 'bold', 
+          }, headerTitleAlign: 'center', headerBackButtonDisplayMode: 'minimal'}}>
       <Stack.Screen
-        name="CreditDebitScreen"
-        component={CreditDebitScreen}
-        options={{ title: t('overview'), headerRight: () => <><View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('HistoryScreen')} icon='list-outline' size={30} color="black" /></View><View style={{marginRight: 10}}><IconButton onPress={() => navigation.navigate('SettingsScreen')} icon='settings-outline' size={30} color="black" /></View></> }}
+        name="MainMenuScreen"
+        component={MainMenuScreen}
+        options={{ headerTitle: (props) => ( // App Logo
+      <Image
+        style={{ width: 200, height: 50 }}
+        source={require('./assets/images/logo-1024.png')}
+        resizeMode='contain'
+      />
+    ),
+    headerTitleStyle: { flex: 1, textAlign: 'center' }, /*, headerRight: () => <IconButton onPress={() => navigation.navigate('WalletScreen')} icon='wallet' size={30} color="black" />*/ }}
       />
       <Stack.Screen
         name="AddCategoryScreen"

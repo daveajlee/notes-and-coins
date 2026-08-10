@@ -129,8 +129,8 @@ export default function AddHistoryScreen({route}: any) {
                     await onIncreaseNote(100, hundredAmount);
                 }
             }
-            // Redirect to history screen.
-            navigation.navigate('CreditDebitScreen');
+            // Redirect to main menu screen.
+            navigation.navigate('MainMenuScreen');
         } else {
             Alert.alert(t('error'), t('historyAddErrorMessage'));
         }
