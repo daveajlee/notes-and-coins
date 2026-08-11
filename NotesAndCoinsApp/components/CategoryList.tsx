@@ -32,7 +32,28 @@ function CategoryList() {
         } else {
             return { backgroundColor: item.colour };
         }
-        
+    }
+
+    function deleteCategory(item: Category) {
+        Alert.alert(t('confirmDeletion'), t('deleteCategory', { categoryName: item.name }), [
+            {
+                text: t('cancel'),
+                onPress: () => console.log('Cancel Pressed'),
+            },
+            {
+                text: t('ok'),
+                onPress: () => {
+                    const categories = loadedCategories;
+                    for ( let i = 0; i < categories.length; i++ ) {
+                        if ( categories[i].name === item.name ) {
+                            categories.splice(i, 1);
+                        }
+                    }
+                    setLoadedCategories(categories);
+                    deleteCategory(item.name);
+                }
+            },
+        ]); 
     }
 
     if ( !loadedCategories || loadedCategories.length === 0 ) {
@@ -42,30 +63,17 @@ function CategoryList() {
     }
     return <FlatList style={styles.list} data={loadedCategories} keyExtractor={(item: Category) => item.name} renderItem={({item}) =>
         <View style={styles.container}>
-            <Text style={[styles.categoryLabel, getBackgroundColour(item)]}>{item.name}</Text>
-            <View style={styles.deleteIcon}>
-            <IconButton color="white" onPress={() => { 
-                Alert.alert(t('confirmDeletion'), t('deleteCategory', { categoryName: item.name }), [
-                    {
-                        text: t('cancel'),
-                        onPress: () => console.log('Cancel Pressed'),
-                    },
-                    {
-                        text: t('ok'),
-                        onPress: () => {
-                            const categories = loadedCategories;
-                            for ( let i = 0; i < categories.length; i++ ) {
-                                if ( categories[i].name === item.name ) {
-                                    categories.splice(i, 1);
-                                }
-                            }
-                            setLoadedCategories(categories);
-                            deleteCategory(item.name);
-                        }
-                    },
-                ]); 
-            ; }} icon='trash-outline' size={30} /> 
+            <Text style={styles.categoryName}>{item.name}</Text>
+            <View style={styles.colourContainer}>
+                <IconButton icon="color-fill-outline" size={18} color="black"/>
+                <Text style={[styles.categoryColour, getBackgroundColour(item)]}></Text>
             </View>
+            <View style={styles.actionButtonContainer}>
+                <IconButton icon="chevron-forward" size={24} color="black" onPress={deleteCategory.bind(null, item)}/>
+            </View>
+            {/*<IconButton color="white" onPress={() => { 
+                
+            ; }} icon='trash-outline' size={30} /> */}
         </View> 
         }/>
 
@@ -75,16 +83,23 @@ export default CategoryList;
 
 const styles = StyleSheet.create({
     container: {
-        flexDirection: 'row'
+        flexDirection: 'column',
+        margin: 20,
+        borderBottomColor: 'black',
+        borderBottomWidth: 2,
+        paddingBottom: 10
     },
     deleteIcon: {
         marginTop: 30,
         paddingLeft: 30
     },
     list: {
-        marginLeft: '10%',
-        width: '100%',
-        marginBottom: '10%',
+        flexDirection: 'column',
+        width: '90%',
+        borderRadius: 25,
+        backgroundColor: '#f2d6d3ff',
+        paddingBottom: 10,
+        marginLeft: '5%',
     },
     fallbackContainer: {
         flex: 1,
@@ -97,6 +112,23 @@ const styles = StyleSheet.create({
         color: 'black',
         textAlign: 'center',
         fontWeight: 'bold'
+    },
+    categoryName: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        textAlign: 'left',
+        width: '35%',
+        color: 'black'
+    },
+    colourContainer: {
+        flexDirection: 'row',
+        marginTop: 10,
+    },
+    categoryColour: {
+        fontSize: 18,
+        textAlign: 'left',
+        width: '10%',
+        marginLeft: 20
     },
     categoryLabel: {
         fontSize: 18,

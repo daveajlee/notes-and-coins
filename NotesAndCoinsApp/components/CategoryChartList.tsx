@@ -28,7 +28,7 @@ export default function CategoryChartList() {
 
     if ( !loadedCategories || loadedCategories.length === 0 ) {
         return <View style={styles.fallbackContainer}>
-            <Text style={styles.fallbackTitle}>{t('noCategories')}</Text>
+            <Text style={styles.fallbackTitle}>{t('noCharts')}</Text>
         </View>
     }
     return (

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { fetchCategories, insertHistoryEntry, fetchAmount, updateValueAmount, insertValueAmount } from "../utilities/sqlite";
 //import DatePicker from "react-native-date-picker";
@@ -7,15 +7,16 @@ import { Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { ScrollView } from "react-native";
 import { useTranslation } from "react-i18next";
-import './../assets/i18n/i18n';
+import '../assets/i18n/i18n';
 import IconButton from "../components/IconButton";
+import SelectModal from "../modals/SelectModal";
 
 type NavigationStackParams = {
   navigate: Function;
   setOptions: Function;
 }
 
-export default function AddHistoryScreen({route}: any) {
+export default function AddEntryScreen({route}: any) {
 
     const {t, i18n} = useTranslation();
 
@@ -25,7 +26,7 @@ export default function AddHistoryScreen({route}: any) {
     const [description, setDescription] = useState('');
 
     const [categories, setCategories] = useState<{label: string, value: string}[]>([]);
-    const [initialCategory, setInitialCategory] = useState('Select a category');
+    const [initialCategory, setInitialCategory] = useState('');
 
     // Navigation hook
     const navigation = useNavigation<NavigationStackParams>();
@@ -37,6 +38,8 @@ export default function AddHistoryScreen({route}: any) {
     const [fiftyAmount, setFiftyAmount] = useState(0);
     const [hundredAmount, setHundredAmount] = useState(0);
 
+    const [modalVisible, setModalVisible] = useState(false);
+
     useEffect(() => {
         async function prepare() {
             try {
@@ -44,7 +47,7 @@ export default function AddHistoryScreen({route}: any) {
                 let dbCategories = await fetchCategories();
                 let dropdownCategories = dbCategories.map((cat) => ({ label: cat.name, value: cat.name }));
                 setCategories(dropdownCategories);
-                setInitialCategory(dbCategories[0]?.name || 'No categories available');
+                setInitialCategory(dbCategories[0]?.name);
                 setCategory(dbCategories[0]?.name || 'Unassigned');
             } catch (err) {
                 console.log(err);
@@ -68,19 +71,6 @@ export default function AddHistoryScreen({route}: any) {
     function descriptionInputHandler(enteredText: string) {
         setDescription(enteredText);
     }
-
-    /**
-     * Render the item on the category dropdown list with the label and the appropriate styling.
-     * @param item the item to be displayed on the category dropdown list.
-     * @returns the appropriate components to display to the user.
-     */
-    const _renderCategoryItem = (item: any) => {
-        return (
-            <View>
-                <Text style={styles.categoryItem}>{item.label}</Text>
-            </View>
-        );
-    };
 
     async function save() {
         // Convert any commas to dots for decimal representation.
@@ -182,63 +172,95 @@ export default function AddHistoryScreen({route}: any) {
     }
 
     function openModal() {
-        console.log('Coming Soon!');
+        setModalVisible(true);
     }
 
     return (
-        <SafeAreaView style={{ flex: 1, }}>
+        <SafeAreaView>
             <ScrollView>
                 <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.centeredView}>
-                <View style={styles.formFieldContainer}>
-                    <Text style={[styles.formFieldLabel]}>{t('amount')}:</Text>
-                    <TextInput style={styles.formFieldValue} placeholder='0,00' onChangeText={amountInputHandler} value={amount}/> 
-                </View>
-                <View style={styles.formFieldContainer}>
-                    <Text style={[styles.fieldText, styles.formFieldLabel]}>{t('category')}:</Text>
-                    <Text style={[styles.entryText, styles.formFieldLabel]}>{}</Text>
-                    <IconButton icon="chevron-forward" size={24} color="black" onPress={openModal}/>
-                </View>
-                <View style={styles.formFieldContainer}>
-                    <Text style={[styles.formFieldLabel]}>{t('title')}:</Text>
-                    <TextInput style={styles.formFieldValue} placeholder={t('placeholderTitle')} onChangeText={descriptionInputHandler} value={description}/>
-                </View>
-                <View style={styles.formFieldContainer}>
-                    <Text style={[styles.formFieldLabel]}>{t('date')}:</Text>
-                    {/*<DatePicker theme="dark" locale={i18n.language === 'de' ? 'de' : 'en'} date={date} onDateChange={setDate} />*/}
-                </View>
-                <View style={styles.formFieldContainer}>
-                    <Text style={[styles.formFieldLabel]}>{t('notes')}:</Text>
-                    <View style={styles.notesContainer}>
-                        <View style={styles.noteContainer}>
-                            <Pressable onPress={increaseFiveAmount}><Text style={[styles.noteText, styles.fiveColour]}>5</Text></Pressable>
-                            <Text style={styles.noteAmount}>({fiveAmount})</Text>
+                    {/* Input Felder ohne Scheine */}
+                    <View style={styles.inputContainer}>
+                        <View style={styles.textFieldContainer}>
+                            <Text style={[styles.fieldText]}>{t('amount')}:</Text>
+                            <TextInput style={styles.textInput} placeholder={"0,00"} onChangeText={amountInputHandler} value={amount}/>
                         </View>
-                        <View style={styles.noteContainer}>
-                            <Pressable onPress={increaseTenAmount}><Text style={[styles.noteText, styles.tenColour]}>10</Text></Pressable>
-                            <Text style={styles.noteAmount}>({tenAmount})</Text>
+                        <View style={styles.textFieldContainer}>
+                            <Text style={[styles.fieldText]}>{t('category')}:</Text>
+                            <Text style={[styles.entryText]}>{}</Text>
+                            <IconButton icon="chevron-forward" size={24} color="black" onPress={openModal}/>
                         </View>
-                        <View style={styles.noteContainer}>
-                            <Pressable onPress={increaseTwentyAmount}><Text style={[styles.noteText, styles.twentyColour]}>20</Text></Pressable>
-                            <Text style={styles.noteAmount}>({twentyAmount})</Text>
+                        <View style={styles.textFieldContainer}>
+                            <Text style={[styles.fieldText]}>{t('title')}:</Text>
+                            <TextInput style={styles.textInput} placeholder={t('placeholderTitle')} onChangeText={descriptionInputHandler} value={description}/>
                         </View>
-                        <View style={styles.noteContainer}>
-                            <Pressable onPress={increaseFiftyAmount}><Text style={[styles.noteText, styles.fiftyColour]}>50</Text></Pressable>
-                            <Text style={styles.noteAmount}>({fiftyAmount})</Text>
+                        <View style={styles.textFieldContainer}>
+                            <Text style={[styles.fieldText]}>{t('date')}:</Text>
+                            <Text style={[styles.entryText]}>{}</Text>
+                            <IconButton icon="calendar-outline" size={24} color="black" onPress={openModal}/>
                         </View>
-                        <View style={styles.noteContainer}>
-                            <Pressable onPress={increaseHundredAmount}><Text style={[styles.noteText, styles.hundredColour]}>100</Text></Pressable>
-                            <Text style={styles.noteAmount}>({hundredAmount})</Text>
+                        <View style={styles.textFieldContainer}>
+                            <Text style={[styles.fieldText]}>{t('time')}:</Text>
+                            <Text style={[styles.entryText]}>{}</Text>
+                            <IconButton icon="time-outline" size={24} color="black" onPress={openModal}/>
                         </View>
+                        {route.params.isDebit && <View style={styles.textFieldContainer}>
+                            <Text style={[styles.fieldText]}>{t('change')}:</Text>
+                            <Text style={[styles.entryText]}>{}</Text>
+                            <IconButton icon="cash-outline" size={24} color="black" onPress={openModal}/>
+                        </View>}
                     </View>
-                </View>
-                <View style={styles.buttonContainer}>
-                    <Pressable style={[styles.button]} onPress={save}>
-                        <Text style={styles.textStyle}>{t('save')}</Text>
-                    </Pressable>
-                    <Pressable style={[styles.button]} onPress={reset}>
-                        <Text style={styles.textStyle}>{t('reset')}</Text>
-                    </Pressable>
-                </View>
+                    <SelectModal modalVisible={modalVisible} setModalVisible={setModalVisible} setOriginSelectedItem={initialCategory} data={categories} headerTitle={t('category')}/>
+                    <View style={styles.spacer}></View>
+                    <View style={styles.inputContainer}>
+                        <View style={styles.titleContainer}>
+                            <Text style={styles.balanceText}>{route.params.isDebit ? t('notesSpent') : t('notesGiven')}:</Text>
+                        </View>
+                        <View style={styles.notesContainer}>
+                            <TouchableOpacity onPress={increaseFiveAmount}>
+                                <View style={styles.noteContainer}>
+                                    <Text style={[styles.noteText, styles.fiveColour]}>5</Text>
+                                    <Text style={styles.amount}>{fiveAmount}</Text>
+                                </View>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={increaseTenAmount}>
+                                <View style={styles.noteContainer}>
+                                    <Text style={[styles.noteText, styles.tenColour]}>10</Text>
+                                    <Text style={styles.amount}>{tenAmount}</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.notesContainer}>
+                            <TouchableOpacity onPress={increaseTwentyAmount}>
+                                <View style={styles.noteContainer}>
+                                    <Text style={[styles.noteText, styles.twentyColour]}>20</Text>
+                                    <Text style={styles.amount}>{twentyAmount}</Text>
+                                </View>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={increaseFiftyAmount}>
+                                <View style={styles.noteContainer}>
+                                    <Text style={[styles.noteText, styles.fiftyColour]}>50</Text>
+                                    <Text style={styles.amount}>{fiftyAmount}</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.notesContainer}>
+                            <TouchableOpacity onPress={increaseHundredAmount}>
+                                <View style={styles.noteContainer}>
+                                    <Text style={[styles.noteText, styles.hundredColour]}>100</Text>
+                                    <Text style={styles.amount}>{hundredAmount}</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
+                    </View> 
+                    <View style={styles.buttonContainer}>
+                        <Pressable style={[styles.button]} onPress={save}>
+                            <Text style={styles.buttonText}>{t('save')}</Text>
+                        </Pressable>
+                        <Pressable style={[styles.button]} onPress={reset}>
+                            <Text style={styles.buttonText}>{t('reset')}</Text>
+                        </Pressable>
+                    </View>
                 </KeyboardAvoidingView>
             </ScrollView>
         </SafeAreaView>
@@ -249,6 +271,66 @@ export default function AddHistoryScreen({route}: any) {
 const styles = StyleSheet.create({
     centeredView: {
         flex: 1,
+        paddingTop: 10,
+        width: '100%',
+        alignItems: 'center',
+    },
+    inputContainer: {
+        flexDirection: 'column',
+        width: '90%',
+        borderRadius: 25,
+        backgroundColor: '#f2d6d3ff',
+        paddingBottom: 20,
+    },
+    textFieldContainer: {
+        flexDirection: 'row',
+        paddingTop: 20,
+        paddingLeft: 10,
+        paddingRight: 10
+    },
+    infoContainer: {
+        borderRadius: 25,
+        backgroundColor: '#f2e9e9',
+        width: '90%',
+        marginBottom: '10%',
+        borderStyle: 'solid',
+        borderWidth: 3,
+        borderColor: 'black'
+    },
+    titleContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        justifyContent: 'center',
+        marginTop: 15,
+        marginBottom: 5,
+    },
+    balanceText: {
+        color: 'black',
+        marginLeft: 10,
+        fontSize: 18,
+        fontWeight: "bold"
+    },
+    spacer: {
+        margin: 10,
+    },
+    fieldText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        textAlign: 'left',
+        width: '50%',
+        color: 'black'
+    },
+    textInput: {
+        paddingLeft: 10,
+        fontSize: 18,
+        textAlign: 'right',
+        width: '45%'
+    },
+    entryText: {
+        paddingLeft: 10,
+        fontSize: 18,
+        width: '40%'
     },
     formFieldContainer: {
         flexDirection: 'row',
@@ -296,19 +378,23 @@ const styles = StyleSheet.create({
         marginLeft: 10
     },
     buttonContainer: {
+        marginTop: 40,
         flexDirection: 'row',
-        marginTop: 20,
-        justifyContent: 'center',
-        marginBottom: 20
     },
     button: {
-        borderRadius: 20,
-        padding: 10,
-        elevation: 2,
+        alignItems: "center",
+        backgroundColor: "#A2574F",
         width: '40%',
-        height: 50,
+        padding: 10,
+        marginBottom: 30,
         marginRight: 10,
-        backgroundColor: '#f2d6d3ff'
+        borderRadius: 25
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 20,
+        fontWeight: 'bold',
+        textAlign: 'center',
     },
     textStyle: {
         color: 'black',
@@ -317,32 +403,31 @@ const styles = StyleSheet.create({
         fontSize: 20
     },
     notesContainer: {
-        borderWidth: 1,
-        borderColor: '#e4d0ff',
-        color: 'black',
-        borderRadius: 6,
-        width: '60%',
-        justifyContent: 'flex-end',
-        textAlign: 'right',
-        marginLeft: '10%',
-        padding: 8
+        flexDirection: 'row',
+        marginLeft: 20,
+        marginBottom: 10,
     },
     noteContainer: {
-        flexDirection: 'row',
-        width: '100%',
-        marginBottom: 10,
-        alignItems: 'center',
-        justifyContent: 'center'
+        flexDirection: 'row'
     },
     noteText: {
+        alignItems: 'center',
+        width: '30%',
+        padding: 0,
+        marginTop: 10,
+        height: 35,
         textAlign: 'center',
         fontWeight: 'bold',
-        fontSize: 28,
-        marginRight: 40,
-        marginLeft: 5,
-        width: 60,
-        height: 40,
-        color: 'white',
+        fontSize: 24,
+        color: 'white'
+    },
+    amount: {
+        textAlign: 'center',
+        fontWeight: 'bold',
+        color: 'black',
+        fontSize: 24,
+        marginTop: 10,
+        width: 75,
     },
     noteAmount: {
         textAlign: 'right',

@@ -96,7 +96,7 @@ export default function AddCategoryScreen() {
                     <Text style={styles.buttonText}>{t('reset')}</Text>
                 </TouchableOpacity>
             </View>
-            <SelectModal modalVisible={modalVisible} setModalVisible={setModalVisible} setOriginSelectedItem={setMyColour} data={colourItems} headerTitle='Colour'/>
+            <SelectModal modalVisible={modalVisible} setModalVisible={setModalVisible} setOriginSelectedItem={setMyColour} data={colourItems} headerTitle={t('colour')}/>
         </View>
     );
 

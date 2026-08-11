@@ -17,10 +17,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import AddCategoryScreen from './screens/AddCategoryScreen.tsx';
 import IconButton from './components/IconButton.tsx';
-import AddHistoryScreen from './screens/AddHistoryScreen.tsx';
+import AddEntryScreen from './screens/AddEntryScreen.tsx';
 import { Image, View } from 'react-native';
 import { useTranslation } from "react-i18next";
 import './assets/i18n/i18n';
+import AnalysisScreen from './screens/AnalysisScreen.tsx';
 
 type NavigationStackParams = {
   navigate: Function;
@@ -89,13 +90,18 @@ function RootStack() {
         options={{ title: t('addCategory') }}
       />
       <Stack.Screen
-        name="AddHistoryScreen"
-        component={AddHistoryScreen}
+        name="AddEntryScreen"
+        component={AddEntryScreen}
       />
       <Stack.Screen
         name="SettingsScreen"
         component={SettingsScreen}
         options={{ title: t('settings') }}
+      />
+      <Stack.Screen
+        name="AnalysisScreen"
+        component={AnalysisScreen}
+        options={{title: t('analysis')}}
       />
       <Stack.Screen
         name="HistoryScreen"

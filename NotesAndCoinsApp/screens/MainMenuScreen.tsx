@@ -232,11 +232,15 @@ export default function MainMenuScreen() {
     }
 
     function addCreditHistory() {
-        navigation.navigate('AddHistoryScreen', { isDebit: false });
+        navigation.navigate('AddEntryScreen', { isDebit: false });
     }
 
     function addDebitHistory() {
-        navigation.navigate('AddHistoryScreen', { isDebit: true });
+        navigation.navigate('AddEntryScreen', { isDebit: true });
+    }
+
+    function viewAnalysis() {
+      navigation.navigate('AnalysisScreen');
     }
 
     function viewCategories() {
@@ -306,8 +310,8 @@ export default function MainMenuScreen() {
           </View>
           <View style={styles.menuContainer}>
                 <View style={styles.menuButtonLeft}>
-                    <Pressable onPress={viewHistory}></Pressable>
-                    <IconButton icon="bar-chart-outline" size={48} color="black" onPress={viewHistory}/>
+                    <Pressable onPress={viewAnalysis}></Pressable>
+                    <IconButton icon="bar-chart-outline" size={48} color="black" onPress={viewAnalysis}/>
                     <Text style={styles.textStyle}>{t('analysis')}</Text>
                 </View>
                 <View style={styles.menuButtonRight}>
