@@ -63,17 +63,15 @@ function CategoryList() {
     }
     return <FlatList style={styles.list} data={loadedCategories} keyExtractor={(item: Category) => item.name} renderItem={({item}) =>
         <View style={styles.container}>
-            <Text style={styles.categoryName}>{item.name}</Text>
-            <View style={styles.colourContainer}>
-                <IconButton icon="color-fill-outline" size={18} color="black"/>
-                <Text style={[styles.categoryColour, getBackgroundColour(item)]}></Text>
+            <View style={styles.leftContainerColumn}>
+                <Text style={styles.categoryName}>{item.name}</Text>
+                <View style={styles.colourContainer}>
+                    <Text style={[styles.categoryColour, getBackgroundColour(item)]}/>
+                </View>
             </View>
-            <View style={styles.actionButtonContainer}>
-                <IconButton icon="chevron-forward" size={24} color="black" onPress={deleteCategory.bind(null, item)}/>
+            <View style={styles.rightContainerColumn}>
+                <IconButton icon="trash-outline" size={24} color="black" onPress={deleteCategory.bind(null, item)}/>
             </View>
-            {/*<IconButton color="white" onPress={() => { 
-                
-            ; }} icon='trash-outline' size={30} /> */}
         </View> 
         }/>
 
@@ -83,7 +81,7 @@ export default CategoryList;
 
 const styles = StyleSheet.create({
     container: {
-        flexDirection: 'column',
+        flexDirection: 'row',
         margin: 20,
         borderBottomColor: 'black',
         borderBottomWidth: 2,
@@ -128,7 +126,6 @@ const styles = StyleSheet.create({
         fontSize: 18,
         textAlign: 'left',
         width: '10%',
-        marginLeft: 20
     },
     categoryLabel: {
         fontSize: 18,
@@ -140,5 +137,12 @@ const styles = StyleSheet.create({
         padding: 20,
         marginBottom: 20,
         marginTop: 20
+    },
+    leftContainerColumn: {
+        flexDirection: 'column',
+        width: '90%'
+    },
+    rightContainerColumn: {
+        marginTop: 15
     }
 })
