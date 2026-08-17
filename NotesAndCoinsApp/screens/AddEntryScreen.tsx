@@ -143,13 +143,6 @@ export default function AddEntryScreen({route}: any) {
             await updateValueAmount(noteValue, 0);
         }
     }
-    
-    function reset() {
-        setAmount("0,00");
-        setDate(new Date());
-        setCategory('');
-        setDescription('');
-    }
 
     function increaseFiveAmount() {
         setFiveAmount(fiveAmount + 1);
@@ -187,7 +180,7 @@ export default function AddEntryScreen({route}: any) {
                         </View>
                         <View style={styles.textFieldContainer}>
                             <Text style={[styles.fieldText]}>{t('category')}:</Text>
-                            <Text style={[styles.entryText]}>{}</Text>
+                            <Text style={[styles.entryText]}>{initialCategory}</Text>
                             <IconButton icon="chevron-forward" size={24} color="black" onPress={openModal}/>
                         </View>
                         <View style={styles.textFieldContainer}>
@@ -210,7 +203,7 @@ export default function AddEntryScreen({route}: any) {
                             <IconButton icon="cash-outline" size={24} color="black" onPress={openModal}/>
                         </View>}
                     </View>
-                    <SelectModal modalVisible={modalVisible} setModalVisible={setModalVisible} setOriginSelectedItem={initialCategory} data={categories} headerTitle={t('category')}/>
+                    <SelectModal modalVisible={modalVisible} setModalVisible={setModalVisible} setOriginSelectedItem={setInitialCategory} data={categories} headerTitle={t('category')}/>
                     <View style={styles.spacer}></View>
                     <View style={styles.inputContainer}>
                         <View style={styles.titleContainer}>
@@ -256,9 +249,6 @@ export default function AddEntryScreen({route}: any) {
                     <View style={styles.buttonContainer}>
                         <Pressable style={[styles.button]} onPress={save}>
                             <Text style={styles.buttonText}>{t('save')}</Text>
-                        </Pressable>
-                        <Pressable style={[styles.button]} onPress={reset}>
-                            <Text style={styles.buttonText}>{t('reset')}</Text>
                         </Pressable>
                     </View>
                 </KeyboardAvoidingView>
@@ -384,7 +374,7 @@ const styles = StyleSheet.create({
     button: {
         alignItems: "center",
         backgroundColor: "#A2574F",
-        width: '40%',
+        width: '90%',
         padding: 10,
         marginBottom: 30,
         marginRight: 10,

@@ -58,18 +58,11 @@ export default function AddCategoryScreen() {
         
     }
 
-    function reset() {
-        setName('');
-        setColourValue('');
-    }
-
     function chooseColour() {
         setModalVisible(true);
     }
 
     function setMyColour(value) {
-        console.log('Attempting to set colour');
-        console.log(value);
         setColourValue(value);
     }
 
@@ -91,9 +84,6 @@ export default function AddCategoryScreen() {
             <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.button} onPress={save}>
                     <Text style={styles.buttonText}>{t('save')}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={reset}>
-                    <Text style={styles.buttonText}>{t('reset')}</Text>
                 </TouchableOpacity>
             </View>
             <SelectModal modalVisible={modalVisible} setModalVisible={setModalVisible} setOriginSelectedItem={setMyColour} data={colourItems} headerTitle={t('colour')}/>
@@ -149,7 +139,7 @@ const styles = StyleSheet.create({
     button: {
         alignItems: "center",
         backgroundColor: "#A2574F",
-        width: '40%',
+        width: '90%',
         padding: 10,
         marginBottom: 30,
         marginRight: 10,
