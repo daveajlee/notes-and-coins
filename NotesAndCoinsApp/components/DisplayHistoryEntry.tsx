@@ -72,7 +72,7 @@ export function DisplayHistoryEntry({entries, id, sum, datetime, categoryName, c
             </View>
             <View style={styles.rightRow}>
                 <Text style={styles.rightRowText}>{getValueWithCurrency()}</Text>
-                <IconButton color="white" onPress={() => { 
+                <IconButton color="black" onPress={() => { 
                     Alert.alert(t('confirmDeletion'), t('deleteEntry'), [
                         {
                             text: t('cancel'),
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginTop: 10,
-        borderBottomColor: 'white',
+        borderBottomColor: 'black',
         borderBottomWidth: 2,
     },
     leftRow: {
@@ -117,19 +117,19 @@ const styles = StyleSheet.create({
     },
     leftRowText: {
         fontSize: 18,
-        color: 'white',
+        color: 'black',
         fontWeight: "bold",
         textAlign: 'left'
     },
     listText: {
         fontSize: 18,
-        color: 'white',
+        color: 'black',
         fontWeight: "bold",
         textAlign: 'center'
     },
     rightRowText: {
         fontSize: 18,
-        color: 'white',
+        color: 'black',
         fontWeight: "bold",
         textAlign: 'left',
         marginLeft: 10,
