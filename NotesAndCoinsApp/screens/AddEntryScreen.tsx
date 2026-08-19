@@ -26,7 +26,7 @@ export default function AddEntryScreen({route}: any) {
     const [description, setDescription] = useState('');
 
     const [categories, setCategories] = useState<{label: string, value: string}[]>([]);
-    const [initialCategory, setInitialCategory] = useState('');
+    const [initialCategory, setInitialCategory] = useState<any>();
 
     // Navigation hook
     const navigation = useNavigation<NavigationStackParams>();
@@ -47,7 +47,6 @@ export default function AddEntryScreen({route}: any) {
                 let dbCategories = await fetchCategories();
                 let dropdownCategories = dbCategories.map((cat) => ({ label: cat.name, value: cat.name }));
                 setCategories(dropdownCategories);
-                setInitialCategory(dbCategories[0]?.name);
                 setCategory(dbCategories[0]?.name || 'Unassigned');
             } catch (err) {
                 console.log(err);
@@ -180,7 +179,7 @@ export default function AddEntryScreen({route}: any) {
                         </View>
                         <View style={styles.textFieldContainer}>
                             <Text style={[styles.fieldText]}>{t('category')}:</Text>
-                            <Text style={[styles.entryText]}>{initialCategory}</Text>
+                            <Text style={[styles.entryText]}>{initialCategory && initialCategory.label}</Text>
                             <IconButton icon="chevron-forward" size={24} color="black" onPress={openModal}/>
                         </View>
                         <View style={styles.textFieldContainer}>
