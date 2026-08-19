@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { fetchCategories, insertHistoryEntry, fetchAmount, updateValueAmount, insertValueAmount } from "../utilities/sqlite";
-//import DatePicker from "react-native-date-picker";
 import { Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { ScrollView } from "react-native";
@@ -10,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import '../assets/i18n/i18n';
 import IconButton from "../components/IconButton";
 import SelectModal from "../modals/SelectModal";
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 type NavigationStackParams = {
   navigate: Function;
@@ -22,6 +22,7 @@ export default function AddEntryScreen({route}: any) {
 
     const [amount, setAmount] = useState('');
     const [date, setDate] = useState(new Date());
+    const [time, setTime] = useState(new Date());
     const [category, setCategory] = useState('');
     const [description, setDescription] = useState('');
 
@@ -38,7 +39,9 @@ export default function AddEntryScreen({route}: any) {
     const [fiftyAmount, setFiftyAmount] = useState(0);
     const [hundredAmount, setHundredAmount] = useState(0);
 
-    const [modalVisible, setModalVisible] = useState(false);
+    const [showCategoryNameModal, setShowCategoryNameModal] = useState(false);
+    const [showDateModal, setShowDateModal] = useState(false);
+    const [showTimeModal, setShowTimeModal] = useState(false);
 
     useEffect(() => {
         async function prepare() {
@@ -77,11 +80,18 @@ export default function AddEntryScreen({route}: any) {
         if ( amount.includes(',') ) {
             convertedAmount = amount.replace(',', '.');
         }
+        let mergedDateTime = new Date();
+        mergedDateTime.setDate(date.getDate());
+        mergedDateTime.setMonth(date.getMonth());
+        mergedDateTime.setFullYear(date.getFullYear());
+        mergedDateTime.setHours(time.getHours());
+        mergedDateTime.setMinutes(time.getMinutes());
         // Now save the entry to the database.
-        if ( await insertHistoryEntry(convertedAmount, description, category, date.toISOString(), route.params.isDebit ? 'debit' : 'credit') ) {
+        if ( await insertHistoryEntry(convertedAmount, description, category, mergedDateTime.toISOString(), route.params.isDebit ? 'debit' : 'credit') ) {
             Alert.alert(t('historyAdded'), t('historyAddedMessage'));
             setAmount(''); 
             setDate(new Date());
+            setTime(new Date());
             setCategory('');
             setDescription('');
             // Now we take care of notes.
@@ -163,8 +173,12 @@ export default function AddEntryScreen({route}: any) {
         setHundredAmount(hundredAmount + 1);
     }
 
-    function openModal() {
-        setModalVisible(true);
+    function openCategoryNameModal() {
+        setShowCategoryNameModal(true);
+    }
+
+    function openChangeModal() {
+
     }
 
     return (
@@ -180,7 +194,7 @@ export default function AddEntryScreen({route}: any) {
                         <View style={styles.textFieldContainer}>
                             <Text style={[styles.fieldText]}>{t('category')}:</Text>
                             <Text style={[styles.entryText]}>{initialCategory && initialCategory.label}</Text>
-                            <IconButton icon="chevron-forward" size={24} color="black" onPress={openModal}/>
+                            <IconButton icon="chevron-forward" size={24} color="black" onPress={openCategoryNameModal}/>
                         </View>
                         <View style={styles.textFieldContainer}>
                             <Text style={[styles.fieldText]}>{t('title')}:</Text>
@@ -188,21 +202,38 @@ export default function AddEntryScreen({route}: any) {
                         </View>
                         <View style={styles.textFieldContainer}>
                             <Text style={[styles.fieldText]}>{t('date')}:</Text>
-                            <Text style={[styles.entryText]}>{}</Text>
-                            <IconButton icon="calendar-outline" size={24} color="black" onPress={openModal}/>
+                            <View style={[styles.dateTimePickerEntry]}>
+                                <DateTimePicker
+                                    testID="dateTimePicker"
+                                    value={date}
+                                    mode="date"
+                                    is24Hour={true}
+                                    onValueChange={(event, selectedDate) => setDate(selectedDate)}
+                                    onDismiss={() => setShowDateModal(false)}
+                                />
+                            </View>
                         </View>
                         <View style={styles.textFieldContainer}>
                             <Text style={[styles.fieldText]}>{t('time')}:</Text>
-                            <Text style={[styles.entryText]}>{}</Text>
-                            <IconButton icon="time-outline" size={24} color="black" onPress={openModal}/>
+                            <View style={[styles.dateTimePickerEntry]}>
+                                <DateTimePicker
+                                    testID="dateTimePicker"
+                                    value={time}
+                                    mode="time"
+                                    is24Hour={true}
+                                    onValueChange={(event, selectedTime) => setTime(selectedTime)}
+                                    onDismiss={() => setShowTimeModal(false)}
+                                />
+                            </View>
                         </View>
                         {route.params.isDebit && <View style={styles.textFieldContainer}>
                             <Text style={[styles.fieldText]}>{t('change')}:</Text>
                             <Text style={[styles.entryText]}>{}</Text>
-                            <IconButton icon="cash-outline" size={24} color="black" onPress={openModal}/>
+                            <IconButton icon="cash-outline" size={24} color="black" onPress={openChangeModal}/>
                         </View>}
                     </View>
-                    <SelectModal modalVisible={modalVisible} setModalVisible={setModalVisible} setOriginSelectedItem={setInitialCategory} data={categories} headerTitle={t('category')}/>
+                    <SelectModal modalVisible={showCategoryNameModal} setModalVisible={setShowCategoryNameModal} setOriginSelectedItem={setInitialCategory} data={categories} headerTitle={t('category')}/>
+                    
                     <View style={styles.spacer}></View>
                     <View style={styles.inputContainer}>
                         <View style={styles.titleContainer}>
@@ -320,6 +351,13 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
         fontSize: 18,
         width: '40%'
+    },
+    dateTimePickerEntry: {
+        paddingLeft: 10,
+        fontSize: 18,
+        width: '50%',
+        alignItems: 'flex-end',
+        textAlign: 'right'
     },
     formFieldContainer: {
         flexDirection: 'row',
