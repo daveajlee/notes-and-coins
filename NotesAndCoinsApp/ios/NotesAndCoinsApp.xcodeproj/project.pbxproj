@@ -191,9 +191,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-NotesAndCoinsApp/Pods-NotesAndCoinsApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-NotesAndCoinsApp/Pods-NotesAndCoinsApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -230,9 +234,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-NotesAndCoinsApp/Pods-NotesAndCoinsApp-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-NotesAndCoinsApp/Pods-NotesAndCoinsApp-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -263,20 +271,20 @@
 				DEVELOPMENT_TEAM = 57SJGDPNCC;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = NotesAndCoinsApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Notes & Coins";
+				INFOPLIST_KEY_CFBundleDisplayName = "N&C Beta";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.2.0;
+				MARKETING_VERSION = 0.2.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = de.davelee.notesandcoins.app;
+				PRODUCT_BUNDLE_IDENTIFIER = de.davelee.notesandcoins.beta;
 				PRODUCT_NAME = NotesAndCoinsApp;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -295,20 +303,20 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 57SJGDPNCC;
 				INFOPLIST_FILE = NotesAndCoinsApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Notes & Coins";
+				INFOPLIST_KEY_CFBundleDisplayName = "N&C Beta";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.2.0;
+				MARKETING_VERSION = 0.2.1;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = de.davelee.notesandcoins.app;
+				PRODUCT_BUNDLE_IDENTIFIER = de.davelee.notesandcoins.beta;
 				PRODUCT_NAME = NotesAndCoinsApp;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_VERSION = 5.0;
