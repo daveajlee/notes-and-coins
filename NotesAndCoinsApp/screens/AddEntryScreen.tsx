@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import '../assets/i18n/i18n';
 import IconButton from "../components/IconButton";
 import SelectModal from "../modals/SelectModal";
+import ChangeModal from "../modals/ChangeModal";
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 type NavigationStackParams = {
@@ -42,6 +43,7 @@ export default function AddEntryScreen({route}: any) {
     const [showCategoryNameModal, setShowCategoryNameModal] = useState(false);
     const [showDateModal, setShowDateModal] = useState(false);
     const [showTimeModal, setShowTimeModal] = useState(false);
+    const [showChangeModal, setShowChangeModal] = useState(false);
 
     useEffect(() => {
         async function prepare() {
@@ -178,7 +180,7 @@ export default function AddEntryScreen({route}: any) {
     }
 
     function openChangeModal() {
-
+        setShowChangeModal(true);
     }
 
     return (
@@ -233,7 +235,7 @@ export default function AddEntryScreen({route}: any) {
                         </View>}
                     </View>
                     <SelectModal modalVisible={showCategoryNameModal} setModalVisible={setShowCategoryNameModal} setOriginSelectedItem={setInitialCategory} data={categories} headerTitle={t('category')}/>
-                    
+                    <ChangeModal modalVisible={showChangeModal} setModalVisible={setShowChangeModal} headerTitle={t('change')}/>
                     <View style={styles.spacer}></View>
                     <View style={styles.inputContainer}>
                         <View style={styles.titleContainer}>
