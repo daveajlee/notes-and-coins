@@ -45,6 +45,8 @@ export default function AddEntryScreen({route}: any) {
     const [showTimeModal, setShowTimeModal] = useState(false);
     const [showChangeModal, setShowChangeModal] = useState(false);
 
+    const [changeAmount, setChangeAmount] = useState(0);
+
     useEffect(() => {
         async function prepare() {
             try {
@@ -230,12 +232,12 @@ export default function AddEntryScreen({route}: any) {
                         </View>
                         {route.params.isDebit && <View style={styles.textFieldContainer}>
                             <Text style={[styles.fieldText]}>{t('change')}:</Text>
-                            <Text style={[styles.entryText]}>{}</Text>
+                            <Text style={[styles.fixedText]}>{changeAmount}</Text>
                             <IconButton icon="cash-outline" size={24} color="black" onPress={openChangeModal}/>
                         </View>}
                     </View>
                     <SelectModal modalVisible={showCategoryNameModal} setModalVisible={setShowCategoryNameModal} setOriginSelectedItem={setInitialCategory} data={categories} headerTitle={t('category')}/>
-                    <ChangeModal modalVisible={showChangeModal} setModalVisible={setShowChangeModal} headerTitle={t('change')}/>
+                    <ChangeModal modalVisible={showChangeModal} setModalVisible={setShowChangeModal} headerTitle={t('change')} setOriginChangeAmount={setChangeAmount}/>
                     <View style={styles.spacer}></View>
                     <View style={styles.inputContainer}>
                         <View style={styles.titleContainer}>
@@ -353,6 +355,13 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
         fontSize: 18,
         width: '40%'
+    },
+    fixedText: {
+        paddingLeft: 10,
+        fontSize: 18,
+        width: '40%',
+        textAlign: 'right',
+        paddingRight: 10
     },
     dateTimePickerEntry: {
         paddingLeft: 10,

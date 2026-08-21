@@ -7,9 +7,10 @@ type ChangeModalProperties = {
   modalVisible: boolean;
   setModalVisible: Function;
   headerTitle: string;
+  setOriginChangeAmount: Function;
 }
 
-function ChangeModal({modalVisible, setModalVisible, headerTitle}: ChangeModalProperties) {
+function ChangeModal({modalVisible, setModalVisible, headerTitle, setOriginChangeAmount}: ChangeModalProperties) {
 
     const {t, i18n} = useTranslation();
 
@@ -25,25 +26,30 @@ function ChangeModal({modalVisible, setModalVisible, headerTitle}: ChangeModalPr
         switch ( note ) {
             case 5:
                 setFiveAmount(fiveAmount + 1);
-                setTotal(total + 5);
+                setRevisedTotal(total + 5);
                 break;
             case 10:
                 setTenAmount(tenAmount + 1);
-                setTotal(total + 10);
+                setRevisedTotal(total + 10);
                 break;
             case 20:
                 setTwentyAmount(twentyAmount + 1);
-                setTotal(total + 20);
+                setRevisedTotal(total + 20);
                 break;
             case 50:
                 setFiftyAmount(fiftyAmount + 1);
-                setTotal(total + 50);
+                setRevisedTotal(total + 50);
                 break;
             case 100:
                 setHundredAmount(hundredAmount + 1);
-                setTotal(total + 100);
+                setRevisedTotal(total + 100);
                 break;
         }
+    }
+
+    function setRevisedTotal(amount: number) {
+        setTotal(amount);
+        setOriginChangeAmount(amount);
     }
 
     function onDecreaseValue(note: number) {
@@ -51,31 +57,31 @@ function ChangeModal({modalVisible, setModalVisible, headerTitle}: ChangeModalPr
             case 5:
                 if ( fiveAmount > 0 ) {
                     setFiveAmount(fiveAmount - 1);
-                    setTotal(total - 5);
+                    setRevisedTotal(total - 5);
                 }
                 break;
             case 10:
                 if ( tenAmount > 0 ) {
                     setTenAmount(tenAmount - 1);
-                    setTotal(total - 10);
+                    setRevisedTotal(total - 10);
                 }
                 break;
             case 20:
                 if ( twentyAmount > 0 ) {
                     setTwentyAmount(twentyAmount - 1);
-                    setTotal(total - 20);
+                    setRevisedTotal(total - 20);
                 }
                 break;
             case 50:
                 if ( fiftyAmount > 0 ) {
                     setFiftyAmount(fiftyAmount - 1);
-                    setTotal(total - 50);
+                    setRevisedTotal(total - 50);
                 }
                 break;
             case 100:
                 if ( hundredAmount > 0 ) {
                     setHundredAmount(hundredAmount - 1);
-                    setTotal(total - 100);
+                    setRevisedTotal(total - 100);
                 }
                 break;
         }
