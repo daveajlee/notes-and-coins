@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         textAlign: 'left',
-        width: '35%',
+        width: '90%',
         color: 'black'
     },
     colourContainer: {

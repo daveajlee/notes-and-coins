@@ -40,6 +40,13 @@ export default function AddEntryScreen({route}: any) {
     const [fiftyAmount, setFiftyAmount] = useState(0);
     const [hundredAmount, setHundredAmount] = useState(0);
 
+    // Notes as change amount.
+    const [changeFiveAmount, setChangeFiveAmount] = useState(0);
+    const [changeTenAmount, setChangeTenAmount] = useState(0);
+    const [changeTwentyAmount, setChangeTwentyAmount] = useState(0);
+    const [changeFiftyAmount, setChangeFiftyAmount] = useState(0);
+    const [changeHundredAmount, setChangeHundredAmount] = useState(0);
+
     const [showCategoryNameModal, setShowCategoryNameModal] = useState(false);
     const [showDateModal, setShowDateModal] = useState(false);
     const [showTimeModal, setShowTimeModal] = useState(false);
@@ -114,6 +121,22 @@ export default function AddEntryScreen({route}: any) {
                 }
                 if ( hundredAmount > 0 ) {
                     await onDecreaseNote(100, hundredAmount);
+                }
+                // Sort change.
+                if ( changeFiveAmount > 0 ) {
+                    await onIncreaseNote(5, changeFiveAmount);
+                }
+                if ( changeTenAmount > 0 ) {
+                    await onIncreaseNote(10, changeTenAmount);
+                }
+                if ( changeTwentyAmount > 0 ) {
+                    await onIncreaseNote(20, changeTwentyAmount);
+                }
+                if ( changeFiftyAmount > 0 ) {
+                    await onIncreaseNote(50, changeFiftyAmount);
+                }
+                if ( changeHundredAmount > 0 ) {
+                    await onIncreaseNote(100, changeHundredAmount);
                 }
             } else {
                 if ( fiveAmount > 0 ) {
@@ -237,7 +260,8 @@ export default function AddEntryScreen({route}: any) {
                         </View>}
                     </View>
                     <SelectModal modalVisible={showCategoryNameModal} setModalVisible={setShowCategoryNameModal} setOriginSelectedItem={setInitialCategory} data={categories} headerTitle={t('category')}/>
-                    <ChangeModal modalVisible={showChangeModal} setModalVisible={setShowChangeModal} headerTitle={t('change')} setOriginChangeAmount={setChangeAmount}/>
+                    <ChangeModal modalVisible={showChangeModal} setModalVisible={setShowChangeModal} headerTitle={t('change')} setOriginChangeAmount={setChangeAmount}
+                        setOriginFiveAmount={setChangeFiveAmount} setOriginTenAmount={setChangeTenAmount} setOriginTwentyAmount={setChangeTwentyAmount} setOriginFiftyAmount={setChangeFiftyAmount} setOriginHundredAmount={setChangeHundredAmount}/>
                     <View style={styles.spacer}></View>
                     <View style={styles.inputContainer}>
                         <View style={styles.titleContainer}>
@@ -354,7 +378,8 @@ const styles = StyleSheet.create({
     entryText: {
         paddingLeft: 10,
         fontSize: 18,
-        width: '40%'
+        width: '40%',
+        textAlign: 'right'
     },
     fixedText: {
         paddingLeft: 10,
