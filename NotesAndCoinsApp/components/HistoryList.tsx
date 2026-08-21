@@ -50,9 +50,12 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     list: {
-        marginLeft: '3%',
-        width: '100%',
-        marginBottom: '10%',
+        flexDirection: 'column',
+        width: '90%',
+        borderRadius: 25,
+        backgroundColor: '#f2d6d3ff',
+        paddingBottom: 10,
+        marginLeft: '5%',
     },
     listText: {
         fontSize: 18,

@@ -33,7 +33,7 @@ export function DisplayHistoryEntry({entries, id, sum, datetime, categoryName, c
         if ( categoryColour === 'yellow' ) {
             return { backgroundColor: categoryColour, color: 'black' };
         } else {
-            return { backgroundColor: categoryColour };
+            return { backgroundColor: categoryColour, };
         }
     }
 
@@ -60,39 +60,41 @@ export function DisplayHistoryEntry({entries, id, sum, datetime, categoryName, c
         let displayedValue = (type === 'credit') ? '+' : '-';
         return displayedValue + getCurrency(parseFloat(sum).toFixed(2));
     }
+
+    function deleteSelectedEntry() {
+        Alert.alert(t('confirmDeletion'), t('deleteEntry'), [
+            {
+                text: t('cancel'),
+                onPress: () => console.log('Cancel Pressed'),
+            },
+            {
+                text: t('ok'),
+                onPress: () => {
+                    for ( let i = 0; i < entries.length; i++ ) {
+                        if ( entries[i].id === id ) {
+                            entries.splice(id, 1);
+                        }
+                    }
+                    deleteHistoryEntry(id)
+                }
+            },
+        ]);
+    }
     
     return (
         <View style={styles.container}>
-            <View style={styles.leftRow}>
-                <Text style={styles.leftRowText}>{convertUTCDateToLocal(datetime)}</Text>
-            </View>
-            <View style={styles.middleRow}>
-                {(categoryName) ? <Text style={[styles.listText, getBackgroundColour()]}>{categoryName}</Text> : <Text style={[styles.listText, styles.unassigned]}>{t('unassigned')}</Text>}
+            <View style={styles.leftContainerColumn}>
                 <Text style={styles.listText}>{description}</Text>
+                <Text style={styles.listText}>{convertUTCDateToLocal(datetime)}</Text>
+                {(categoryName) ? <Text style={[styles.categoryNameText, getBackgroundColour()]}>{categoryName}</Text> : <Text style={[styles.categoryNameText, styles.unassigned]}>{t('unassigned')}</Text>}
             </View>
-            <View style={styles.rightRow}>
+            <View style={styles.rightContainerColumn}>
                 <Text style={styles.rightRowText}>{getValueWithCurrency()}</Text>
-                <IconButton color="black" onPress={() => { 
-                    Alert.alert(t('confirmDeletion'), t('deleteEntry'), [
-                        {
-                            text: t('cancel'),
-                            onPress: () => console.log('Cancel Pressed'),
-                        },
-                        {
-                            text: t('ok'),
-                            onPress: () => {
-                                for ( let i = 0; i < entries.length; i++ ) {
-                                    if ( entries[i].id === id ) {
-                                        entries.splice(id, 1);
-                                    }
-                                }
-                                deleteHistoryEntry(id)
-                            }
-                        },
-                    ]); 
-                    ; }} icon='trash-outline' size={30} /> 
+                <View style={styles.deleteIcon}>
+                    <IconButton color="black" onPress={deleteSelectedEntry} icon='trash-outline' size={30} /> 
+                </View>
             </View>
-        </View>
+        </View> 
     );
 }
 
@@ -101,41 +103,52 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginTop: 10,
-        borderBottomColor: 'black',
-        borderBottomWidth: 2,
     },
-    leftRow: {
-        width: '30%',
+    leftContainerColumn: {
+        width: '60%',
     },
-    middleRow: {
-        width: '40%',
-        marginBottom: 10,
+    rightContainerColumn: {
+        width: '40%'
     },
     rightRow: {
-        width: '30%',
+        width: '100%',
         flexDirection: 'row'
-    },
-    leftRowText: {
-        fontSize: 18,
-        color: 'black',
-        fontWeight: "bold",
-        textAlign: 'left'
-    },
-    listText: {
-        fontSize: 18,
-        color: 'black',
-        fontWeight: "bold",
-        textAlign: 'center'
     },
     rightRowText: {
         fontSize: 18,
         color: 'black',
         fontWeight: "bold",
+        textAlign: 'right',
+        marginRight: 10,
+        marginTop: 5
+    },
+    listText: {
+        fontSize: 18,
+        color: 'black',
+        fontWeight: "bold",
         textAlign: 'left',
         marginLeft: 10,
-        width: 60
+        marginTop: 5
+    },
+    categoryNameText: {
+        fontSize: 18,
+        color: 'white',
+        fontWeight: "bold",
+        textAlign: 'left',
+        marginLeft: 10,
+        marginRight: 30,
+        marginTop: 5,
+        marginBottom: 5,
+        paddingTop: 5,
+        paddingBottom: 5,
+        borderRadius: 5
     },
     unassigned: {
         backgroundColor: 'darkgray',
+    },
+    deleteIcon: {
+        alignItems: 'flex-end',
+        marginTop: 30,
+        marginRight: 10
     }
 }); 
