@@ -59,6 +59,7 @@
         "notificationTitle": "Balance below Minimum Balance!",
         "notificationMessage": "Your balance of {{calculatedBalance}} {{symbol}} is below the minimum balance of {{minimumBalance}} {{symbol}}!",
         "minimumBalanceLetter": "Please enter a valid minimum balance without letters.",
-        "minimumBalanceDecimal": "Please enter a valid minimum balance with notes and coins."
+        "minimumBalanceDecimal": "Please enter a valid minimum balance with notes and coins.",
+        "total": "Total"
     }
 }

@@ -1,6 +1,7 @@
-import { Alert, Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert, Modal, StyleSheet, Text, View } from "react-native";
 import IconButton from "../components/IconButton";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type ChangeModalProperties = {
   modalVisible: boolean;
@@ -10,19 +11,74 @@ type ChangeModalProperties = {
 
 function ChangeModal({modalVisible, setModalVisible, headerTitle}: ChangeModalProperties) {
 
+    const {t, i18n} = useTranslation();
+
     // Notes counters.
     const [fiveAmount, setFiveAmount] = useState(0);
     const [tenAmount, setTenAmount] = useState(0);
     const [twentyAmount, setTwentyAmount] = useState(0);
     const [fiftyAmount, setFiftyAmount] = useState(0);
     const [hundredAmount, setHundredAmount] = useState(0);
+    const [total, setTotal] = useState(0);
 
     function onIncreaseValue(note: number) {
-        console.log('Want to increase ' + note);
+        switch ( note ) {
+            case 5:
+                setFiveAmount(fiveAmount + 1);
+                setTotal(total + 5);
+                break;
+            case 10:
+                setTenAmount(tenAmount + 1);
+                setTotal(total + 10);
+                break;
+            case 20:
+                setTwentyAmount(twentyAmount + 1);
+                setTotal(total + 20);
+                break;
+            case 50:
+                setFiftyAmount(fiftyAmount + 1);
+                setTotal(total + 50);
+                break;
+            case 100:
+                setHundredAmount(hundredAmount + 1);
+                setTotal(total + 100);
+                break;
+        }
     }
 
     function onDecreaseValue(note: number) {
-        console.log('Want to decrease ' + note);
+        switch ( note ) {
+            case 5:
+                if ( fiveAmount > 0 ) {
+                    setFiveAmount(fiveAmount - 1);
+                    setTotal(total - 5);
+                }
+                break;
+            case 10:
+                if ( tenAmount > 0 ) {
+                    setTenAmount(tenAmount - 1);
+                    setTotal(total - 10);
+                }
+                break;
+            case 20:
+                if ( twentyAmount > 0 ) {
+                    setTwentyAmount(twentyAmount - 1);
+                    setTotal(total - 20);
+                }
+                break;
+            case 50:
+                if ( fiftyAmount > 0 ) {
+                    setFiftyAmount(fiftyAmount - 1);
+                    setTotal(total - 50);
+                }
+                break;
+            case 100:
+                if ( hundredAmount > 0 ) {
+                    setHundredAmount(hundredAmount - 1);
+                    setTotal(total - 100);
+                }
+                break;
+        }
     }
 
     return (
@@ -86,6 +142,10 @@ function ChangeModal({modalVisible, setModalVisible, headerTitle}: ChangeModalPr
                                 <IconButton icon="add" size={36} color="black" onPress={onIncreaseValue.bind(null, 100)}/>
                             </View> 
                         </View>
+                        <View style={styles.noteContainer}>
+                            <Text style={[styles.totalText]}>{t('total')}:</Text>
+                            <Text style={styles.amount}>{total}</Text>
+                        </View>
                     </View>
                 </View>
             </View>
@@ -142,6 +202,17 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 24,
         color: 'white'
+    },
+    totalText: {
+        alignItems: 'center',
+        width: '30%',
+        padding: 0,
+        marginTop: 10,
+        height: 35,
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 24,
+        color: 'black'
     },
     amount: {
         textAlign: 'center',

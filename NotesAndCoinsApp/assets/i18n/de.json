@@ -59,6 +59,7 @@
         "notificationTitle": "Guthaben unter Mindestguthaben!",
         "notificationMessage": "Ihr Guthaben von {{calculatedBalance}} {{symbol}} liegt unter dem Mindestguthaben von {{minimumBalance}} {{symbol}}!",
         "minimumBalanceLetter": "Bitte geben Sie ein gültiges Mindestguthaben ohne Buchstaben ein.",
-        "minimumBalanceDecimal": "Bitte geben Sie ein gültiges Mindestguthaben mit Scheinen und Münzen ein."
+        "minimumBalanceDecimal": "Bitte geben Sie ein gültiges Mindestguthaben mit Scheinen und Münzen ein.",
+        "total": "Summe"
     }
 }
