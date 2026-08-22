@@ -11,7 +11,7 @@ import './../assets/i18n/i18n';
  */
 export default function CategoryChartList() {
 
-    const [loadedCategories, setLoadedCategories] = useState<Category[]>([]);
+    const [loadedCategories, setLoadedCategories] = useState<any>();
     const {t, i18n} = useTranslation();
 
     /**
@@ -24,7 +24,7 @@ export default function CategoryChartList() {
         }
 
         loadCategories();
-    }, [loadedCategories]);
+    }, []);
 
     if ( !loadedCategories || loadedCategories.length === 0 ) {
         return <View style={styles.fallbackContainer}>

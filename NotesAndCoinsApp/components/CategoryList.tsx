@@ -24,7 +24,7 @@ function CategoryList() {
         }
 
         loadCategories();
-    }, [loadedCategories]);
+    }, []);
 
     function getBackgroundColour(item: Category) {
         if ( item.colour === 'yellow' ) {
