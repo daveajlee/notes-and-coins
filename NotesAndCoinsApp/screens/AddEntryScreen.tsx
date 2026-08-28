@@ -24,11 +24,10 @@ export default function AddEntryScreen({route}: any) {
     const [amount, setAmount] = useState('');
     const [date, setDate] = useState(new Date());
     const [time, setTime] = useState(new Date());
-    const [category, setCategory] = useState('');
+    const [category, setCategory] = useState<any>();
     const [description, setDescription] = useState('');
 
     const [categories, setCategories] = useState<{label: string, value: string}[]>([]);
-    const [initialCategory, setInitialCategory] = useState<any>();
 
     // Navigation hook
     const navigation = useNavigation<NavigationStackParams>();
@@ -98,7 +97,7 @@ export default function AddEntryScreen({route}: any) {
         mergedDateTime.setHours(time.getHours());
         mergedDateTime.setMinutes(time.getMinutes());
         // Now save the entry to the database.
-        if ( await insertHistoryEntry(convertedAmount, description, category, mergedDateTime.toISOString(), route.params.isDebit ? 'debit' : 'credit') ) {
+        if ( await insertHistoryEntry(convertedAmount, description, category.label, mergedDateTime.toISOString(), route.params.isDebit ? 'debit' : 'credit') ) {
             Alert.alert(t('historyAdded'), t('historyAddedMessage'));
             setAmount(''); 
             setDate(new Date());
@@ -220,7 +219,7 @@ export default function AddEntryScreen({route}: any) {
                         </View>
                         <View style={styles.textFieldContainer}>
                             <Text style={[styles.fieldText]}>{t('category')}:</Text>
-                            <Text style={[styles.entryText]}>{initialCategory && initialCategory.label}</Text>
+                            <Text style={[styles.entryText]}>{category && category.label}</Text>
                             <IconButton icon="chevron-forward" size={24} color="black" onPress={openCategoryNameModal}/>
                         </View>
                         <View style={styles.textFieldContainer}>
@@ -259,7 +258,7 @@ export default function AddEntryScreen({route}: any) {
                             <IconButton icon="cash-outline" size={24} color="black" onPress={openChangeModal}/>
                         </View>}
                     </View>
-                    <SelectModal modalVisible={showCategoryNameModal} setModalVisible={setShowCategoryNameModal} setOriginSelectedItem={setInitialCategory} data={categories} headerTitle={t('category')}/>
+                    <SelectModal modalVisible={showCategoryNameModal} setModalVisible={setShowCategoryNameModal} setOriginSelectedItem={setCategory} data={categories} headerTitle={t('category')}/>
                     <ChangeModal modalVisible={showChangeModal} setModalVisible={setShowChangeModal} headerTitle={t('change')} setOriginChangeAmount={setChangeAmount}
                         setOriginFiveAmount={setChangeFiveAmount} setOriginTenAmount={setChangeTenAmount} setOriginTwentyAmount={setChangeTwentyAmount} setOriginFiftyAmount={setChangeFiftyAmount} setOriginHundredAmount={setChangeHundredAmount}/>
                     <View style={styles.spacer}></View>
