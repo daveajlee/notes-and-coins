@@ -30,8 +30,6 @@
         "pink":"Pink",
         "brown":"Braun",
         "gray":"Grau",
-        "incomeChart": "Einnahmen Chart",
-        "expenseChart": "Ausgaben Chart",
         "minimumBalance":"Mindestguthaben",
         "language": "Sprache",
         "settings": "Einstellungen",
@@ -39,7 +37,7 @@
         "history": "Verlauf",
         "confirmSaved": "Einstellungen erfolgreich gespeichert.",
         "noCategories": "Es wurden noch keine Kategorien hinzugefügt! \n\n Klicken Sie oben rechts auf das Plus-Symbol, um eine Kategorie hinzuzufügen!",
-        "noCharts": "Es wurden noch keine Kategorien hinzugefügt!",
+        "noAnalysis": "Es wurden noch keine Kategorien hinzugefügt!",
         "confirmDeletion": "Löschen bestätigen",
         "deleteCategory": "Sind Sie sicher, dass Sie {{categoryName}} löschen möchten?",
         "ok":"OK",
@@ -60,6 +58,8 @@
         "notificationMessage": "Ihr Guthaben von {{calculatedBalance}} {{symbol}} liegt unter dem Mindestguthaben von {{minimumBalance}} {{symbol}}!",
         "minimumBalanceLetter": "Bitte geben Sie ein gültiges Mindestguthaben ohne Buchstaben ein.",
         "minimumBalanceDecimal": "Bitte geben Sie ein gültiges Mindestguthaben mit Scheinen und Münzen ein.",
-        "total": "Summe"
+        "total": "Summe",
+        "entry": "Eintrag",
+        "entries": "Einträge"
     }
 }

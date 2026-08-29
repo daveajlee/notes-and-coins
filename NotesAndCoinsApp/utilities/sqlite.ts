@@ -2,6 +2,7 @@ import { open } from 'react-native-nitro-sqlite';
 import { Category } from '../models/Category';
 import { HistoryEntryResult } from '../models/HistoryEntryResult';
 import { getCountry } from 'react-native-localize';
+import { CategoryAnalysis } from '../models/CategoryAnalysis';
 
 /**
  * Define the file where the database will be stored by SQLite.
@@ -9,6 +10,8 @@ import { getCountry } from 'react-native-localize';
 export const database = open({
   name: 'notes-and-coins.db'
 });
+
+const UNASSIGNED = "Unassigned";
 
 /**
  * Initialise the database by creating required tables
@@ -104,6 +107,45 @@ export async function fetchCategories(): Promise<Category[]> {
         return rows._array;
     }
     return [];
+}
+
+/**
+ * Retrieve the income, expenses and number of entries for each category in the database.
+ * @returns an array of category analysis objects.
+ */
+export async function fetchAnalysis(): Promise<CategoryAnalysis[]> {
+    let categoryAnalysis: CategoryAnalysis[] = [];
+    // Retrieve the categories that user created.
+    let categories = await fetchCategories();
+    for ( let i = 0; i < categories.length; i++ ) {
+        let historyForCategory = await fetchHistoryForCategory(categories[i].name);
+        let incomeTotal = 0; let expenseTotal = 0; let count = 0;
+        for ( let j = 0; j < historyForCategory.length; j++ ) {
+            if ( historyForCategory[j].type === 'credit' ) {
+                incomeTotal += parseFloat(historyForCategory[j].sum);
+            } else if ( historyForCategory[j].type === 'debit' ) {
+                expenseTotal += parseFloat(historyForCategory[j].sum);
+            }
+            count++;
+        }
+        categoryAnalysis.push(new CategoryAnalysis(categories[i].name, categories[i].colour, incomeTotal, expenseTotal, count));
+    }
+    // Analysis for unassigned entries.
+    let unassignedEntries = await fetchHistoryForCategory(UNASSIGNED);
+    let incomeTotal = 0; let expenseTotal = 0; let count = 0;
+    if ( unassignedEntries && unassignedEntries.length > 0 ) {
+        let incomeTotal = 0; let expenseTotal = 0; let count = 0;
+        for ( let j = 0; j < unassignedEntries.length; j++ ) {
+            if ( unassignedEntries[j].type === 'credit' ) {
+                incomeTotal += parseFloat(unassignedEntries[j].sum);
+            } else if ( unassignedEntries[j].type === 'debit' ) {
+                expenseTotal += parseFloat(unassignedEntries[j].sum);
+            }
+            count++;
+        }
+        categoryAnalysis.push(new CategoryAnalysis(UNASSIGNED, await getCategoryColour(UNASSIGNED), incomeTotal, expenseTotal, count));
+    }
+    return categoryAnalysis;
 }
 
 /**

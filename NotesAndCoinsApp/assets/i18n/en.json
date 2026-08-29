@@ -30,8 +30,6 @@
         "pink":"Pink",
         "brown":"Brown",
         "gray":"Gray",
-        "incomeChart": "Income Chart",
-        "expenseChart": "Expense Chart",
         "minimumBalance":"Minimum Balance",
         "language": "Language",
         "settings": "Settings",
@@ -39,7 +37,7 @@
         "history": "History",
         "confirmSaved": "Settings saved successfully.",
         "noCategories": "No categories added yet! \n\n Click on the plus button at the top right to add a category!",
-        "noCharts": "No categories added yet!",
+        "noAnalysis": "No categories added yet!",
         "confirmDeletion": "Confirm Deletion",
         "deleteCategory": "Are you sure you want to delete {{categoryName}}?",
         "ok":"OK",
@@ -60,6 +58,8 @@
         "notificationMessage": "Your balance of {{calculatedBalance}} {{symbol}} is below the minimum balance of {{minimumBalance}} {{symbol}}!",
         "minimumBalanceLetter": "Please enter a valid minimum balance without letters.",
         "minimumBalanceDecimal": "Please enter a valid minimum balance with notes and coins.",
-        "total": "Total"
+        "total": "Total",
+        "entry": "Entry",
+        "entries": "Entries"
     }
 }
