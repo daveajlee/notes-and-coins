@@ -77,13 +77,13 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.notesandcoinsapp"
+    namespace "de.davelee.notesandcoins"
     defaultConfig {
-        applicationId "com.notesandcoinsapp"
+        applicationId "de.davelee.notesandcoins"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 22
+        versionName "0.2.2"
     }
     signingConfigs {
         debug {

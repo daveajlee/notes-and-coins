@@ -1,4 +1,4 @@
-package com.notesandcoinsapp
+package de.davelee.notesandcoins
 
 import android.app.Application
 import com.facebook.react.PackageList

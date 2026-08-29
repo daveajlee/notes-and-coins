@@ -1,4 +1,4 @@
-package com.notesandcoinsapp
+package de.davelee.notesandcoins
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
