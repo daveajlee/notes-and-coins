@@ -207,6 +207,26 @@ export default function AddEntryScreen({route}: any) {
         setShowChangeModal(true);
     }
 
+    function openDateModalAndroid() {
+        setShowDateModal(true);
+    }
+
+    function openTimeModalAndroid() {
+        setShowTimeModal(true);
+    }
+
+    function showDateAndroid() {
+        return date.getDate() + "-" + convertToTwoDigits(date.getMonth()+1) + "-" + date.getFullYear();
+    }
+
+    function showTimeAndroid() {
+        return convertToTwoDigits(time.getHours()) + ":" + convertToTwoDigits(time.getMinutes());
+    }
+
+    function convertToTwoDigits(value: number) {
+        return ( value > 9 ) ? value : "0" + value;
+    }
+
     return (
         <SafeAreaView>
             <ScrollView>
@@ -228,7 +248,7 @@ export default function AddEntryScreen({route}: any) {
                         </View>
                         <View style={styles.textFieldContainer}>
                             <Text style={[styles.fieldText]}>{t('date')}:</Text>
-                            <View style={[styles.dateTimePickerEntry]}>
+                            {Platform.OS === 'ios' && <View style={[styles.dateTimePickerEntry]}>
                                 <DateTimePicker
                                     testID="dateTimePicker"
                                     value={date}
@@ -237,11 +257,25 @@ export default function AddEntryScreen({route}: any) {
                                     onValueChange={(event, selectedDate) => setDate(selectedDate)}
                                     onDismiss={() => setShowDateModal(false)}
                                 />
-                            </View>
+                            </View>}
+                            {Platform.OS === 'android' && 
+                                <>
+                                    <Text style={[styles.entryText]}>{showDateAndroid()}</Text>
+                                    <IconButton icon="calendar-number-outline" size={24} color="black" onPress={openDateModalAndroid}/>
+                                    {showDateModal && <DateTimePicker
+                                        testID="dateTimePicker"
+                                        value={date}
+                                        mode="date"
+                                        is24Hour={true}
+                                        onValueChange={(event, selectedDate) => { setShowDateModal(false); setDate(selectedDate); }}
+                                        onDismiss={() => setShowDateModal(false)}
+                                    />}
+                                </>
+                            }
                         </View>
                         <View style={styles.textFieldContainer}>
                             <Text style={[styles.fieldText]}>{t('time')}:</Text>
-                            <View style={[styles.dateTimePickerEntry]}>
+                            {Platform.OS === 'ios' && <View style={[styles.dateTimePickerEntry]}>
                                 <DateTimePicker
                                     testID="dateTimePicker"
                                     value={time}
@@ -250,7 +284,21 @@ export default function AddEntryScreen({route}: any) {
                                     onValueChange={(event, selectedTime) => setTime(selectedTime)}
                                     onDismiss={() => setShowTimeModal(false)}
                                 />
-                            </View>
+                            </View>}
+                            {Platform.OS === 'android' && 
+                                <>
+                                    <Text style={[styles.entryText]}>{showTimeAndroid()}</Text>
+                                    <IconButton icon="time-outline" size={24} color="black" onPress={openTimeModalAndroid}/>
+                                    {showTimeModal && <DateTimePicker
+                                        testID="dateTimePicker"
+                                        value={time}
+                                        mode="time"
+                                        is24Hour={true}
+                                        onValueChange={(event, selectedTime) => { setShowTimeModal(false); setTime(selectedTime); }}
+                                        onDismiss={() => setShowTimeModal(false)}
+                                    />}
+                                </>
+                            }
                         </View>
                         {route.params.isDebit && <View style={styles.textFieldContainer}>
                             <Text style={[styles.fieldText]}>{t('change')}:</Text>
@@ -378,7 +426,8 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
         fontSize: 18,
         width: '40%',
-        textAlign: 'right'
+        textAlign: 'right',
+        marginRight: 5
     },
     fixedText: {
         paddingLeft: 10,
