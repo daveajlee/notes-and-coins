@@ -11,7 +11,8 @@ import MainMenuScreen from "./screens/MainMenuScreen.tsx";
 import CategoriesScreen from './screens/CategoriesScreen.tsx';
 import HistoryScreen from './screens/HistoryScreen.tsx';
 import SettingsScreen from './screens/SettingsScreen.tsx';
-import { fetchLanguage, init } from './utilities/sqlite';
+import { fetchLanguage } from './utilities/asyncStorage.ts';
+import { init } from './utilities/sqlite';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
@@ -22,6 +23,7 @@ import { Image, View } from 'react-native';
 import { useTranslation } from "react-i18next";
 import './assets/i18n/i18n';
 import AnalysisScreen from './screens/AnalysisScreen.tsx';
+import { createAsyncStorage } from '@react-native-async-storage/async-storage';
 
 type NavigationStackParams = {
   navigate: Function;
@@ -46,12 +48,12 @@ function App() {
   useEffect(() => {
     async function prepare() {
       try {
-          await init();
           let language = await fetchLanguage();
           language = language.toLowerCase();
           if (language) {
             i18n.changeLanguage(language);
           }
+          await init();
       } catch (err) {
           console.error(err);
       }

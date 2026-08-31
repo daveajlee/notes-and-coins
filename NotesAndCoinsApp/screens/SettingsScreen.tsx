@@ -1,7 +1,7 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Alert, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useEffect, useState } from "react";
-import { fetchLanguage, fetchMinimumBalance, saveSettingsToDatabase } from "../utilities/sqlite";
+import { fetchLanguage, fetchMinimumBalance, saveSettingsToDatabase } from "../utilities/asyncStorage";
 import CountryFlag from "react-native-country-flag";
 import { useTranslation } from "react-i18next";
 import './../assets/i18n/i18n';
