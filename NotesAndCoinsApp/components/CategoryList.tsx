@@ -34,7 +34,12 @@ function CategoryList() {
         }
     }
 
-    function deleteCategory(item: Category) {
+    async function deleteSpecifiedCategory(item: Category) {
+        await deleteCategory(item.name);
+        setLoadedCategories(await fetchCategories());
+    }
+
+    function confirmAndDeleteCategory(item: Category) {
         Alert.alert(t('confirmDeletion'), t('deleteCategory', { categoryName: item.name }), [
             {
                 text: t('cancel'),
@@ -43,14 +48,7 @@ function CategoryList() {
             {
                 text: t('ok'),
                 onPress: () => {
-                    const categories = loadedCategories;
-                    for ( let i = 0; i < categories.length; i++ ) {
-                        if ( categories[i].name === item.name ) {
-                            categories.splice(i, 1);
-                        }
-                    }
-                    setLoadedCategories(categories);
-                    deleteCategory(item.name);
+                    deleteSpecifiedCategory(item);
                 }
             },
         ]); 
@@ -70,7 +68,7 @@ function CategoryList() {
                 </View>
             </View>
             <View style={styles.rightContainerColumn}>
-                <IconButton icon="trash-outline" size={24} color="black" onPress={deleteCategory.bind(null, item)}/>
+                <IconButton icon="trash-outline" size={24} color="black" onPress={confirmAndDeleteCategory.bind(null, item)}/>
             </View>
         </View> 
         }/>

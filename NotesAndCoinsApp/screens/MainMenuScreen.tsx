@@ -38,11 +38,6 @@ export default function MainMenuScreen() {
 
     const colorScheme = Appearance.getColorScheme();
 
-    const [symbol] = formatCurrency({
-            amount: 0.00,
-            code: getCurrencies()[0],
-    });
-
     const isFocused = useIsFocused();
 
     /*const changeLanguage = (value: any) => {
@@ -83,7 +78,7 @@ export default function MainMenuScreen() {
             // Display a notification
             await notifee.displayNotification({
             title: t('notificationTitle'),
-            body: t('notificationMessage', { calculatedBalance: calculatedBalance, symbol:symbol, minimumBalance: await fetchMinimumBalance() }),
+            body: t('notificationMessage', { calculatedBalance: calculatedBalance, symbol:formatSymbol(getCurrencies()[0]), minimumBalance: await fetchMinimumBalance() }),
             android: {
               channelId,
               // pressAction is needed if you want the notification to open the app when pressed
@@ -102,7 +97,13 @@ export default function MainMenuScreen() {
 
         prepare();
 
-    }, [symbol, isFocused, /*currentLanguage,*/ i18n, navigation, t]);
+    }, [isFocused, /*currentLanguage,*/ i18n, navigation, t]);
+
+    function formatSymbol(currencyCode: string) {
+        if ( currencyCode === 'EUR' ) {
+            return "€";
+        }
+    } 
 
     /**
      * Retrieve the amount of a particular note.

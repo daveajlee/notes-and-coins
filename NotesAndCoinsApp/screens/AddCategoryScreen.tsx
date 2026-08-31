@@ -51,7 +51,7 @@ export default function AddCategoryScreen() {
             Alert.alert(t('categoryAdded'), t('categoryAddedMessage', { categoryName: name }));
             setName('');
             setColourValue('');
-            navigation.navigate('CategoriesScreen');
+            navigation.navigate('MainMenuScreen');
         } else {
             Alert.alert(t('error'), t('errorDuplicateCategory', { categoryName: name }));
         }

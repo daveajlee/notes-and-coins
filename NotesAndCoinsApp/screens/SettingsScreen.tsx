@@ -7,6 +7,10 @@ import { useTranslation } from "react-i18next";
 import './../assets/i18n/i18n';
 import { useNavigation } from "@react-navigation/native";
 
+type NavigationStackParams = {
+  navigate: Function;
+}
+
 /**
  * Show the settings screen.
  */
@@ -14,7 +18,7 @@ export default function SettingsScreen() {
 
     const [minimumBalance, setMinimumBalance] = useState('');
     const [language, setLanguage] = useState('');
-    const navigation = useNavigation();
+    const navigation = useNavigation<NavigationStackParams>();
 
     const {t, i18n} = useTranslation();
 
@@ -58,21 +62,13 @@ export default function SettingsScreen() {
             Alert.alert(t('minimumBalanceDecimal'));
             return;
         }
-        // Parse the number and then to two decimal places.
+        // Save settings to database.
         let parsedMinimumBalance = parseFloat(minimumBalance.replace(',', '.')).toFixed(2);
-        setMinimumBalance(parsedMinimumBalance);
         await saveSettingsToDatabase(parsedMinimumBalance, language);
         // Change the language of the app immediately after saving.
         i18n.changeLanguage(language);
         // Show confirmation alert that the settings have been saved.
         Alert.alert(t('confirmSaved'));
-        // Now go back to the previous screen.
-        navigation.goBack();
-        
-    }
-
-    function resetSettings() {
-        setMinimumBalance('0,00');
     }
 
     /**
@@ -106,9 +102,6 @@ export default function SettingsScreen() {
             <View style={styles.buttonContainer}>
                 <Pressable style={[styles.button]} onPress={saveSettings}>
                     <Text style={styles.buttonText}>{t('save')}</Text>
-                </Pressable>
-                <Pressable style={[styles.button]} onPress={resetSettings}>
-                    <Text style={styles.buttonText}>{t('reset')}</Text>
                 </Pressable>
             </View>
         </SafeAreaView>
@@ -175,14 +168,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginTop: 20,
     },
-    buttonContainer: {
-        marginTop: 40,
-        flexDirection: 'row',
-    },
     button: {
         alignItems: "center",
         backgroundColor: "#A2574F",
-        width: '40%',
+        width: '90%',
         padding: 10,
         marginBottom: 30,
         marginRight: 10,
