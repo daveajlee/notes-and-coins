@@ -235,7 +235,7 @@ export default function AddEntryScreen({route}: any) {
                     <View style={styles.inputContainer}>
                         <View style={styles.textFieldContainer}>
                             <Text style={[styles.fieldText]}>{t('amount')}:</Text>
-                            <TextInput style={styles.textInput} placeholder={"0,00"} onChangeText={amountInputHandler} value={amount}/>
+                            <TextInput style={styles.textInput} placeholder={"0,00"} placeholderTextColor="#000" onChangeText={amountInputHandler} value={amount}/>
                         </View>
                         <View style={styles.textFieldContainer}>
                             <Text style={[styles.fieldText]}>{t('category')}:</Text>
@@ -244,7 +244,7 @@ export default function AddEntryScreen({route}: any) {
                         </View>
                         <View style={styles.textFieldContainer}>
                             <Text style={[styles.fieldText]}>{t('title')}:</Text>
-                            <TextInput style={styles.textInput} placeholder={t('placeholderTitle')} onChangeText={descriptionInputHandler} value={description}/>
+                            <TextInput style={styles.textInput} placeholder={t('placeholderTitle')} placeholderTextColor="#000" onChangeText={descriptionInputHandler} value={description}/>
                         </View>
                         <View style={styles.textFieldContainer}>
                             <Text style={[styles.fieldText]}>{t('date')}:</Text>
