@@ -271,7 +271,7 @@
 				DEVELOPMENT_TEAM = 57SJGDPNCC;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = NotesAndCoinsApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "N&C Beta";
+				INFOPLIST_KEY_CFBundleDisplayName = "Notes & Coins";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -284,7 +284,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = de.davelee.notesandcoins.beta;
+				PRODUCT_BUNDLE_IDENTIFIER = de.davelee.notesandcoins.app;
 				PRODUCT_NAME = NotesAndCoinsApp;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -303,7 +303,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 57SJGDPNCC;
 				INFOPLIST_FILE = NotesAndCoinsApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "N&C Beta";
+				INFOPLIST_KEY_CFBundleDisplayName = "Notes & Coins";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -316,7 +316,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = de.davelee.notesandcoins.beta;
+				PRODUCT_BUNDLE_IDENTIFIER = de.davelee.notesandcoins.app;
 				PRODUCT_NAME = NotesAndCoinsApp;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_VERSION = 5.0;
