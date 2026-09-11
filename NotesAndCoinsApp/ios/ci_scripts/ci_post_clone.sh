@@ -2,5 +2,7 @@
 set -e
 brew install cocoapods
 brew install node
-cd ..
+cd ../../
+npm install
+cd ios
 pod install
